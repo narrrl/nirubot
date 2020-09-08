@@ -33,6 +33,12 @@ public class GuildManager {
     private Guild guild;
     private File guildFile;
 
+
+    /**
+     * Singleton for guild manager hashmap. That stores all guild managers by their long id
+     * 
+     * @return {@link #guildManagers}
+     */
     private static HashMap<Long, GuildManager> getGuildManagers() {
 
         if (guildManagers == null) {
@@ -42,6 +48,13 @@ public class GuildManager {
         return guildManagers;
     }
 
+    /**
+     * Tries to get the guild manager for a given guild id. Creates a new guildmanager if it doesnt exists.
+     * 
+     * @param idLong
+     * @throws IllegalArgumentException if the config couldn
+     * @return
+     */
     public static GuildManager getManager(long idLong) {
         GuildManager gm = getGuildManagers().get(idLong);
 
@@ -50,6 +63,7 @@ public class GuildManager {
                 gm = new GuildManager(idLong);
             } catch (IOException e) {
                 Nirubot.warning("couldn't create config for guild" + idLong);
+                gm = new GuildManager(idLong, Nirubot.getDefaultPrefix());
             }
             getGuildManagers().put(idLong, gm);
         }
@@ -57,24 +71,34 @@ public class GuildManager {
         return gm;
     }
 
+    /**
+     * Creates a new guild manager for given id. Writes to a config to save the guild settings in {@link #guild}
+     * @param longId
+     * @throws IOException
+     */
     GuildManager(long longId) throws IOException {
 
+        // creates guilds directory where the configs of all guilds get saved
         if (!GUILDS_DIR.exists()) {
             GUILDS_DIR.mkdir();
         }
 
         guildFile = new File(GUILDS_DIR.getAbsolutePath().concat(File.separator + longId + ".json"));
+
+        // checks if guild files exists and creates it if not
         if (!guildFile.exists() && guildFile.createNewFile()) {
             guild = new Guild(longId);
             guild.prefix = Nirubot.getDefaultPrefix();
             guild.volume = 100;
             guild.successReaction = false;
             write();
-        } else if (!guildFile.exists()) {
+        } else if (!guildFile.exists()) { // if file couldn't be created 
             throw new IllegalArgumentException("Couldn't read or create guild config for " + longId);
         }
+        // gets the data from the file and parse it
         guild = Nirubot.getGson().fromJson(Files.readString(guildFile.toPath(), StandardCharsets.UTF_8), Guild.class);
 
+        // checks if guild is null to prevent errors
         if (guild == null) {
             guild = new Guild(longId);
             guild.prefix = Nirubot.getDefaultPrefix();
@@ -84,6 +108,22 @@ public class GuildManager {
         }
     }
 
+    /**
+     * Constructor if the normal guild manager constructor couldn't create config.
+     * Guild settings will reset on bot restart
+     * 
+     * @param id guild id
+     * @param prefix guild prefix
+     */
+    private GuildManager(final long id, final String prefix) {
+        this.guild = new Guild(id);
+        this.guild.prefix = prefix;
+        this.guild.volume = 100;
+        this.guild.successReaction = false;
+    }
+
+
+    // writes the data stores in {@link #guild}
     private synchronized void write() {
         FileWriter writer;
         try {
@@ -112,6 +152,7 @@ public class GuildManager {
         write();
     }
 
+    // wont return null to prevent nullpointer exceptions
     public String prefix() {
         if (guild.prefix == null) {
             setPrefix(Nirubot.getDefaultPrefix());
