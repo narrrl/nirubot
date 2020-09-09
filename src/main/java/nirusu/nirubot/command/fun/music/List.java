@@ -12,7 +12,6 @@ import nirusu.nirubot.core.GuildMusicManager;
 import nirusu.nirubot.core.PlayerManager;
 
 import java.util.ArrayList;
-import java.awt.Color;
 
 public final class List implements ICommand {
 
