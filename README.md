@@ -17,7 +17,8 @@ The config shoulde look something like this:
   "prefix":"!",
   "activity":"!help",
   "activityType":"listening",
-  "token":"YOUR BOT TOKEN"
+  "token":"YOUR BOT TOKEN",
+  "owners":[208979474988007425, 208981656999034890]
 }
 ```
 
@@ -33,8 +34,9 @@ The bot will create a log directory on the first start:
 bot-directory
     ├── nirubot-{$VERSION}-all.jar
     ├── config.json
-    └── logs
-        └── YYYY-MM-DDlog.json
+    └── guilds
+        └── GUILD_ID_LONG.json
+        └── ...
 ```
 
 ## Contact
