@@ -17,6 +17,7 @@ public class Config {
         private String activity;
         private String activityType;
         private String token;
+        private String googleApiToken;
         private long[] owners;
     }
 
@@ -57,6 +58,10 @@ public class Config {
 
     public String getToken() {
         return data.token;
+    }
+
+    public String getYouTubeKey() {
+        return data.googleApiToken;
     }
 
     public long[] getOwners() {

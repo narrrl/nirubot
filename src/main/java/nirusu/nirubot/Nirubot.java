@@ -4,6 +4,11 @@ import java.awt.Color;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import com.google.api.client.http.HttpRequest;
+import com.google.api.client.http.HttpRequestInitializer;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.services.youtube.YouTube;
 import com.google.common.util.concurrent.AbstractIdleService;
 import com.google.gson.Gson;
 
@@ -21,6 +26,7 @@ public class Nirubot extends AbstractIdleService {
     private static Nirubot bot;
     private static Gson gson;
     private static Config conf;
+    private static YouTube yt;
     private ArrayList<NiruListener> listeners;
 
     public static Nirubot getNirubot() {
@@ -151,5 +157,16 @@ public class Nirubot extends AbstractIdleService {
             }
         }
         return false;
+    }
+
+    public static synchronized YouTube getYouTube() {
+        if (yt == null) {
+            yt = new YouTube.Builder(new NetHttpTransport(), new JacksonFactory(), new HttpRequestInitializer(){
+				@Override
+				public void initialize(HttpRequest request) throws IOException {
+				}
+            }).setApplicationName("Nirubot").build();
+        }
+        return yt;
     }
 }

@@ -7,7 +7,7 @@ import nirusu.nirubot.core.DiscordUtil;
 import nirusu.nirubot.core.GuildManager;
 import nirusu.nirubot.core.PlayerManager;
 
-public final class Stop implements ICommand {
+public final class Leave implements ICommand {
     @Override
     public void execute(CommandContext ctx) {
 
@@ -19,6 +19,7 @@ public final class Stop implements ICommand {
             ctx.reply("You must be in the same voice channel!");
             return;
         }
+
 
         PlayerManager manager = PlayerManager.getInstance();
         manager.destroy(ctx.getGuild());

@@ -22,9 +22,6 @@ mainClassName = 'nirusu.nirubot.Nirubot'
 repositories {
     mavenCentral()
     jcenter()
-    maven {
-        url  "https://dl.bintray.com/kodehawa/maven"
-    }
 }
 
 dependencies {
