@@ -14,6 +14,8 @@ import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import nirusu.nirubot.Nirubot;
 import nirusu.nirubot.command.CommandContext;
+import nirusu.nirubot.command.CommandDispatcher;
+import nirusu.nirubot.command.ICommand;
 import nirusu.nirubot.core.Config;
 import nirusu.nirubot.core.GuildManager;
 
@@ -44,16 +46,13 @@ public class DiscordListener extends ListenerAdapter implements NiruListener {
 
         String raw = event.getMessage().getContentRaw();
 
-        //TODO: implement proper command system
-
         if (raw.startsWith(gm.prefix()) && raw.length() > gm.prefix().length()) {
             String content = raw.substring(gm.prefix().length());
             CommandContext ctx = new CommandContext(event, Arrays.asList(content.split("\\s+")));
 
-            if (ctx.getArgs().size() == 1 && ctx.getArgs().get(0).equals("ping")) {
-                ctx.reply("Pong!");
-            }
+            ICommand cmd = CommandDispatcher.getICommand(ctx.getArgs().get(0));
 
+            cmd.execute(ctx);
         }
     }
 
