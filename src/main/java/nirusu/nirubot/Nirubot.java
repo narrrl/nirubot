@@ -1,5 +1,6 @@
 package nirusu.nirubot;
 
+import java.awt.Color;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -130,4 +131,8 @@ public class Nirubot extends AbstractIdleService {
     public static String getDefaultPrefix() {
         return getConfig().getPrefix();
     }
+
+	public static Color getColor() {
+		return new Color(0, 153, 255);
+	}
 }
