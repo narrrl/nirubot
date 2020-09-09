@@ -1,6 +1,11 @@
 package nirusu.nirubot.core;
 
+import javax.annotation.Nonnull;
+
 import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.entities.GuildVoiceState;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.VoiceChannel;
 
 public class DiscordUtil {
 
@@ -16,5 +21,25 @@ public class DiscordUtil {
         }
         return act;
     }
+
+    public static VoiceChannel findVoiceChannel(@Nonnull Member member) {
+        GuildVoiceState state = member.getVoiceState();
+        return state != null ? state.getChannel() : null;
+    }
+
+    /**
+     * Checks if both member are in the same voice channel
+     */
+	public static boolean areInSameVoice(Member member, Member selfMember) {
+        VoiceChannel channel = DiscordUtil.findVoiceChannel(member);
+
+        if (channel == null) return false;
+
+        VoiceChannel botChannel = DiscordUtil.findVoiceChannel(selfMember);
+
+        if (!channel.equals(botChannel)) return false;
+
+        return true;
+	}
     
 }
