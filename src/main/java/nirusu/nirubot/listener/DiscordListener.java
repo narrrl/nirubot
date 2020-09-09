@@ -5,6 +5,7 @@ import java.util.Arrays;
 import javax.annotation.Nonnull;
 import javax.security.auth.login.LoginException;
 
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.ReadyEvent;
@@ -17,6 +18,7 @@ import nirusu.nirubot.command.CommandContext;
 import nirusu.nirubot.command.CommandDispatcher;
 import nirusu.nirubot.command.ICommand;
 import nirusu.nirubot.core.Config;
+import nirusu.nirubot.core.DiscordUtil;
 import nirusu.nirubot.core.GuildManager;
 
 public class DiscordListener extends ListenerAdapter implements NiruListener {
@@ -29,7 +31,9 @@ public class DiscordListener extends ListenerAdapter implements NiruListener {
         shardManager = DefaultShardManagerBuilder.createDefault(conf.getToken())
             .setAutoReconnect(true)
             .setStatus(OnlineStatus.ONLINE)
-            .addEventListeners(this).build();
+            .addEventListeners(this)
+            .setActivity(DiscordUtil.getActivity(conf.getActivityType(), conf.getActivity()))
+            .build();
 
     }
 
@@ -63,6 +67,9 @@ public class DiscordListener extends ListenerAdapter implements NiruListener {
 
     @Override
 	public void shutdown() {
+        for (JDA j : shardManager.getShards()) {
+            j.shutdown();
+        }
         shardManager.shutdown();
         Nirubot.info("Discord listener is shutting down");
 	}
