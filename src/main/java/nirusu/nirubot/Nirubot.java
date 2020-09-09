@@ -144,7 +144,7 @@ public class Nirubot extends AbstractIdleService {
         }
     }
     
-    public boolean isOwner(long id) {
+    public static boolean isOwner(long id) {
         for (long l : getConfig().getOwners()) {
             if (id == l) {
                 return true;

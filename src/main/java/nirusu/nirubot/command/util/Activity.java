@@ -14,7 +14,7 @@ public class Activity implements ICommand {
     @Override
     public void execute(CommandContext ctx) {
 
-        if (!Nirubot.getNirubot().isOwner(ctx.getAuthor().getIdLong())) {
+        if (!Nirubot.isOwner(ctx.getAuthor().getIdLong())) {
             ctx.reply("Not enough permissions");
         }
 

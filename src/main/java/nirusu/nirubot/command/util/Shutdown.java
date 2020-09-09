@@ -15,14 +15,7 @@ public class Shutdown implements ICommand {
             return;
         }
 
-        int offset = 0;
-        for (long id : Nirubot.getConfig().getOwners()) {
-            if (id == ctx.getAuthor().getIdLong()) {
-                offset++;
-            }
-        }
-
-        if (offset == 0) {
+        if (!Nirubot.isOwner(ctx.getAuthor().getIdLong())) {
             ctx.reply("Not enough permissions");
             return;
         }
