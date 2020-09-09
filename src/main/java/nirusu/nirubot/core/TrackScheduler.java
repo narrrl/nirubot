@@ -5,6 +5,7 @@ import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.ArrayList;
 
 import java.util.concurrent.BlockingQueue;
@@ -88,5 +89,32 @@ public class TrackScheduler extends AudioEventAdapter {
     public boolean setRepeat() {
         this.repeat = !repeat;
         return repeat;
+    }
+
+	public AudioTrack remove(final int num) {
+        Iterator<AudioTrack> it = queue.iterator();
+        int i = 1;
+        while (it.hasNext()) {
+            if (i == num) {
+                AudioTrack t = it.next();
+                queue.remove(t);
+                return t;
+            }
+            it.next();
+            i++;
+        }
+        return null;
+    }
+    
+    public AudioTrack remove(final String keyWord) {
+        Iterator<AudioTrack> it = queue.iterator();
+        while (it.hasNext()) {
+            AudioTrack tr = it.next();
+            if (tr.getInfo().title.toLowerCase().contains(keyWord.toLowerCase())) {
+                queue.remove(tr);
+                return tr;
+            }
+        }
+        return null;
     }
 }

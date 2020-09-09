@@ -100,6 +100,14 @@ public class PlayerManager {
 
     }
 
+    public AudioTrack remove(@Nonnull final GuildMusicManager musicManager, final int num) {
+        return musicManager.getScheduler().remove(num);
+    }
+
+    public AudioTrack remove(@Nonnull final GuildMusicManager musicManager, final String keyWord) {
+        return musicManager.getScheduler().remove(keyWord);
+    }
+
     public boolean repeat(@Nonnull final GuildMusicManager musicManager) {
         return musicManager.getScheduler().setRepeat();
     }

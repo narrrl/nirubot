@@ -14,6 +14,7 @@ nirusu.nirubot.command.fun.music.Shuffle
 nirusu.nirubot.command.fun.music.Stop
 nirusu.nirubot.command.fun.music.Volume
 nirusu.nirubot.command.fun.music.Join
+nirusu.nirubot.command.fun.music.Remove
 nirusu.nirubot.command.util.SetAvatar
 nirusu.nirubot.command.util.ChangeName
 nirusu.nirubot.command.util.ServerInfo
