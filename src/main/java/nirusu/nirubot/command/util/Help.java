@@ -32,10 +32,7 @@ public class Help implements ICommand {
         }
     }
 
-    @Override
-    public String getKey() {
-        return "help";
-    }
+
 
     @Override
     public MessageEmbed helpMessage(GuildManager gm) {

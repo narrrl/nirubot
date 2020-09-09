@@ -43,10 +43,7 @@ public class Activity implements ICommand {
 
     }
 
-    @Override
-    public String getKey() {
-        return "activity";
-    }
+
 
     @Override
     public MessageEmbed helpMessage(GuildManager gm) {

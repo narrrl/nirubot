@@ -9,13 +9,15 @@ public interface ICommand {
 
     public void execute(CommandContext ctx);
 
-    public String getKey();
+    public default String getKey() {
+        return this.getClass().getSimpleName().toLowerCase();
+    }
 
     public MessageEmbed helpMessage(GuildManager gm);
 
     public static MessageEmbed createHelp(final String message, final String prefix, final String key) {
         return new EmbedBuilder().setColor(Nirubot.getColor()).setDescription(message)
-            .setTitle("Help for " + prefix + key).build();
+            .setTitle("Help for **" + prefix + key + "**").build();
     }
     
 }

@@ -38,10 +38,7 @@ public final class Repeat implements ICommand {
         }
     }
 
-    @Override
-    public String getKey() {
-        return "repeat";
-    }
+
 
     @Override
     public MessageEmbed helpMessage(final GuildManager gm) {

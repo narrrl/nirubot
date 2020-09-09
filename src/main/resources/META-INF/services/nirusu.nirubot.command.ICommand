@@ -4,3 +4,13 @@ nirusu.nirubot.command.util.Prefix
 nirusu.nirubot.command.fun.Mock
 nirusu.nirubot.command.util.Shutdown
 nirusu.nirubot.command.util.Activity
+nirusu.nirubot.command.fun.music.List
+nirusu.nirubot.command.fun.music.Next
+nirusu.nirubot.command.fun.music.Pause
+nirusu.nirubot.command.fun.music.Play
+nirusu.nirubot.command.fun.music.Playing
+nirusu.nirubot.command.fun.music.Repeat
+nirusu.nirubot.command.fun.music.Shuffle
+nirusu.nirubot.command.fun.music.Stop
+nirusu.nirubot.command.fun.music.Volume
+nirusu.nirubot.command.fun.music.Join

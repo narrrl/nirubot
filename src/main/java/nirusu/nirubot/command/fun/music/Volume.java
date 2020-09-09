@@ -28,18 +28,13 @@ public final class Volume implements ICommand {
         int volume;
 
         try {
-            volume = Integer.parseInt(ctx.getArgs().get(0));
+            volume = Integer.parseInt(ctx.getArgs().get(1));
         } catch (NumberFormatException e) {
             return;
         }
 
         GuildManager.getManager(ctx.getGuild().getIdLong()).setVolume(volume);
         musicManager.getPlayer().setVolume(volume);
-    }
-
-    @Override
-    public String getKey() {
-        return "volume";
     }
 
     @Override

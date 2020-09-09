@@ -27,10 +27,7 @@ public class Prefix implements ICommand {
 
     }
 
-    @Override
-    public String getKey() {
-        return "prefix";
-    }
+
 
     @Override
     public MessageEmbed helpMessage(GuildManager gm) {

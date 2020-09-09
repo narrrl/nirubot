@@ -18,10 +18,7 @@ public class Ping implements ICommand {
                 .queue(edit -> edit.editMessageFormat("Pong: %d ms", ctx.getJDA().getGatewayPing()).queue());
     }
 
-    @Override
-    public String getKey() {
-        return "ping";
-    }
+
 
     @Override
     public MessageEmbed helpMessage(GuildManager gm) {

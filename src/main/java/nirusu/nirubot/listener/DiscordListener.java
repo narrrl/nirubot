@@ -54,7 +54,14 @@ public class DiscordListener extends ListenerAdapter implements NiruListener {
             String content = raw.substring(gm.prefix().length());
             CommandContext ctx = new CommandContext(event, Arrays.asList(content.split("\\s+")));
 
-            ICommand cmd = CommandDispatcher.getICommand(ctx.getArgs().get(0));
+            ICommand cmd;
+
+            try {
+                cmd = CommandDispatcher.getICommand(ctx.getArgs().get(0));
+            } catch (IllegalArgumentException e) {
+                ctx.reply("Command not found!");
+                return;
+            }
 
             cmd.execute(ctx);
         }

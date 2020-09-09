@@ -25,7 +25,7 @@ public final class Play implements ICommand {
         }
 
         PlayerManager manager = PlayerManager.getInstance();
-        manager.loadAndPlay(ctx, ctx.getArgs().get(0));
+        manager.loadAndPlay(ctx, ctx.getArgs().get(1));
 
         GuildManager gm = GuildManager.getManager(ctx.getGuild().getIdLong());
 
@@ -35,10 +35,7 @@ public final class Play implements ICommand {
         ctx.getGuild().getAudioManager().openAudioConnection(DiscordUtil.findVoiceChannel(ctx.getMember()));
     }
 
-    @Override
-    public String getKey() {
-        return "play";
-    }
+
 
     @Override
     public MessageEmbed helpMessage(GuildManager gm) {

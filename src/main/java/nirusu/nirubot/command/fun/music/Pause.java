@@ -26,10 +26,7 @@ public final class Pause implements ICommand {
         manager.pause(musicManager, !musicManager.getPlayer().isPaused());
     }
 
-    @Override
-    public String getKey() {
-        return "pause";
-    }
+
 
     @Override
     public MessageEmbed helpMessage(final GuildManager gm) {

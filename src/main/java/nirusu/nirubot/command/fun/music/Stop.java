@@ -26,11 +26,6 @@ public final class Stop implements ICommand {
     }
 
     @Override
-    public String getKey() {
-        return "stop";
-    }
-
-    @Override
     public MessageEmbed helpMessage(GuildManager gm) {
         return ICommand.createHelp("Stops the current music and deletes queue", gm.prefix(), getKey());
     }

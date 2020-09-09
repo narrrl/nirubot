@@ -37,10 +37,7 @@ public final class Playing implements ICommand {
 
     }
 
-    @Override
-    public String getKey() {
-        return "playing";
-    }
+
 
     @Override
     public MessageEmbed helpMessage(GuildManager gm) {

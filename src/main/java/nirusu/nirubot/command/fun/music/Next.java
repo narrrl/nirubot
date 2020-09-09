@@ -40,10 +40,7 @@ public final class Next implements ICommand {
         ctx.reply("Skipped: " + prevText + "\n" + "Now playing: " + nextText);
     }
 
-    @Override
-    public String getKey() {
-        return "next";
-    }
+
 
     @Override
     public MessageEmbed helpMessage(GuildManager gm) {

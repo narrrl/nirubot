@@ -40,10 +40,7 @@ public class Mock implements ICommand {
         ctx.reply(builder.toString());
     }
 
-    @Override
-    public String getKey() {
-        return "mock";
-    }
+
 
     @Override
     public MessageEmbed helpMessage(GuildManager gm) {

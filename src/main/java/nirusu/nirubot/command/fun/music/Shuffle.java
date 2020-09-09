@@ -35,11 +35,6 @@ public final class Shuffle implements ICommand {
     }
 
     @Override
-    public String getKey() {
-        return "shuffle";
-    }
-
-    @Override
     public MessageEmbed helpMessage(GuildManager gm) {
         return ICommand.createHelp("Shuffles the current queue", gm.prefix(), getKey());
     }

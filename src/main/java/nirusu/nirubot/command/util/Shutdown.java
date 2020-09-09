@@ -32,10 +32,7 @@ public class Shutdown implements ICommand {
 
     }
 
-    @Override
-    public String getKey() {
-        return "shutdown";
-    }
+
 
     @Override
     public MessageEmbed helpMessage(GuildManager gm) {

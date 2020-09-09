@@ -71,10 +71,7 @@ public final class List implements ICommand {
         }
 
     }
-    @Override
-    public String getKey() {
-        return "list";
-    }
+
 
     @Override
     public MessageEmbed helpMessage(GuildManager gm) {
