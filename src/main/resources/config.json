@@ -2,5 +2,6 @@
     "prefix":"!",
     "activity":"!help",
     "activityType":"listening",
-    "token":"YOUR BOT TOKEN"
+    "token":"YOUR BOT TOKEN",
+    "owners":["your discord id"]
 }
