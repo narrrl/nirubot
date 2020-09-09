@@ -1,5 +1,6 @@
 package nirusu.nirubot.command.util;
 
+import java.util.Arrays;
 import java.util.List;
 
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -43,6 +44,11 @@ public class ChangeName implements ICommand {
     @Override
     public MessageEmbed helpMessage(GuildManager gm) {
         return ICommand.createHelp("Change the name of the bot user", gm.prefix(), getKey());
+    }
+
+    @Override
+    public List<String> alias() {
+        return Arrays.asList("cname", "chna");
     }
     
 }

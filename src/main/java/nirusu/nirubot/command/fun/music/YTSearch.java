@@ -14,6 +14,7 @@ import nirusu.nirubot.Nirubot;
 import nirusu.nirubot.command.CommandContext;
 import nirusu.nirubot.command.ICommand;
 import nirusu.nirubot.core.GuildManager;
+import nirusu.nirubot.core.PlayerManager;
 import nirusu.nirubot.util.YouTubeVideo;
 
 public class YTSearch implements ICommand {
@@ -34,16 +35,12 @@ public class YTSearch implements ICommand {
         }
 
 
-        YouTubeVideo video = Nirubot.getGson().fromJson(results.get(0).toString().replace("default", "default_"), YouTubeVideo.class);
+        YouTubeVideo video = Nirubot.getGson().fromJson(results.get(0).toString().replace("\"default\"", "\"default_\""), YouTubeVideo.class);
         EmbedBuilder emb = new EmbedBuilder();
-        emb.setColor(Nirubot.getColor()).setTitle(video.getTitle(), "https://www.youtube.com/watch?v=" + video.getVideoId()).setImage(video.getThumbnailUrl());
-        ctx.reply(emb.build());
-        CommandContext c = new CommandContext(ctx.getEvent(), Arrays.asList(new String[]{ "play", video.getVideoId() }));
 
-        
+        emb.setColor(Nirubot.getColor()).setTitle(video.getTitle(), "https://www.youtube.com/watch?v=" + video.getVideoId()).setThumbnail(video.getThumbnailUrl());
 
-
-
+        PlayerManager.getInstance().loadAndPlay(ctx, video.getVideoId(), emb);
     }
 
 
@@ -86,6 +83,11 @@ public class YTSearch implements ICommand {
     @Override
     public MessageEmbed helpMessage(GuildManager gm) {
         return ICommand.createHelp("Searches for a song on youtube and queues it", gm.prefix(), getKey());
+    }
+
+    @Override
+    public List<String> alias() {
+        return Arrays.asList("yt", "yp");
     }
     
 }

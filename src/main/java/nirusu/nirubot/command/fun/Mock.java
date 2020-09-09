@@ -1,5 +1,6 @@
 package nirusu.nirubot.command.fun;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -45,6 +46,11 @@ public class Mock implements ICommand {
     @Override
     public MessageEmbed helpMessage(GuildManager gm) {
         return ICommand.createHelp("makes your message retarded", gm.prefix(), getKey());
+    }
+
+    @Override
+    public List<String> alias() {
+        return Arrays.asList();
     }
     
 }

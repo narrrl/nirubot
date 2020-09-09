@@ -2,6 +2,7 @@ package nirusu.nirubot.command.util;
 
 import java.util.ServiceLoader;
 import java.util.stream.StreamSupport;
+import java.util.Arrays;
 import java.util.List;
 
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -39,6 +40,11 @@ public class Help implements ICommand {
         return new EmbedBuilder()
         .setDescription("Use " + gm.prefix() + getKey() + " to list all commands and " + gm.prefix() + getKey() + "<command> for more info about a command")
         .setColor(Nirubot.getColor()).build();
+    }
+
+    @Override
+    public List<String> alias() {
+        return Arrays.asList("h");
     }
     
 }

@@ -1,5 +1,6 @@
 package nirusu.nirubot.command.fun.music;
 
+import java.util.Arrays;
 import java.util.List;
 
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
@@ -52,6 +53,11 @@ public class Remove implements ICommand {
     @Override
     public MessageEmbed helpMessage(final GuildManager gm) {
         return ICommand.createHelp("Removes song at an given position", gm.prefix(), getKey());
+    }
+
+    @Override
+    public List<String> alias() {
+        return Arrays.asList("rm");
     }
     
 }

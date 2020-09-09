@@ -1,5 +1,8 @@
 package nirusu.nirubot.command.fun.music;
 
+import java.util.Arrays;
+import java.util.List;
+
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -31,16 +34,19 @@ public final class Playing implements ICommand {
 
         EmbedBuilder emb = new EmbedBuilder();
         AudioTrackInfo info = track.getInfo();
-        emb.setColor(Nirubot.getColor()).setThumbnail(ctx.getGuild().getIconUrl()).setTitle("Now playing:", info.uri)
-                .setDescription(info.author + " - " + info.title);
+        emb.setColor(Nirubot.getColor()).setThumbnail(ctx.getGuild().getIconUrl()).setTitle("Now playing:")
+                .setDescription("[" + info.title + "]" + "(" + info.uri + ")");
         ctx.reply(emb.build());
 
     }
 
-
-
     @Override
     public MessageEmbed helpMessage(GuildManager gm) {
         return ICommand.createHelp("Shows the current playing song", gm.prefix(), getKey());
+    }
+
+    @Override
+    public List<String> alias() {
+        return Arrays.asList("np");
     }
 }

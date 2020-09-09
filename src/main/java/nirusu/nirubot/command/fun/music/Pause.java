@@ -1,5 +1,8 @@
 package nirusu.nirubot.command.fun.music;
 
+import java.util.Arrays;
+import java.util.List;
+
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import nirusu.nirubot.command.CommandContext;
 import nirusu.nirubot.command.ICommand;
@@ -26,11 +29,14 @@ public final class Pause implements ICommand {
         manager.pause(musicManager, !musicManager.getPlayer().isPaused());
     }
 
-
-
     @Override
     public MessageEmbed helpMessage(final GuildManager gm) {
         return ICommand.createHelp("Pauses the current queue", gm.prefix(), getKey());
+    }
+
+    @Override
+    public List<String> alias() {
+        return Arrays.asList("resume");
     }
 
 }

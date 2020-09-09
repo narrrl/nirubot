@@ -12,6 +12,7 @@ import nirusu.nirubot.core.GuildMusicManager;
 import nirusu.nirubot.core.PlayerManager;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public final class List implements ICommand {
 
@@ -76,5 +77,10 @@ public final class List implements ICommand {
     @Override
     public MessageEmbed helpMessage(GuildManager gm) {
         return ICommand.createHelp("Lists all queued songs", gm.prefix(), getKey());
+    }
+
+    @Override
+    public java.util.List<String> alias() {
+        return Arrays.asList(new String[] {"ls"});
     }
 }

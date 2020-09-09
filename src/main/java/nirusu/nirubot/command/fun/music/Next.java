@@ -1,5 +1,8 @@
 package nirusu.nirubot.command.fun.music;
 
+import java.util.Arrays;
+import java.util.List;
+
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -40,11 +43,14 @@ public final class Next implements ICommand {
         ctx.reply("Skipped: " + prevText + "\n" + "Now playing: " + nextText);
     }
 
-
-
     @Override
     public MessageEmbed helpMessage(GuildManager gm) {
         return ICommand.createHelp("skips the current song", gm.prefix(), getKey());
+    }
+
+    @Override
+    public List<String> alias() {
+        return Arrays.asList("skip");
     }
 
 }

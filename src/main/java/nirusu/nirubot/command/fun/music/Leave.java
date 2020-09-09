@@ -1,5 +1,8 @@
 package nirusu.nirubot.command.fun.music;
 
+import java.util.Arrays;
+import java.util.List;
+
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import nirusu.nirubot.command.CommandContext;
 import nirusu.nirubot.command.ICommand;
@@ -20,7 +23,6 @@ public final class Leave implements ICommand {
             return;
         }
 
-
         PlayerManager manager = PlayerManager.getInstance();
         manager.destroy(ctx.getGuild());
         ctx.getGuild().getAudioManager().closeAudioConnection();
@@ -29,5 +31,10 @@ public final class Leave implements ICommand {
     @Override
     public MessageEmbed helpMessage(GuildManager gm) {
         return ICommand.createHelp("Stops the current music and deletes queue", gm.prefix(), getKey());
+    }
+
+    @Override
+    public List<String> alias() {
+        return Arrays.asList("lv");
     }
 }

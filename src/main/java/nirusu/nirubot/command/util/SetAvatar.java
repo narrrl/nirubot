@@ -3,6 +3,7 @@ package nirusu.nirubot.command.util;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.List;
 
 import net.dv8tion.jda.api.entities.Icon;
@@ -38,6 +39,11 @@ public class SetAvatar implements ICommand {
     @Override
     public MessageEmbed helpMessage(GuildManager gm) {
         return ICommand.createHelp("Sets the avatar for the bot. You have to attach a picture", gm.prefix(), getKey());
+    }
+
+    @Override
+    public List<String> alias() {
+        return Arrays.asList("setav");
     }
     
 }

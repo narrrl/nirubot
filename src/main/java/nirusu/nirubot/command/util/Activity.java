@@ -1,5 +1,6 @@
 package nirusu.nirubot.command.util;
 
+import java.util.Arrays;
 import java.util.List;
 
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -48,6 +49,11 @@ public class Activity implements ICommand {
     @Override
     public MessageEmbed helpMessage(GuildManager gm) {
         return ICommand.createHelp("This commands sets the activity for the bot", gm.prefix(), getKey());
+    }
+
+    @Override
+    public List<String> alias() {
+        return Arrays.asList("act");
     }
     
 }

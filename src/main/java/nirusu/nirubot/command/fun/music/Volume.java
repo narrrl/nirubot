@@ -1,6 +1,11 @@
 package nirusu.nirubot.command.fun.music;
 
+import java.util.Arrays;
+import java.util.List;
+
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import nirusu.nirubot.Nirubot;
 import nirusu.nirubot.command.CommandContext;
 import nirusu.nirubot.command.ICommand;
 import nirusu.nirubot.core.DiscordUtil;
@@ -35,10 +40,30 @@ public final class Volume implements ICommand {
 
         GuildManager.getManager(ctx.getGuild().getIdLong()).setVolume(volume);
         musicManager.getPlayer().setVolume(volume);
+
+        int volBars = volume / 10;
+        StringBuilder out = new StringBuilder();
+        out.append("Volume:\n►");
+        for (int i = 0; i < 10; i++) {
+            if (i < volBars) {
+                out.append("█");
+            } else {
+                out.append("░");
+            }
+        }
+        out.append("◄\n" + volume + "%");
+        EmbedBuilder emb = new EmbedBuilder();
+        emb.setColor(Nirubot.getColor()).setDescription(out.toString());
+        ctx.reply(emb.build());
     }
 
     @Override
     public MessageEmbed helpMessage(GuildManager gm) {
         return ICommand.createHelp("Sets the volume for this guild", gm.prefix(), getKey());
+    }
+
+    @Override
+    public List<String> alias() {
+        return Arrays.asList("vl");
     }
 }

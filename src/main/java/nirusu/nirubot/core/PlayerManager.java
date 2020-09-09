@@ -10,6 +10,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 
 import nirusu.nirubot.Nirubot;
 import nirusu.nirubot.command.CommandContext;
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 
 import javax.annotation.Nonnull;
@@ -48,21 +49,36 @@ public class PlayerManager {
     }
 
 
-    public void loadAndPlay(@Nonnull final CommandContext ctx, @Nonnull  String trackUrl) {
+    public synchronized void loadAndPlay(@Nonnull final CommandContext ctx, @Nonnull  String trackUrl, EmbedBuilder emb) {
         GuildMusicManager musicManager = getGuildMusicManager(ctx.getGuild());
+
+        GuildManager gm = GuildManager.getManager(ctx.getGuild().getIdLong());
+
+        getGuildMusicManager(ctx.getGuild()).getPlayer()
+                .setVolume(gm.volume());
 
         playerManager.loadItemOrdered(musicManager, trackUrl, new AudioLoadResultHandler() {
             @Override
             public void trackLoaded(@Nonnull AudioTrack track) {
                 play(musicManager, track);
-                ctx.reply("Loaded: " + track.getInfo().author
-                                + "-" + track.getInfo().title);
+                if (emb == null) {
+                    ctx.reply(new EmbedBuilder().setTitle(track.getInfo().title, track.getInfo().uri)
+                    .setThumbnail(ctx.getGuild().getIconUrl()).build());
+                } else {
+                    ctx.reply(emb.build());
+                }
             }
 
             @Override
             public void playlistLoaded(@Nonnull final AudioPlaylist playlist) {
                 playlist.getTracks().forEach(track -> play(musicManager, track));
-                ctx.reply("Loaded: Playlist: " + playlist.getName());
+                if (emb == null) {
+                    ctx.reply(new EmbedBuilder().setTitle(playlist.getName()).setDescription("Loaded playlist! First Track is: \n[" 
+                    + playlist.getSelectedTrack().getInfo().title + "](" + playlist.getSelectedTrack().getInfo().uri + ")")
+                    .setThumbnail(ctx.getGuild().getIconUrl()).build());
+                } else {
+                    ctx.reply(emb.build());
+                }
             }
 
             @Override
@@ -73,20 +89,21 @@ public class PlayerManager {
             @Override
             public void loadFailed(@Nonnull FriendlyException exception) {
                 Nirubot.warning(exception.getMessage());
-                ctx.reply("Well done, you destroyed the bot, volvo pls fix...");
             }
         });
+
+        ctx.getGuild().getAudioManager().openAudioConnection(DiscordUtil.findVoiceChannel(ctx.getMember()));
     }
 
-    private void play(@Nonnull final GuildMusicManager musicManager, @Nonnull final AudioTrack track) {
+    private synchronized void play(@Nonnull final GuildMusicManager musicManager, @Nonnull final AudioTrack track) {
         musicManager.getScheduler().queue(track);
     }
 
-    public void pause(@Nonnull final GuildMusicManager musicManager, final boolean pause) {
+    public synchronized void pause(@Nonnull final GuildMusicManager musicManager, final boolean pause) {
         musicManager.getPlayer().setPaused(pause);
     }
 
-    public void destroy(@Nonnull final Guild guild) {
+    public synchronized void destroy(@Nonnull final Guild guild) {
         musicManagers.get(guild.getIdLong()).getPlayer().destroy();
         musicManagers.remove(guild.getIdLong());
     }
@@ -95,20 +112,20 @@ public class PlayerManager {
         musicManager.getScheduler().nextTrack();
     }
 
-    public void shuffle(@Nonnull final GuildMusicManager musicManager) {
+    public synchronized void shuffle(@Nonnull final GuildMusicManager musicManager) {
         musicManager.getScheduler().shuffle();
 
     }
 
-    public AudioTrack remove(@Nonnull final GuildMusicManager musicManager, final int num) {
+    public synchronized AudioTrack remove(@Nonnull final GuildMusicManager musicManager, final int num) {
         return musicManager.getScheduler().remove(num);
     }
 
-    public AudioTrack remove(@Nonnull final GuildMusicManager musicManager, final String keyWord) {
+    public synchronized AudioTrack remove(@Nonnull final GuildMusicManager musicManager, final String keyWord) {
         return musicManager.getScheduler().remove(keyWord);
     }
 
-    public boolean repeat(@Nonnull final GuildMusicManager musicManager) {
+    public synchronized boolean repeat(@Nonnull final GuildMusicManager musicManager) {
         return musicManager.getScheduler().setRepeat();
     }
 

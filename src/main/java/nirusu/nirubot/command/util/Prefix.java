@@ -1,5 +1,6 @@
 package nirusu.nirubot.command.util;
 
+import java.util.Arrays;
 import java.util.List;
 
 import net.dv8tion.jda.api.Permission;
@@ -32,6 +33,11 @@ public class Prefix implements ICommand {
     @Override
     public MessageEmbed helpMessage(GuildManager gm) {
         return ICommand.createHelp("Sets a new prefix for this guild", gm.prefix(), getKey());
+    }
+
+    @Override
+    public List<String> alias() {
+        return Arrays.asList("pref");
     }
 
     

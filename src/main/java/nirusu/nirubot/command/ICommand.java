@@ -1,5 +1,7 @@
 package nirusu.nirubot.command;
 
+import java.util.List;
+
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import nirusu.nirubot.Nirubot;
@@ -12,6 +14,8 @@ public interface ICommand {
     public default String getKey() {
         return this.getClass().getSimpleName().toLowerCase();
     }
+
+    public List<String> alias();
 
     public MessageEmbed helpMessage(GuildManager gm);
 

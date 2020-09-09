@@ -1,5 +1,8 @@
 package nirusu.nirubot.command.util;
 
+import java.util.Arrays;
+import java.util.List;
+
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import nirusu.nirubot.command.CommandContext;
 import nirusu.nirubot.command.ICommand;
@@ -18,11 +21,16 @@ public class Ping implements ICommand {
                 .queue(edit -> edit.editMessageFormat("Pong: %d ms", ctx.getJDA().getGatewayPing()).queue());
     }
 
-
-
     @Override
     public MessageEmbed helpMessage(GuildManager gm) {
-        return ICommand.createHelp("Ping command to check if the bot is online and working. Also sends the ping of the bot", gm.prefix(), getKey());
+        return ICommand.createHelp(
+                "Ping command to check if the bot is online and working. Also sends the ping of the bot", gm.prefix(),
+                getKey());
+    }
+
+    @Override
+    public List<String> alias() {
+        return Arrays.asList();
     }
     
 }

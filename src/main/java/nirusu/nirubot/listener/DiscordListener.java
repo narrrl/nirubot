@@ -34,7 +34,7 @@ public class DiscordListener extends ListenerAdapter implements NiruListener {
             .addEventListeners(this)
             .setActivity(DiscordUtil.getActivity(conf.getActivityType(), conf.getActivity()))
             .build();
-
+        CommandDispatcher.checkForDuplicateAlias();
     }
 
 

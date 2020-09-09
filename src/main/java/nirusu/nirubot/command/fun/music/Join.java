@@ -1,5 +1,8 @@
 package nirusu.nirubot.command.fun.music;
 
+import java.util.Arrays;
+import java.util.List;
+
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import nirusu.nirubot.command.CommandContext;
@@ -11,7 +14,7 @@ public class Join implements ICommand {
 
     @Override
     public void execute(CommandContext ctx) {
-        
+
         if (ctx.getArgs().size() != 1) {
             return;
         }
@@ -24,6 +27,11 @@ public class Join implements ICommand {
     @Override
     public MessageEmbed helpMessage(GuildManager gm) {
         return ICommand.createHelp("Bot joins your channel", gm.prefix(), getKey());
+    }
+
+    @Override
+    public List<String> alias() {
+        return Arrays.asList("j");
     }
     
 }

@@ -3,11 +3,9 @@ package nirusu.nirubot.core;
 import javax.annotation.Nonnull;
 
 import net.dv8tion.jda.api.entities.Activity;
-import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.VoiceChannel;
-import nirusu.nirubot.command.CommandContext;
 
 public class DiscordUtil {
 
@@ -42,18 +40,6 @@ public class DiscordUtil {
         if (!channel.equals(botChannel)) return false;
 
         return true;
-    }
-    
-    public static void play(@Nonnull final String url, @Nonnull final CommandContext ctx) {
-        PlayerManager manager = PlayerManager.getInstance();
-        manager.loadAndPlay(ctx, url);
-
-        GuildManager gm = GuildManager.getManager(ctx.getGuild().getIdLong());
-
-        manager.getGuildMusicManager(ctx.getGuild()).getPlayer()
-                .setVolume(gm.volume());
-
-        ctx.getGuild().getAudioManager().openAudioConnection(DiscordUtil.findVoiceChannel(ctx.getMember()));
     }
     
 }
