@@ -1,8 +1,6 @@
 package nirusu.nirubot.command.util;
 
-import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import nirusu.nirubot.Nirubot;
 import nirusu.nirubot.command.CommandContext;
 import nirusu.nirubot.command.ICommand;
 import nirusu.nirubot.core.GuildManager;
