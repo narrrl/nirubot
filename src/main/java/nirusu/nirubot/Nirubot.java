@@ -56,7 +56,7 @@ public class Nirubot extends AbstractIdleService {
 
     public static void main(String[] args) {
 
-        var bot = new Nirubot();
+        var bot = getNirubot();
         bot.addListener(new Listener() {
             @Override
             public void starting() {
@@ -135,4 +135,21 @@ public class Nirubot extends AbstractIdleService {
 	public static Color getColor() {
 		return new Color(0, 153, 255);
 	}
+
+	public synchronized void shutdown() {
+        try {
+            stopAsync();
+        } catch (Exception e) {
+            Nirubot.error("Couldn't shutdown bot!", e);
+        }
+    }
+    
+    public boolean isOwner(long id) {
+        for (long l : getConfig().getOwners()) {
+            if (id == l) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
