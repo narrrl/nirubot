@@ -1,6 +1,7 @@
 package nirusu.nirubot.core;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -16,7 +17,7 @@ public class Config {
         private String activity;
         private String activityType;
         private String token;
-
+        private long[] owners;
     }
 
     public Config() throws IOException {
@@ -28,8 +29,9 @@ public class Config {
         return data.activityType;
     }
 
-    public void setActivityType(final String newType) {
+    public synchronized void setActivityType(final String newType) {
         data.activityType = newType;
+        write();
     }
 
     public String getPrefix() {
@@ -39,20 +41,39 @@ public class Config {
         return data.prefix;
     }
 
-    public void setPrefix(final String newPrefix) {
+    public synchronized void setPrefix(final String newPrefix) {
         data.prefix = newPrefix;
+        write();
     }
 
     public String getActivity() {
         return data.activity;
     }
 
-    public void setActivity(final String newActivity) {
+    public synchronized void setActivity(final String newActivity) {
         data.activity = newActivity;
+        write();
     }
 
     public String getToken() {
         return data.token;
+    }
+
+    public long[] getOwners() {
+        return data.owners;
+    }
+
+    private void write() {
+        try {
+            FileWriter writer = new FileWriter(configFile);
+            String json = Nirubot.getGson().toJson(data);
+            writer.write(json);
+            writer.flush();
+            writer.close();
+        } catch (IOException e) {
+            Nirubot.warning("Couldn't write to config file");
+        }
+
     }
 
 }
