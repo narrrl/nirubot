@@ -10,9 +10,11 @@ import com.google.api.services.youtube.model.SearchResult;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.VoiceChannel;
 import nirusu.nirubot.Nirubot;
 import nirusu.nirubot.command.CommandContext;
 import nirusu.nirubot.command.ICommand;
+import nirusu.nirubot.core.DiscordUtil;
 import nirusu.nirubot.core.GuildManager;
 import nirusu.nirubot.core.PlayerManager;
 import nirusu.nirubot.util.YouTubeVideo;
@@ -23,6 +25,13 @@ public class YTSearch implements ICommand {
     public void execute(CommandContext ctx) {
 
         if (ctx.getArgs().size() < 2) {
+            return;
+        }
+
+        VoiceChannel channel = DiscordUtil.findVoiceChannel(ctx.getSelfMember());
+
+        if (channel != null && !DiscordUtil.areInSameVoice(ctx.getMember(), ctx.getSelfMember())) {
+            ctx.reply("You must be in the same voice channel!");
             return;
         }
 
