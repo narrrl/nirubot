@@ -5,7 +5,9 @@ import java.util.List;
 
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import nirusu.nirubot.Nirubot;
 import nirusu.nirubot.command.CommandContext;
 import nirusu.nirubot.command.ICommand;
 import nirusu.nirubot.core.DiscordUtil;
@@ -44,9 +46,10 @@ public final class Next implements ICommand {
 
         manager.next(musicManager);
         AudioTrack next = musicManager.getPlayer().getPlayingTrack();
-        String prevText = prev.getInfo().author + " - " + prev.getInfo().title;
-        String nextText = next != null ? next.getInfo().author + " - " + next.getInfo().title : "End of queue";
-        ctx.reply("Skipped: " + prevText + "\n" + "Now playing: " + nextText);
+        String prevText = "[" + prev.getInfo().title + "](" + prev.getInfo().uri + ")";
+        String nextText = next != null ? "[" + next.getInfo().title + "](" + next.getInfo().uri + ")" : "End of queue";
+        ctx.reply(new EmbedBuilder().setTitle("Skipped Song!")
+        .setDescription("Skipped: \n" + prevText + "\n" + "Now playing: \n" + nextText).setColor(Nirubot.getColor()).build());
     }
 
     @Override
