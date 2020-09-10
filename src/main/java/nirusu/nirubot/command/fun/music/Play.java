@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.entities.VoiceChannel;
 import nirusu.nirubot.command.CommandContext;
 import nirusu.nirubot.command.ICommand;
 import nirusu.nirubot.core.DiscordUtil;
@@ -19,8 +18,6 @@ public final class Play implements ICommand {
         if (ctx.getArgs().size() != 2) {
             return;
         }
-
-        VoiceChannel channel = DiscordUtil.findVoiceChannel(ctx.getSelfMember());
 
         if (!DiscordUtil.areInSameVoice(ctx.getMember(), ctx.getSelfMember())) {
             ctx.reply("You must be in the same voice channel!");

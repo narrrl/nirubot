@@ -10,7 +10,6 @@ import com.google.api.services.youtube.model.SearchResult;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.entities.VoiceChannel;
 import nirusu.nirubot.Nirubot;
 import nirusu.nirubot.command.CommandContext;
 import nirusu.nirubot.command.ICommand;
