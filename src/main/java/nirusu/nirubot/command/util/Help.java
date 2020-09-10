@@ -38,7 +38,7 @@ public class Help implements ICommand {
     @Override
     public MessageEmbed helpMessage(GuildManager gm) {
         return new EmbedBuilder()
-        .setDescription("Use " + gm.prefix() + getKey() + " to list all commands and " + gm.prefix() + getKey() + "<command> for more info about a command")
+        .setDescription("Use " + gm.prefix() + getKey() + " to list all commands and " + gm.prefix() + getKey() + " <command> for more info about a command")
         .setColor(Nirubot.getColor()).build();
     }
 
