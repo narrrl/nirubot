@@ -18,7 +18,8 @@ The config shoulde look something like this:
   "activity":"!help",
   "activityType":"listening",
   "token":"YOUR BOT TOKEN",
-  "owners":[208979474988007425, 208981656999034890]
+  "owners":[208979474988007425, 208981656999034890],
+  "googleApiToken":"YOUR_GOOGLE_API_TOKEN"
 }
 ```
 
