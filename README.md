@@ -30,7 +30,7 @@ bot-directory
     └── config.json
 ```
 
-The bot will create a log directory on the first start:
+The bot will create a guilds directory on the first start:
 ```
 bot-directory
     ├── nirubot-{$VERSION}-all.jar
