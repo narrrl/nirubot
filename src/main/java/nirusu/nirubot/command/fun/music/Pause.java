@@ -20,12 +20,25 @@ public final class Pause implements ICommand {
             return;
         }
 
+
+        if (DiscordUtil.findVoiceChannel(ctx.getSelfMember()) == null) {
+            ctx.reply("No music is playing");
+            return;
+        }
+
         if (!DiscordUtil.areInSameVoice(ctx.getMember(), ctx.getSelfMember())) {
             ctx.reply("You must be in the same voice channel!");
             return;
         }
+
         final PlayerManager manager = PlayerManager.getInstance();
         final GuildMusicManager musicManager = manager.getGuildMusicManager(ctx.getGuild());
+
+        if (musicManager.getPlayer().getPlayingTrack() == null) {
+            ctx.reply("No music is playing!");
+            return;
+        }
+
         manager.pause(musicManager, !musicManager.getPlayer().isPaused());
     }
 

@@ -22,14 +22,20 @@ public final class Next implements ICommand {
             return;
         }
 
-        PlayerManager manager = PlayerManager.getInstance();
-        GuildMusicManager musicManager = manager.getGuildMusicManager(ctx.getGuild());
-        AudioTrack prev = musicManager.getPlayer().getPlayingTrack();
+        if (DiscordUtil.findVoiceChannel(ctx.getSelfMember()) == null) {
+            ctx.reply("No music is playing");
+            return;
+        }
 
         if (!DiscordUtil.areInSameVoice(ctx.getMember(), ctx.getSelfMember())) {
             ctx.reply("You must be in the same voice channel!");
             return;
         }
+
+
+        PlayerManager manager = PlayerManager.getInstance();
+        GuildMusicManager musicManager = manager.getGuildMusicManager(ctx.getGuild());
+        AudioTrack prev = musicManager.getPlayer().getPlayingTrack();
 
         if (prev == null) {
             ctx.reply("Nothing is playing!");

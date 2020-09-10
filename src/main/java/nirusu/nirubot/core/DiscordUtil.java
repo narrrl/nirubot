@@ -37,6 +37,9 @@ public class DiscordUtil {
 
         VoiceChannel botChannel = DiscordUtil.findVoiceChannel(selfMember);
 
+        if (botChannel == null) return true;
+
+
         if (!channel.equals(botChannel)) return false;
 
         return true;

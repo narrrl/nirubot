@@ -24,12 +24,22 @@ public class Remove implements ICommand {
             return;
         }
 
+        if (DiscordUtil.findVoiceChannel(ctx.getSelfMember()) == null) {
+            ctx.reply("No music is playing");
+            return;
+        }
+
         if (!DiscordUtil.areInSameVoice(ctx.getMember(), ctx.getSelfMember())) {
             ctx.reply("You must be in the same voice channel!");
         }
 
         PlayerManager mg = PlayerManager.getInstance();
         GuildMusicManager musicManager = mg.getGuildMusicManager(ctx.getGuild());
+
+        if (musicManager.getPlayer().getPlayingTrack() == null) {
+            ctx.reply("No music is playing!");
+            return;
+        }
 
        AudioTrack tr = null; 
         try {

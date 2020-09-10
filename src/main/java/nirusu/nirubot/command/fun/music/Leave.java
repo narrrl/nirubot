@@ -18,12 +18,24 @@ public final class Leave implements ICommand {
             return;
         }
 
+        if (DiscordUtil.findVoiceChannel(ctx.getSelfMember()) == null) {
+            ctx.reply("No music is playing");
+            return;
+        }
+
+
         if (!DiscordUtil.areInSameVoice(ctx.getMember(), ctx.getSelfMember())) {
             ctx.reply("You must be in the same voice channel!");
             return;
         }
 
         PlayerManager manager = PlayerManager.getInstance();
+
+        if (manager.getGuildMusicManager(ctx.getGuild()).getPlayer().getPlayingTrack() == null) {
+            ctx.reply("Bot is not connected to any voice channel");
+            return;
+        }
+
         manager.destroy(ctx.getGuild());
         ctx.getGuild().getAudioManager().closeAudioConnection();
     }

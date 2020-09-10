@@ -22,6 +22,11 @@ public final class Volume implements ICommand {
             return;
         }
 
+        if (DiscordUtil.findVoiceChannel(ctx.getSelfMember()) == null) {
+            ctx.reply("No music is playing");
+            return;
+        }
+
         if (!DiscordUtil.areInSameVoice(ctx.getMember(), ctx.getSelfMember())) {
             ctx.reply("You must be in the same voice channel!");
             return;

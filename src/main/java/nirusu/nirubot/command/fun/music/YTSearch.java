@@ -28,9 +28,7 @@ public class YTSearch implements ICommand {
             return;
         }
 
-        VoiceChannel channel = DiscordUtil.findVoiceChannel(ctx.getSelfMember());
-
-        if (channel != null && !DiscordUtil.areInSameVoice(ctx.getMember(), ctx.getSelfMember())) {
+        if (!DiscordUtil.areInSameVoice(ctx.getMember(), ctx.getSelfMember())) {
             ctx.reply("You must be in the same voice channel!");
             return;
         }
