@@ -8,11 +8,12 @@ import java.nio.file.Files;
 import java.util.HashMap;
 
 import nirusu.nirubot.Nirubot;
+import nirusu.nirubot.core.GuildManager.Guild.Playlist;
 
 /**
  * This class handles all the guild specific settings which are stored in {@link Guild}. The attributes for {@link Guild}
  * gets written into a json with the guild long id as name.
- * 
+ *
  */
 public class GuildManager {
 
@@ -21,9 +22,23 @@ public class GuildManager {
         private boolean successReaction;
         private int volume;
         private String prefix;
+        private HashMap<String, Playlist> playlists;
 
         public Guild(long longId) {
             this.id = longId;
+            playlists = new HashMap<>();
+        }
+
+        public void addPlaylist(final String name, final String[] playlist) {
+            Playlist pl = new Playlist();
+            pl.songs = playlist;
+            playlists.put(name, pl);
+        }
+
+
+
+        public class Playlist {
+            String[] songs;
         }
 
     }
@@ -36,7 +51,7 @@ public class GuildManager {
 
     /**
      * Singleton for guild manager hashmap. That stores all guild managers by their long id
-     * 
+     *
      * @return {@link #guildManagers}
      */
     private static HashMap<Long, GuildManager> getGuildManagers() {
@@ -50,7 +65,7 @@ public class GuildManager {
 
     /**
      * Tries to get the guild manager for a given guild id. Creates a new guildmanager if it doesnt exists.
-     * 
+     *
      * @param idLong
      * @throws IllegalArgumentException if the config couldn
      * @return
@@ -92,7 +107,7 @@ public class GuildManager {
             guild.volume = 100;
             guild.successReaction = false;
             write();
-        } else if (!guildFile.exists()) { // if file couldn't be created 
+        } else if (!guildFile.exists()) { // if file couldn't be created
             throw new IllegalArgumentException("Couldn't read or create guild config for " + longId);
         }
         // gets the data from the file and parse it
@@ -111,7 +126,7 @@ public class GuildManager {
     /**
      * Constructor if the normal guild manager constructor couldn't create config.
      * Guild settings will reset on bot restart
-     * 
+     *
      * @param id guild id
      * @param prefix guild prefix
      */
@@ -171,6 +186,29 @@ public class GuildManager {
 
     public boolean successReaction() {
         return guild.successReaction;
+    }
+
+    public String[] getPlaylist(final String name) {
+        Playlist pl = this.guild.playlists.get(name);
+        if (pl == null) {
+            throw new IllegalArgumentException("Cannot find playlist with name " + name);
+        }
+        return pl.songs;
+    }
+
+    public synchronized void addPlaylist(final String name, final String[] playlist) {
+        Playlist pl = this.guild.playlists.get(name);
+
+        if (pl != null) {
+            removePlaylist(name);
+        }
+
+        this.guild.addPlaylist(name, playlist);
+        write();
+    }
+
+    public synchronized void removePlaylist(final String name) {
+        this.guild.playlists.remove(name);
     }
 
 }

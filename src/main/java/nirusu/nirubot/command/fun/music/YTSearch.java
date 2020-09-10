@@ -45,8 +45,13 @@ public class YTSearch implements ICommand {
         EmbedBuilder emb = new EmbedBuilder();
 
         emb.setColor(Nirubot.getColor()).setTitle(video.getTitle(), "https://www.youtube.com/watch?v=" + video.getVideoId()).setThumbnail(video.getThumbnailUrl());
+        try {
+            PlayerManager.getInstance().loadAndPlay(ctx, video.getVideoId());
+        } catch (IllegalArgumentException e) {
+            return;
+        }
+        ctx.reply(emb.build());
 
-        PlayerManager.getInstance().loadAndPlay(ctx, video.getVideoId(), emb);
     }
 
 

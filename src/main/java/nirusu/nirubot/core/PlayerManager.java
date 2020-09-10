@@ -7,6 +7,7 @@ import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 
 import nirusu.nirubot.Nirubot;
 import nirusu.nirubot.command.CommandContext;
@@ -14,6 +15,8 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 
 import javax.annotation.Nonnull;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -48,8 +51,7 @@ public class PlayerManager {
         return musicManager;
     }
 
-
-    public synchronized void loadAndPlay(@Nonnull final CommandContext ctx, @Nonnull  String trackUrl, EmbedBuilder emb) {
+    public synchronized void loadAndPlay(@Nonnull final CommandContext ctx, @Nonnull  String trackUrl) {
         GuildMusicManager musicManager = getGuildMusicManager(ctx.getGuild());
 
         GuildManager gm = GuildManager.getManager(ctx.getGuild().getIdLong());
@@ -60,36 +62,22 @@ public class PlayerManager {
             @Override
             public void trackLoaded(@Nonnull AudioTrack track) {
                 play(musicManager, track);
-                if (emb == null) {
-                    ctx.reply(new EmbedBuilder().setTitle(track.getInfo().title, track.getInfo().uri)
-                    .setThumbnail(ctx.getGuild().getIconUrl()).build());
-                } else {
-                    ctx.reply(emb.build());
-                }
             }
 
             @Override
             public void playlistLoaded(@Nonnull final AudioPlaylist playlist) {
                 playlist.getTracks().forEach(track -> play(musicManager, track));
-                if (emb == null) {
-                    AudioTrack first = playlist.getTracks().get(0);
-                    String firstText = first != null ? "Loaded playlist! First Track is: \n[" 
-                    + first.getInfo().title + "](" + first.getInfo().uri + ")" : "No tracks in playlist!";
-                    ctx.reply(new EmbedBuilder().setTitle(playlist.getName()).setDescription(firstText)
-                    .setThumbnail(ctx.getGuild().getIconUrl()).build());
-                } else {
-                    ctx.reply(emb.build());
-                }
             }
 
             @Override
             public void noMatches() {
-                ctx.reply("Couldn't find: " + trackUrl);
+                throw new IllegalArgumentException("Song not found!");
             }
 
             @Override
             public void loadFailed(@Nonnull FriendlyException exception) {
                 Nirubot.warning(exception.getMessage());
+                throw new IllegalArgumentException("Couldn't load song. Maybe google is down? lol");
             }
         });
 
@@ -141,4 +129,17 @@ public class PlayerManager {
 
         return instance;
     }
+
+	public String[] getCurrentSongs(Guild guild) {
+        GuildMusicManager mg = getGuildMusicManager(guild);
+        ArrayList<AudioTrackInfo> tracks = new ArrayList<>();
+        String[] uris = new String[tracks.size() - 1];
+
+        for (int i = 0; i < tracks.size(); i++ ) {
+            uris[i] = tracks.get(i).uri;
+        }
+        return uris;
+    }
+
 }
+        

@@ -3,7 +3,9 @@ package nirusu.nirubot.command.fun.music;
 import java.util.Arrays;
 import java.util.List;
 
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import nirusu.nirubot.Nirubot;
 import nirusu.nirubot.command.CommandContext;
 import nirusu.nirubot.command.ICommand;
 import nirusu.nirubot.core.DiscordUtil;
@@ -24,7 +26,11 @@ public final class Play implements ICommand {
             return;
         }
 
-        PlayerManager.getInstance().loadAndPlay(ctx, ctx.getArgs().get(1), null);
+        PlayerManager.getInstance().loadAndPlay(ctx, ctx.getArgs().get(1));
+
+        EmbedBuilder emb = new EmbedBuilder();
+        emb.setColor(Nirubot.getColor()).setTitle("Song/Playlist loaded!");
+        ctx.reply(emb.build());
     }
 
     @Override
