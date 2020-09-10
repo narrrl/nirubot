@@ -72,8 +72,10 @@ public class PlayerManager {
             public void playlistLoaded(@Nonnull final AudioPlaylist playlist) {
                 playlist.getTracks().forEach(track -> play(musicManager, track));
                 if (emb == null) {
-                    ctx.reply(new EmbedBuilder().setTitle(playlist.getName()).setDescription("Loaded playlist! First Track is: \n[" 
-                    + playlist.getSelectedTrack().getInfo().title + "](" + playlist.getSelectedTrack().getInfo().uri + ")")
+                    AudioTrack first = playlist.getTracks().get(0);
+                    String firstText = first != null ? "Loaded playlist! First Track is: \n[" 
+                    + first.getInfo().title + "](" + first.getInfo().uri + ")" : "No tracks in playlist!";
+                    ctx.reply(new EmbedBuilder().setTitle(playlist.getName()).setDescription(firstText)
                     .setThumbnail(ctx.getGuild().getIconUrl()).build());
                 } else {
                     ctx.reply(emb.build());
