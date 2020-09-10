@@ -30,7 +30,7 @@ public final class Leave implements ICommand {
 
     @Override
     public MessageEmbed helpMessage(GuildManager gm) {
-        return ICommand.createHelp("Stops the current music and deletes queue", gm.prefix(), getKey());
+        return ICommand.createHelp("Stops the current music and deletes queue", gm.prefix(), this);
     }
 
     @Override

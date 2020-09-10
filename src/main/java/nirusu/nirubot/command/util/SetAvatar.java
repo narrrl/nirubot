@@ -38,7 +38,7 @@ public class SetAvatar implements ICommand {
 
     @Override
     public MessageEmbed helpMessage(GuildManager gm) {
-        return ICommand.createHelp("Sets the avatar for the bot. You have to attach a picture", gm.prefix(), getKey());
+        return ICommand.createHelp("Sets the avatar for the bot. You have to attach a picture", gm.prefix(), this);
     }
 
     @Override

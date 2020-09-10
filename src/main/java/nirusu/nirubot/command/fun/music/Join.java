@@ -26,7 +26,7 @@ public class Join implements ICommand {
 
     @Override
     public MessageEmbed helpMessage(GuildManager gm) {
-        return ICommand.createHelp("Bot joins your channel", gm.prefix(), getKey());
+        return ICommand.createHelp("Bot joins your channel", gm.prefix(), this);
     }
 
     @Override

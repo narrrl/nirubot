@@ -32,7 +32,7 @@ public class Prefix implements ICommand {
 
     @Override
     public MessageEmbed helpMessage(GuildManager gm) {
-        return ICommand.createHelp("Sets a new prefix for this guild", gm.prefix(), getKey());
+        return ICommand.createHelp("Sets a new prefix for this guild", gm.prefix(), this);
     }
 
     @Override

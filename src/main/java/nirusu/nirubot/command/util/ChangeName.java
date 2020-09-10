@@ -43,7 +43,7 @@ public class ChangeName implements ICommand {
 
     @Override
     public MessageEmbed helpMessage(GuildManager gm) {
-        return ICommand.createHelp("Change the name of the bot user", gm.prefix(), getKey());
+        return ICommand.createHelp("Change the name of the bot user", gm.prefix(), this);
     }
 
     @Override

@@ -42,7 +42,7 @@ public final class Playing implements ICommand {
 
     @Override
     public MessageEmbed helpMessage(GuildManager gm) {
-        return ICommand.createHelp("Shows the current playing song", gm.prefix(), getKey());
+        return ICommand.createHelp("Shows the current playing song", gm.prefix(), this);
     }
 
     @Override

@@ -43,7 +43,7 @@ public final class Repeat implements ICommand {
 
     @Override
     public MessageEmbed helpMessage(final GuildManager gm) {
-        return ICommand.createHelp("Toggles repeat for the current playing queue", gm.prefix(), getKey());
+        return ICommand.createHelp("Toggles repeat for the current playing queue", gm.prefix(), this);
     }
 
     @Override

@@ -33,7 +33,7 @@ public final class Play implements ICommand {
     @Override
     public MessageEmbed helpMessage(GuildManager gm) {
         return ICommand.createHelp("Connects the bot to your channel and starts playing the song", gm.prefix(),
-                getKey());
+                this);
     }
 
     @Override

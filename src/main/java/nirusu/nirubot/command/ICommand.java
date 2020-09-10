@@ -19,9 +19,12 @@ public interface ICommand {
 
     public MessageEmbed helpMessage(GuildManager gm);
 
-    public static MessageEmbed createHelp(final String message, final String prefix, final String key) {
-        return new EmbedBuilder().setColor(Nirubot.getColor()).setDescription(message)
-            .setTitle("Help for **" + prefix + key + "**").build();
+    public static MessageEmbed createHelp(final String message, final String prefix, final ICommand cmd) {
+        StringBuilder aliases = new StringBuilder();
+        cmd.alias().forEach(str -> aliases.append(str).append(", "));
+        return new EmbedBuilder().setColor(Nirubot.getColor())
+            .setDescription(message + "\n\nAlias for command:\n" + aliases.substring(0, aliases.length() - 2))
+            .setTitle("Help for **" + prefix + cmd.getKey() + "**").build();
     }
     
 }

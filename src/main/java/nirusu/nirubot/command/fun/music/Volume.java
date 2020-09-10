@@ -59,7 +59,7 @@ public final class Volume implements ICommand {
 
     @Override
     public MessageEmbed helpMessage(GuildManager gm) {
-        return ICommand.createHelp("Sets the volume for this guild", gm.prefix(), getKey());
+        return ICommand.createHelp("Sets the volume for this guild", gm.prefix(), this);
     }
 
     @Override

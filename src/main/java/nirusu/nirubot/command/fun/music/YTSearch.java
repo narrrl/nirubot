@@ -82,7 +82,7 @@ public class YTSearch implements ICommand {
 
     @Override
     public MessageEmbed helpMessage(GuildManager gm) {
-        return ICommand.createHelp("Searches for a song on youtube and queues it", gm.prefix(), getKey());
+        return ICommand.createHelp("Searches for a song on youtube and queues it", gm.prefix(), this);
     }
 
     @Override

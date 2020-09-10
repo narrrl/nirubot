@@ -52,7 +52,7 @@ public class Remove implements ICommand {
 
     @Override
     public MessageEmbed helpMessage(final GuildManager gm) {
-        return ICommand.createHelp("Removes song at an given position", gm.prefix(), getKey());
+        return ICommand.createHelp("Removes song at an given position", gm.prefix(), this);
     }
 
     @Override

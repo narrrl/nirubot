@@ -76,7 +76,7 @@ public final class List implements ICommand {
 
     @Override
     public MessageEmbed helpMessage(GuildManager gm) {
-        return ICommand.createHelp("Lists all queued songs", gm.prefix(), getKey());
+        return ICommand.createHelp("Lists all queued songs", gm.prefix(), this);
     }
 
     @Override

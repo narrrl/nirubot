@@ -37,7 +37,7 @@ public class ServerInfo implements ICommand {
 
     @Override
     public MessageEmbed helpMessage(GuildManager gm) {
-        return ICommand.createHelp("Lists some usefull info about the server", gm.prefix(), getKey());
+        return ICommand.createHelp("Lists some usefull info about the server", gm.prefix(), this);
     }
 
     @Override

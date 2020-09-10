@@ -45,7 +45,7 @@ public final class Next implements ICommand {
 
     @Override
     public MessageEmbed helpMessage(GuildManager gm) {
-        return ICommand.createHelp("skips the current song", gm.prefix(), getKey());
+        return ICommand.createHelp("skips the current song", gm.prefix(), this);
     }
 
     @Override

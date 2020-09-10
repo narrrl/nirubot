@@ -25,7 +25,7 @@ public class Ping implements ICommand {
     public MessageEmbed helpMessage(GuildManager gm) {
         return ICommand.createHelp(
                 "Ping command to check if the bot is online and working. Also sends the ping of the bot", gm.prefix(),
-                getKey());
+                this);
     }
 
     @Override

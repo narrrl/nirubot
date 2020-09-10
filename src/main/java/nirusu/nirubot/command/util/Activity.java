@@ -48,7 +48,7 @@ public class Activity implements ICommand {
 
     @Override
     public MessageEmbed helpMessage(GuildManager gm) {
-        return ICommand.createHelp("This commands sets the activity for the bot", gm.prefix(), getKey());
+        return ICommand.createHelp("This commands sets the activity for the bot", gm.prefix(), this);
     }
 
     @Override

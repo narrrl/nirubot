@@ -45,7 +45,7 @@ public class Mock implements ICommand {
 
     @Override
     public MessageEmbed helpMessage(GuildManager gm) {
-        return ICommand.createHelp("makes your message retarded", gm.prefix(), getKey());
+        return ICommand.createHelp("makes your message retarded", gm.prefix(), this);
     }
 
     @Override

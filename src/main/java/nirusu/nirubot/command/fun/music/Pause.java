@@ -31,7 +31,7 @@ public final class Pause implements ICommand {
 
     @Override
     public MessageEmbed helpMessage(final GuildManager gm) {
-        return ICommand.createHelp("Pauses the current queue", gm.prefix(), getKey());
+        return ICommand.createHelp("Pauses the current queue", gm.prefix(), this);
     }
 
     @Override

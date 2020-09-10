@@ -30,7 +30,7 @@ public class Shutdown implements ICommand {
 
     @Override
     public MessageEmbed helpMessage(GuildManager gm) {
-        return ICommand.createHelp("This command will shutdown the bot", gm.prefix(), getKey());
+        return ICommand.createHelp("This command will shutdown the bot", gm.prefix(), this);
     }
 
     @Override
