@@ -44,7 +44,7 @@ public final class Volume implements ICommand {
         }
 
         GuildManager.getManager(ctx.getGuild().getIdLong()).setVolume(volume);
-        musicManager.getPlayer().setVolume(volume);
+        musicManager.setVolume(volume);
 
         int volBars = volume / 10;
         StringBuilder out = new StringBuilder();

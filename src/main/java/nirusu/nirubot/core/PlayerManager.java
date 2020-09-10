@@ -54,8 +54,7 @@ public class PlayerManager {
 
         GuildManager gm = GuildManager.getManager(ctx.getGuild().getIdLong());
 
-        getGuildMusicManager(ctx.getGuild()).getPlayer()
-                .setVolume(gm.volume());
+        getGuildMusicManager(ctx.getGuild()).setVolume(gm.volume());
 
         playerManager.loadItemOrdered(musicManager, trackUrl, new AudioLoadResultHandler() {
             @Override

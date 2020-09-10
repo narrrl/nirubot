@@ -40,4 +40,10 @@ public class GuildMusicManager {
     public TrackScheduler getScheduler() {
         return scheduler;
     }
+
+    public void setVolume(final int volume) {
+        int real = volume > 100 ? 100 : volume;
+        real = volume < 5 ? 1 : real / 5;
+        player.setVolume(real);
+    }
 }
