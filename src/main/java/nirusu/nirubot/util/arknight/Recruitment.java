@@ -2,7 +2,6 @@ package nirusu.nirubot.util.arknight;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -13,34 +12,38 @@ import com.google.gson.reflect.TypeToken;
 
 import nirusu.nirubot.Nirubot;
 
-public class RecruitmenTagCalculator {
+public class Recruitment {
     private List<Operator> operators;
+    private static Recruitment calc;
 
-    public RecruitmenTagCalculator() {
-        operators = RecruitmenTagCalculator.loadOperators();
+    public static synchronized Recruitment getRecruitment() {
+        if (calc == null) {
+            calc = new Recruitment();
+        }
+        return calc;
+    }
+
+    private Recruitment() {
+        operators = Recruitment.loadOperators();
     }
 
     public static List<Operator> loadOperators() {
         File opList = new File(System.getProperty("user.dir").concat(File.separator + "operators.json"));
-        ArrayList<Operator> list = null;
+        ArrayList<Operator> list;
         try {
             list = Nirubot.getGson().fromJson(Files.readString(opList.toPath(), StandardCharsets.UTF_8), new TypeToken<List<Operator>>(){}.getType());
-        } catch (JsonSyntaxException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        } catch (JsonSyntaxException | IOException e) {
+            throw new IllegalArgumentException("Couldn't read operator list");
         }
-        list.forEach(System.out::println);
         return list;
     }
 
     public static void main(String[] args)  {
-        loadOperators();
+        Recruitment rec = getRecruitment();
+        List<TagCombination> com = rec.calculate(new String[] {"test"});
     }
 
-    public static List<TagCombination> calculate(final String[] tags) {
+    public List<TagCombination> calculate(final String[] tags) {
         List<TagCombination> tagCombinations = new ArrayList<>();
 
 

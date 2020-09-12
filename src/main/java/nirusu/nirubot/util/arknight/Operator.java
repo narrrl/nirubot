@@ -2,7 +2,7 @@ package nirusu.nirubot.util.arknight;
 
 public class Operator {
     public enum Qualification {
-        STARTER,SENIOR_OPERATOR,TOP_OPERATOR
+        STARTER,SENIOR_OPERATOR,TOP_OPERATOR, NONE
     }
     public enum Position {
         MELEE,RANGED
@@ -30,8 +30,8 @@ public class Operator {
     public String toString() {
         String affix = "";
         for (Affix str : affixes) {
-            affix += str.name();
+            affix += str.name() + " ";
         }
-        return this.name + " " + this.rarity + " " + this.position + " " + this.operatorClass + " " + affix + " " + qualification;
+        return this.name + " " + this.rarity + " " + this.position + " " + this.operatorClass + " " + affix.substring(0, affix.length() - 1) + " " + qualification;
     }
 }
