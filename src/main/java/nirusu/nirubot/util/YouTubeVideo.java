@@ -1,5 +1,7 @@
 package nirusu.nirubot.util;
 
+import com.google.gson.annotations.SerializedName;
+
 public class YouTubeVideo {
     private Id id;
     private Snippet snippet;
@@ -13,6 +15,7 @@ public class YouTubeVideo {
         private String title;
         private Thumbnails thumbnails;
         public class Thumbnails {
+            @SerializedName("default")
             public Default default_;
             public class Default {
                 private String url;

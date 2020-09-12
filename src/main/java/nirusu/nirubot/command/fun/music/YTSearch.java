@@ -41,7 +41,7 @@ public class YTSearch implements ICommand {
         }
 
 
-        YouTubeVideo video = Nirubot.getGson().fromJson(results.get(0).toString().replace("\"default\"", "\"default_\""), YouTubeVideo.class);
+        YouTubeVideo video = Nirubot.getGson().fromJson(results.get(0).toString(), YouTubeVideo.class);
         EmbedBuilder emb = new EmbedBuilder();
 
         emb.setColor(Nirubot.getColor()).setTitle(video.getTitle(), "https://www.youtube.com/watch?v=" + video.getVideoId()).setThumbnail(video.getThumbnailUrl());
