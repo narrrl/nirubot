@@ -11,23 +11,27 @@ public class Operator {
         GUARD,MEDIC,VANGUARD,CASTER,SNIPER,DEFENDER,SUPPORTER,SPECIALIST
     }
     public enum Affix {
-        HEALING,SUPPORT,DPS,AOE,SLOW,SURVIVAL,DEFENSE,DEBUFF,SHIFT,CROW_CONTROL,NUKER,SUMMON,FAST_REDEPLOY,DP_RECOVERY,ROBOT
+        HEALING,SUPPORT,DPS,AOE,SLOW,SURVIVAL,DEFENSE,DEBUFF,SHIFT,CROWD_CONTROL,NUKER,SUMMON,FAST_REDEPLOY,DP_RECOVERY,ROBOT
     }
 
     private int rarity;
 
     private Qualification qualification;
     
-    private Position pos;
+    private Position position;
 
-    private OperatorClass cl;
+    private OperatorClass operatorClass;
 
     private Affix[] affixes;
 
     private String name;
 
-	public static Iterable<Operator> loadOperators() {
-		return null;
-	}
-
+    @Override
+    public String toString() {
+        String affix = "";
+        for (Affix str : affixes) {
+            affix += str.name();
+        }
+        return this.name + " " + this.rarity + " " + this.position + " " + this.operatorClass + " " + affix + " " + qualification;
+    }
 }

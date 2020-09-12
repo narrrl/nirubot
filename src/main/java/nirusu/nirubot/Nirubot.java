@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import nirusu.nirubot.core.Config;
 import nirusu.nirubot.listener.DiscordListener;
 import nirusu.nirubot.listener.NiruListener;
+import nirusu.nirubot.util.arknight.RecruitmenTagCalculator;
 
 public class Nirubot extends AbstractIdleService {
     private static final Logger LOGGER = LoggerFactory.getLogger(Nirubot.class);
@@ -61,6 +62,7 @@ public class Nirubot extends AbstractIdleService {
 
 
     public static void main(String[] args) {
+        RecruitmenTagCalculator.loadOperators();
 
         var bot = getNirubot();
         bot.addListener(new Listener() {
