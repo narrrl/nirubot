@@ -1,0 +1,572 @@
+
+[
+    {
+        "name": "Siege",
+        "rarity": 6,
+        "position": "MELEE",
+        "qualification": "TOP_OPERATOR",
+        "operatorClass": "VANGUARD",
+        "affixes":["DP_RECOVERY", "DPS"]
+    },
+    {
+        "name": "Shining",
+        "rarity": 6,
+        "position": "RANGED",
+        "qualification": "TOP_OPERATOR",
+        "operatorClass": "MEDIC",
+        "affixes":["HEALING", "SUPPORT"]
+    },
+    {
+        "name": "Nightingale",
+        "rarity": 6,
+        "position": "RANGED",
+        "qualification": "TOP_OPERATOR",
+        "operatorClass": "MEDIC",
+        "affixes":["HEALING", "SUPPORT"]
+    },
+    {
+        "name": "Ifrit",
+        "rarity": 6,
+        "position": "RANGED",
+        "qualification": "TOP_OPERATOR",
+        "operatorClass": "CASTER",
+        "affixes":["DEBUFF", "AOE"]
+    },
+    {
+        "name": "Exusiai",
+        "rarity": 6,
+        "position": "RANGED",
+        "qualification": "TOP_OPERATOR",
+        "operatorClass": "SNIPER",
+        "affixes":["DPS"]
+    },
+    {
+        "name": "SilverAsh",
+        "rarity": 6,
+        "position": "MELEE",
+        "qualification": "TOP_OPERATOR",
+        "operatorClass": "GUARD",
+        "affixes": ["SUPPORT", "DPS"]
+
+    },
+    {
+        "name": "Hoshiguma",
+        "rarity": 6,
+        "position": "MELEE",
+        "qualification": "TOP_OPERATOR",
+        "operatorClass": "DEFENDER",
+        "affixes": ["DEFENSE", "DPS"]
+    },
+    {
+        "name": "Saria",
+        "rarity": 6,
+        "position": "MELEE",
+        "qualification": "TOP_OPERATOR",
+        "operatorClass": "DEFENDER",
+        "affixes": ["DEFENSE", "SUPPORT", "HEALING"]
+    },
+    {
+        "name": "Texas",
+        "rarity": 5,
+        "position": "MELEE",
+        "qualification": "SENIOR_OPERATOR",
+        "operatorClass": "VANGUARD",
+        "affixes": ["DP_RECOVERY", "CROWD_CONTROL"]
+    },
+    {
+        "name": "Zima",
+        "rarity": 5,
+        "position": "MELEE",
+        "qualification": "SENIOR_OPERATOR",
+        "operatorClass": "VANGUARD",
+        "affixes": ["DP_RECOVERY", "SUPPORT"]
+    },
+    {   
+        "name": "Ptilopsis",
+        "rarity": 5,
+        "position": "RANGED",
+        "qualification": "SENIOR_OPERATOR",
+        "operatorClass": "MEDIC",
+        "affixes": ["SUPPORT", "HEALING"]
+    },
+    {
+        "name": "Silence",
+        "rarity": 5,
+        "position": "RANGED",
+        "qualification": "SENIOR_OPERATOR",
+        "operatorClass": "MEDIC",
+        "affixes": ["HEALING"]
+    },
+    {
+        "name": "Warfarin",
+        "rarity": 5,
+        "position": "RANGED",
+        "qualification": "SENIOR_OPERATOR",
+        "operatorClass": "MEDIC",
+        "affixes": ["SUPPORT", "HEALING"]
+    },
+    {
+        "name": "Project Red",
+        "rarity": 5,
+        "position": "MELEE",
+        "qualification": "SENIOR_OPERATOR",
+        "operatorClass": "SPECIALIST",
+        "affixes": ["CROWD_CONTROL", "FAST_REDEPLOY"]
+    },
+    {
+        "name": "Manticore",
+        "rarity": 5,
+        "position": "MELEE",
+        "qualification": "SENIOR_OPERATOR",
+        "operatorClass": "SPECIALIST",
+        "affixes": ["SURVIVAL", "DPS"]
+    },
+    {
+        "name": "Cliffheart",
+        "rarity": 5,
+        "position": "MELEE",
+        "qualification": "SENIOR_OPERATOR",
+        "operatorClass": "SPECIALIST",
+        "affixes": ["SHIFT", "DPS"]
+    },
+    {
+        "name": "FEater",
+        "rarity": 5,
+        "position": "MELEE",
+        "qualification": "SENIOR_OPERATOR",
+        "operatorClass": "SPECIALIST",
+        "affixes": ["SHIFT", "SLOW"]
+    },
+    {
+        "name": "Provence",
+        "rarity": 5,
+        "position": "RANGED",
+        "qualification": "SENIOR_OPERATOR",
+        "operatorClass": "SNIPER",
+        "affixes": ["DPS"]
+    },
+    {
+        "name": "Blue Poison",
+        "rarity": 5,
+        "position": "RANGED",
+        "qualification": "SENIOR_OPERATOR",
+        "operatorClass": "SNIPER",
+        "affixes": ["DPS"]
+    },
+    {
+        "name": "Firewatch",
+        "rarity": 5,
+        "position": "RANGED",
+        "qualification": "SENIOR_OPERATOR",
+        "operatorClass": "SNIPER",
+        "affixes": ["DPS", "NUKER"]
+    },
+    {
+        "name": "Meteorite",
+        "rarity": 5,
+        "position": "RANGED",
+        "qualification": "SENIOR_OPERATOR",
+        "operatorClass": "SNIPER",
+        "affixes": ["AOE", "DEBUFF"]
+    },
+    {
+        "name": "Platinum",
+        "rarity": 5,
+        "position": "RANGED",
+        "qualification": "SENIOR_OPERATOR",
+        "operatorClass": "SNIPER",
+        "affixes": ["DPS"]
+    },
+    {
+        "name": "Pramanix",
+        "rarity": 5,
+        "position": "RANGED",
+        "qualification": "SENIOR_OPERATOR",
+        "operatorClass": "SUPPORTER",
+        "affixes": ["DEBUFF"]
+    },
+    {
+        "name": "Istina",
+        "rarity": 5,
+        "position": "RANGED",
+        "qualification": "SENIOR_OPERATOR",
+        "operatorClass": "SUPPORTER",
+        "affixes": ["SLOW", "DPS"]
+    },
+    {
+        "name": "Mayer",
+        "rarity": 5,
+        "position": "RANGED",
+        "qualification": "SENIOR_OPERATOR",
+        "operatorClass": "SUPPORTER",
+        "affixes": ["CROWD_CONTROL", "SUMMON"]
+    },
+    {
+        "name": "Specter",
+        "rarity": 5,
+        "position": "MELEE",
+        "qualification": "SENIOR_OPERATOR",
+        "operatorClass": "GUARD",
+        "affixes": ["AOE", "SURVIVAL"]
+    },
+    {
+        "name": "Indra",
+        "rarity": 5,
+        "position": "MELEE",
+        "qualification": "SENIOR_OPERATOR",
+        "operatorClass": "GUARD",
+        "affixes": ["DPS", "SURVIVAL"]
+    },
+    {
+        "name": "Nearl",
+        "rarity": 5,
+        "position": "MELEE",
+        "qualification": "SENIOR_OPERATOR",
+        "operatorClass": "DEFENDER",
+        "affixes": ["DEFENSE", "HEALING"]
+    },
+    {
+        "name": "Liskarm",
+        "rarity": 5,
+        "position": "MELEE",
+        "qualification": "SENIOR_OPERATOR",
+        "operatorClass": "DEFENDER",
+        "affixes": ["DEFENSE", "DPS"]
+    },
+    {
+        "name": "Vulcan",
+        "rarity": 5,
+        "position": "MELEE",
+        "qualification": "SENIOR_OPERATOR",
+        "operatorClass": "DEFENDER",
+        "affixes": ["DEFENSE", "DPS", "SURVIVAL"]
+    },
+    {
+        "name": "Croissant",
+        "rarity": 5,
+        "position": "MELEE",
+        "qualification": "SENIOR_OPERATOR",
+        "operatorClass": "DEFENDER",
+        "affixes": ["DEFENSE", "SHIFT"]
+    },
+    {
+        "name": "Myrrh",
+        "rarity": 4,
+        "position": "RANGED",
+        "qualification": "NONE",
+        "operatorClass": "MEDIC",
+        "affixes": ["HEALING"]
+    },
+    {
+        "name": "Perfumer",
+        "rarity": 4,
+        "position": "RANGED",
+        "qualification": "NONE",
+        "operatorClass": "MEDIC",
+        "affixes": ["HEALING"]
+    },
+    {
+        "name": "Haze",
+        "rarity": 4,
+        "position": "RANGED",
+        "qualification": "NONE",
+        "operatorClass": "CASTER",
+        "affixes": ["DPS", "DEBUFF"]
+    },
+    {
+        "name": "Gitano",
+        "rarity": 4,
+        "position": "RANGED",
+        "qualification": "NONE",
+        "operatorClass": "CASTER",
+        "affixes": ["AOE"]
+    },
+    {
+        "name": "ShiraYuki",
+        "rarity": 4,
+        "position": "RANGED",
+        "qualification": "NONE",
+        "operatorClass": "SNIPER",
+        "affixes": ["AOE", "SLOW"]
+    },
+    {
+        "name": "Meteor",
+        "rarity": 4,
+        "position": "RANGED",
+        "qualification": "NONE",
+        "operatorClass": "SNIPER",
+        "affixes": ["DPS", "DEBUFF"]
+    },
+    {
+        "name": "Jessica",
+        "rarity": 4,
+        "position": "RANGED",
+        "qualification": "NONE",
+        "operatorClass": "SNIPER",
+        "affixes": ["DPS", "SURVIVAL"]
+    },
+    {
+        "name": "Earthspirit",
+        "rarity": 4,
+        "position": "RANGED",
+        "qualification": "NONE",
+        "operatorClass": "SUPPORTER",
+        "affixes": ["SLOW"]
+    },
+    {
+        "name": "Hibiscus",
+        "rarity": 3,
+        "position": "RANGED",
+        "qualification": "NONE",
+        "operatorClass": "MEDIC",
+        "affixes": ["HEALING"]
+    },
+    {
+        "name": "Ansel",
+        "rarity": 3,
+        "position": "RANGED",
+        "qualification": "NONE",
+        "operatorClass": "MEDIC",
+        "affixes": ["HEALING"]
+    },
+    {
+        "name": "Lava",
+        "rarity": 3,
+        "position": "RANGED",
+        "qualification": "NONE",
+        "operatorClass": "CASTER",
+        "affixes": ["AOE"]
+    },
+    {
+        "name": "Steward",
+        "rarity": 3,
+        "position": "RANGED",
+        "qualification": "NONE",
+        "operatorClass": "CASTER",
+        "affixes": ["DPS"]
+    },
+    {
+        "name": "Kroos",
+        "rarity": 3,
+        "position": "RANGED",
+        "qualification": "NONE",
+        "operatorClass": "SNIPER",
+        "affixes": ["DPS"]
+    },
+    {
+        "name": "Adnachiel",
+        "rarity": 3,
+        "position": "RANGED",
+        "qualification": "NONE",
+        "operatorClass": "SNIPER",
+        "affixes": ["DPS"]
+    },
+    {
+        "name": "Orchid",
+        "rarity": 3,
+        "position": "RANGED",
+        "qualification": "NONE",
+        "operatorClass": "SUPPORTER",
+        "affixes": ["SLOW"]
+    },
+    {
+        "name": "Durin",
+        "rarity": 2,
+        "position": "RANGED",
+        "qualification": "STARTER",
+        "operatorClass": "CASTER",
+        "affixes": []
+    },
+    {
+        "name": "12F",
+        "rarity": 2,
+        "position": "RANGED",
+        "qualification": "STARTER",
+        "operatorClass": "CASTER",
+        "affixes": []
+    },
+    {
+        "name": "Rangers",
+        "rarity": 2,
+        "position": "RANGED",
+        "qualification": "STARTER",
+        "operatorClass": "SNIPER",
+        "affixes": []
+    },
+    {
+        "name": "Lancet-2",
+        "rarity": 1,
+        "position": "RANGED",
+        "qualification": "NONE",
+        "operatorClass": "MEDIC",
+        "affixes": ["ROBOT","HEALING"]
+    },
+    {
+        "name": "Scavenger",
+        "rarity": 4,
+        "position": "MELEE",
+        "qualification": "NONE",
+        "operatorClass": "VANGUARD",
+        "affixes": ["DPS","DP_RECOVERY"]
+    },
+    {
+        "name": "Vigna",
+        "rarity": 4,
+        "position": "MELEE",
+        "qualification": "NONE",
+        "operatorClass": "VANGUARD",
+        "affixes": ["DPS","DP_RECOVERY"]
+    },
+    {
+        "name": "Gravel",
+        "rarity": 4,
+        "position": "MELEE",
+        "qualification": "NONE",
+        "operatorClass": "SPECIALIST",
+        "affixes": ["DEFENSE","FAST_REDEPLOY"]
+    },
+    {
+        "name": "Rope",
+        "rarity": 4,
+        "position": "MELEE",
+        "qualification": "NONE",
+        "operatorClass": "SPECIALIST",
+        "affixes": ["SHIFT"]
+    },
+    {
+        "name": "Shaw",
+        "rarity": 4,
+        "position": "MELEE",
+        "qualification": "NONE",
+        "operatorClass": "SPECIALIST",
+        "affixes": ["SHIFT"]
+    },
+    {
+        "name": "Dobermann",
+        "rarity": 4,
+        "position": "MELEE",
+        "qualification": "NONE",
+        "operatorClass": "GUARD",
+        "affixes": ["DPS", "SUPPORT"]
+    },
+    {
+        "name": "Estelle",
+        "rarity": 4,
+        "position": "MELEE",
+        "qualification": "NONE",
+        "operatorClass": "GUARD",
+        "affixes": ["AOE", "SURVIVAL"]
+    },
+    {
+        "name": "Mousse",
+        "rarity": 4,
+        "position": "MELEE",
+        "qualification": "NONE",
+        "operatorClass": "GUARD",
+        "affixes": ["DPS"]
+    },
+    {
+        "name": "Frostleaf",
+        "rarity": 4,
+        "position": "MELEE",
+        "qualification": "NONE",
+        "operatorClass": "GUARD",
+        "affixes": ["DPS", "SLOW"]
+    },
+    {
+        "name": "Matoimaru",
+        "rarity": 4,
+        "position": "MELEE",
+        "qualification": "NONE",
+        "operatorClass": "GUARD",
+        "affixes": ["DPS", "SURVIVAL"]
+    },
+    {
+        "name": "Cuora",
+        "rarity": 4,
+        "position": "MELEE",
+        "qualification": "NONE",
+        "operatorClass": "DEFENDER",
+        "affixes": ["DEFENSE"]
+    },
+    {
+        "name": "Gummy",
+        "rarity": 4,
+        "position": "MELEE",
+        "qualification": "NONE",
+        "operatorClass": "DEFENDER",
+        "affixes": ["DEFENSE", "HEALING"]
+    },
+    {
+        "name": "Matterhorn",
+        "rarity": 4,
+        "position": "MELEE",
+        "qualification": "NONE",
+        "operatorClass": "DEFENDER",
+        "affixes": ["DEFENSE"]
+    },
+    {
+        "name": "Fang",
+        "rarity": 3,
+        "position": "MELEE",
+        "qualification": "NONE",
+        "operatorClass": "VANGUARD",
+        "affixes": ["DP_RECOVERY"]
+    },
+    {
+        "name": "Vanilla",
+        "rarity": 3,
+        "position": "MELEE",
+        "qualification": "NONE",
+        "operatorClass": "VANGUARD",
+        "affixes": ["DP_RECOVERY"]
+    },
+    {
+        "name": "Plume",
+        "rarity": 3,
+        "position": "MELEE",
+        "qualification": "NONE",
+        "operatorClass": "VANGUARD",
+        "affixes": ["DP_RECOVERY", "DPS"]
+    },
+    {
+        "name": "Melantha",
+        "rarity": 3,
+        "position": "MELEE",
+        "qualification": "NONE",
+        "operatorClass": "GUARD",
+        "affixes": ["SURVIVAL", "DPS"]
+    },
+    {
+        "name": "Beagle",
+        "rarity": 3,
+        "position": "MELEE",
+        "qualification": "NONE",
+        "operatorClass": "DEFENDER",
+        "affixes": ["DEFENSE"]
+    },
+    {
+        "name": "Yato",
+        "rarity": 2,
+        "position": "MELEE",
+        "qualification": "STARTER",
+        "operatorClass": "VANGUARD",
+        "affixes": []
+    },
+    {
+        "name": "Noir Corne",
+        "rarity": 2,
+        "position": "MELEE",
+        "qualification": "STARTER",
+        "operatorClass": "DEFENDER",
+        "affixes": []
+    },
+    {
+        "name": "Castle-3",
+        "rarity": 1,
+        "position": "MELEE",
+        "qualification": "STARTER",
+        "operatorClass": "GUARD",
+        "affixes": ["ROBOT", "SUPPORT"]
+    }
+]
