@@ -100,4 +100,5 @@ Thumbs.db
 /log.json
 logs
 guilds/
+/operators.json
 
