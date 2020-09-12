@@ -7,6 +7,8 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.Nonnull;
+
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 
@@ -40,14 +42,12 @@ public class Recruitment {
 
     public static void main(String[] args)  {
         Recruitment rec = getRecruitment();
-        List<TagCombination> com = rec.calculate(new String[] {"test"});
+        List<TagCombination> com = rec.calculate(new String[] {"GUARD", "SNIPER", "DEFENDER", "VANGUARD", "STARTER"});
     }
 
-    public List<TagCombination> calculate(final String[] tags) {
+    public List<TagCombination> calculate(@Nonnull final String[] tags) {
         List<TagCombination> tagCombinations = new ArrayList<>();
-
-
-
+        // Guard sniper defender vanguard starter, guardsniper guarddefender guardvanguard guardstarter, 
         return tagCombinations;
     }
 }

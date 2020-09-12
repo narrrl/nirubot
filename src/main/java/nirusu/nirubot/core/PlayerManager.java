@@ -11,7 +11,6 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 
 import nirusu.nirubot.Nirubot;
 import nirusu.nirubot.command.CommandContext;
-import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 
 import javax.annotation.Nonnull;
@@ -132,7 +131,7 @@ public class PlayerManager {
 
 	public String[] getCurrentSongs(Guild guild) {
         GuildMusicManager mg = getGuildMusicManager(guild);
-        ArrayList<AudioTrackInfo> tracks = new ArrayList<>();
+        ArrayList<AudioTrackInfo> tracks = mg.getScheduler().getAllTrackInfos();
         String[] uris = new String[tracks.size() - 1];
 
         for (int i = 0; i < tracks.size(); i++ ) {
