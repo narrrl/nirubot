@@ -5,7 +5,11 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
 
@@ -40,14 +44,48 @@ public class Recruitment {
         return list;
     }
 
-    public static void main(String[] args)  {
-        Recruitment rec = getRecruitment();
-        List<TagCombination> com = rec.calculate(new String[] {"GUARD", "SNIPER", "DEFENDER", "VANGUARD", "STARTER"});
-    }
+    public List<TagCombination> calculate(@Nonnull final List<String> userInput) {
+        List<String> tags = Operator.convertTags(userInput);
+        HashSet<TagCombination> tagCombinations = new HashSet<>();
+        for (String tag : tags) {
+            tagCombinations.add(new TagCombination(Arrays.asList(new String[] {tag})));
+        }
 
-    public List<TagCombination> calculate(@Nonnull final String[] tags) {
-        List<TagCombination> tagCombinations = new ArrayList<>();
-        // Guard sniper defender vanguard starter, guardsniper guarddefender guardvanguard guardstarter, 
-        return tagCombinations;
+        for (String tag : tags) {
+            for (String tag2 : tags) {
+                if (!tag.equals(tag2)) {
+                    tagCombinations.add(new TagCombination(Arrays.asList(new String[] {tag, tag2})));
+                }
+            }
+        }
+
+        for (String tag : tags) {
+            for (String tag2 : tags) {
+                for (String tag3 : tags) {
+                    if (!tag.equals(tag2) && !tag.equals(tag3) && !tag2.equals(tag3)) {
+                        tagCombinations.add(new TagCombination(Arrays.asList(new String[] {tag, tag2, tag3})));
+                    }
+                }
+            }
+        }
+
+        for (TagCombination cb : tagCombinations) {
+            for (Operator o : operators) {
+                if (cb.accepts(o)) {
+                    cb.addOperator(o);
+                }
+            }
+        }
+
+        List<TagCombination> toRemove = new ArrayList<>();
+        for (TagCombination cb : tagCombinations) {
+            if (!cb.hasOperator()) {
+                toRemove.add(cb);
+            }
+        }
+        toRemove.forEach(cb -> tagCombinations.remove(cb));
+
+        return tagCombinations.stream().sorted(Comparator.comparingInt(TagCombination::getLowestRarity)).collect(Collectors.toList());
+
     }
 }

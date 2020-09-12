@@ -1,6 +1,9 @@
 package nirusu.nirubot.util.arknight;
 
-public class Operator {
+import java.util.ArrayList;
+import java.util.List;
+
+public class Operator implements Comparable<Operator> {
     public enum Qualification {
         STARTER,SENIOR_OPERATOR,TOP_OPERATOR, NONE
     }
@@ -28,10 +31,73 @@ public class Operator {
 
     @Override
     public String toString() {
-        String affix = "";
-        for (Affix str : affixes) {
-            affix += str.name() + " ";
-        }
-        return this.name + " " + this.rarity + " " + this.position + " " + this.operatorClass + " " + affix.substring(0, affix.length() - 1) + " " + qualification;
+        return this.name;
     }
+
+    @Override
+    public int compareTo(Operator o) {
+        return this.hashCode() - o.hashCode();
+    }
+
+    @Override
+    public int hashCode() {
+        return name.hashCode();
+    }
+
+	public boolean hasTag(final String tag) {
+        String tmp = tag.toLowerCase();
+        if (qualification.name().toLowerCase().equals(tmp)) {
+            return true;
+        } else if (position.name().toLowerCase().equals(tmp)) {
+            return true;
+        } else if (operatorClass.name().toLowerCase().equals(tmp)) {
+            return true;
+        } else {
+            for (Affix a : affixes) {
+                if (a.name().toLowerCase().equals(tmp)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+	}
+
+	public int getRarity() {
+		return this.rarity;
+    }
+
+    static List<String> convertTags(final List<String> oldTags) {
+        List<String> newTags = new ArrayList<>();
+        for (String str : oldTags) {
+            newTags.add(str.replace("-", "_").toUpperCase());
+        }
+        if (newTags.contains("CROWD") && newTags.contains("CONTROL")) {
+            newTags.remove("CROWD");
+            newTags.remove("CONTROL");
+            newTags.add("CROWD_CONTROL");
+        }
+        return newTags;
+    }
+    
+
+    public static String getAllTagsAsString() {
+        StringBuilder out = new StringBuilder();
+        for (Qualification q : Qualification.values()) {
+            if (!q.equals(Qualification.NONE)) {
+                out.append(q.name()).append(" ");
+            }
+        }
+        for (Position pos : Position.values()) {
+            out.append(pos.name()).append(" ");
+        }
+        for (OperatorClass cl : OperatorClass.values()) {
+            out.append(cl.name()).append(" ");
+        }
+        for (Affix a : Affix.values()) {
+            out.append(a.name()).append(" ");
+        }
+        return out.substring(0, out.length() - 1);
+    }
+
+
 }
