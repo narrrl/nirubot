@@ -1,9 +1,13 @@
 package nirusu.nirubot.util.arknight;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+
+import com.google.common.collect.Lists;
 
 public class TagCombination implements Comparable<TagCombination> {
     private Set<Operator> possibleOperator;
@@ -65,11 +69,12 @@ public class TagCombination implements Comparable<TagCombination> {
     @Override
     public String toString() {
         StringBuilder out = new StringBuilder();
+        List<Operator> ops = possibleOperator.stream().sorted(Comparator.comparingInt(Operator::getRarity)).collect(Collectors.toList());
         out.append("Tags: **");
         tags.forEach(str -> out.append(str).append(", "));
         out.replace(out.length() - 2, out.length() - 1, "");
         out.append("** Operators: **");
-        possibleOperator.forEach(op -> out.append(op).append(", "));
+        ops.forEach(op -> out.append(op).append(", "));
         out.replace(out.length() - 2, out.length() - 1, "");
         out.append("**");
         return out.toString() + " Lowest Rarity: "  + getLowestRarity();

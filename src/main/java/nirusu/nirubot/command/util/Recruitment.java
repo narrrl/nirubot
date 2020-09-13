@@ -33,13 +33,21 @@ public class Recruitment implements ICommand {
 
         Collections.reverse(all);
 
-        StringBuilder builder = new StringBuilder();
-        all.forEach(str -> builder.append(str).append("\n"));
         EmbedBuilder emb = new EmbedBuilder();
-        if (builder.length() == 0) {
-            builder.append("No combinations found! Check if you spelled the tags right ");
+        emb.setColor(Nirubot.getColor()).setTitle("All combinations:");
+        StringBuilder builder = new StringBuilder();
+
+        for (TagCombination cb : all) {
+            if (builder.length() > 1500) {
+                emb.setDescription(builder.toString());
+                ctx.reply(emb.build());
+                builder = new StringBuilder();
+                emb = new EmbedBuilder();
+                emb.setColor(Nirubot.getColor());
+            }
+            builder.append(cb).append("\n");
         }
-        emb.setColor(Nirubot.getColor()).setTitle("All combinations:").setDescription(builder.substring(0,builder.length() - 1));
+        emb.setDescription(builder.toString());
         ctx.reply(emb.build());
     }
 
