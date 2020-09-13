@@ -48,6 +48,7 @@ public class Recruitment implements ICommand {
             if (cb.toString().length() > 2000) {
 
                 if (builder.length() != 0) {
+                    emb.setDescription(builder.toString());
                     ctx.reply(emb.build());
                     builder = new StringBuilder();
                     emb = new EmbedBuilder();
@@ -60,14 +61,16 @@ public class Recruitment implements ICommand {
                 emb = new EmbedBuilder();
                 emb.setColor(Nirubot.getColor());
 
-            } else if (builder.length() + cb.toString().length() > 1800) {
-                emb.setDescription(builder.toString());
-                ctx.reply(emb.build());
-                builder = new StringBuilder();
-                emb = new EmbedBuilder();
-                emb.setColor(Nirubot.getColor());
+            } else {
+                if (builder.length() + cb.toString().length() > 1800) {
+                    emb.setDescription(builder.toString());
+                    ctx.reply(emb.build());
+                    builder = new StringBuilder();
+                    emb = new EmbedBuilder();
+                    emb.setColor(Nirubot.getColor());
+                }
+                builder.append(cb).append("\n\n");
             }
-            builder.append(cb).append("\n\n");
         }
         emb.setDescription(builder.toString());
         ctx.reply(emb.build());
@@ -82,5 +85,5 @@ public class Recruitment implements ICommand {
     public MessageEmbed helpMessage(GuildManager gm) {
         return ICommand.createHelp("Gets the best possible combinations for up to 6 tags. Tags are:\n" + Operator.getAllTagsAsString(), gm.prefix(), this);
     }
-    
+
 }
