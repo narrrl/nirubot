@@ -65,7 +65,8 @@ public class PlayerManager {
 
             @Override
             public void playlistLoaded(@Nonnull final AudioPlaylist playlist) {
-                playlist.getTracks().forEach(track -> play(musicManager, track));
+                ctx.reply("Playlist are deactivated! YouTube blocked my IP last time :(");
+                throw new IllegalArgumentException("No playlists :D");
             }
 
             @Override
