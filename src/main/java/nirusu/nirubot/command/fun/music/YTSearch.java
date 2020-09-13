@@ -46,7 +46,8 @@ public class YTSearch implements ICommand {
 
         emb.setColor(Nirubot.getColor()).setTitle(video.getTitle(), "https://www.youtube.com/watch?v=" + video.getVideoId()).setThumbnail(video.getThumbnailUrl());
         try {
-            PlayerManager.getInstance().loadAndPlay(ctx, video.getVideoId());
+            // TODO: bot is banned from youtube lol
+            // PlayerManager.getInstance().loadAndPlay(ctx, video.getVideoId());
         } catch (IllegalArgumentException e) {
             return;
         }
