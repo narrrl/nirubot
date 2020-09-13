@@ -7,8 +7,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.google.common.collect.Lists;
-
 public class TagCombination implements Comparable<TagCombination> {
     private Set<Operator> possibleOperator;
     private List<String> tags;
