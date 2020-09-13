@@ -30,10 +30,10 @@ public class Recruitment {
     }
 
     private Recruitment() {
-        operators = Recruitment.loadOperators();
+        operators = loadOperators();
     }
 
-    public static List<Operator> loadOperators() {
+    public List<Operator> loadOperators() {
         File opList = new File(System.getProperty("user.dir").concat(File.separator + "operators.json"));
         ArrayList<Operator> list;
         try {
