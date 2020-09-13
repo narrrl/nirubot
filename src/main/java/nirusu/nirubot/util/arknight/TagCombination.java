@@ -69,11 +69,21 @@ public class TagCombination implements Comparable<TagCombination> {
         StringBuilder out = new StringBuilder();
         List<Operator> ops = possibleOperator.stream().sorted(Comparator.comparingInt(Operator::getRarity)).collect(Collectors.toList());
         out.append("Tags: **");
-        tags.forEach(str -> out.append(str).append(", "));
-        out.replace(out.length() - 2, out.length() - 1, "");
+        tags.forEach(str -> out.append(str).append(","));
+        out.replace(out.length() - 1, out.length() - 1, "");
         out.append("** Operators: ");
-        ops.forEach(op -> out.append(op).append(", "));
-        out.replace(out.length() - 2, out.length() - 1, "");
+        ops.forEach(op -> out.append(op));
+        return out.toString();
+    }
+
+    public String toStringWithoutHyperlinks() {
+        StringBuilder out = new StringBuilder();
+        List<Operator> ops = possibleOperator.stream().sorted(Comparator.comparingInt(Operator::getRarity)).collect(Collectors.toList());
+        out.append("Tags: **");
+        tags.forEach(str -> out.append(str).append(","));
+        out.replace(out.length() - 1, out.length() - 1, "");
+        out.append("** Operators: ");
+        ops.forEach(op -> out.append(op.toStringWithoutHyperlink()));
         return out.toString();
     }
 

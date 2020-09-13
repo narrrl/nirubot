@@ -44,7 +44,23 @@ public class Recruitment implements ICommand {
         StringBuilder builder = new StringBuilder();
 
         for (TagCombination cb : all) {
-            if (builder.length() > 1200) {
+
+            if (cb.toString().length() > 2000) {
+
+                if (builder.length() != 0) {
+                    ctx.reply(emb.build());
+                    builder = new StringBuilder();
+                    emb = new EmbedBuilder();
+                    emb.setColor(Nirubot.getColor());
+                }
+
+                emb.setDescription(cb.toStringWithoutHyperlinks());
+                ctx.reply(emb.build());
+                builder = new StringBuilder();
+                emb = new EmbedBuilder();
+                emb.setColor(Nirubot.getColor());
+
+            } else if (builder.length() + cb.toString().length() > 1800) {
                 emb.setDescription(builder.toString());
                 ctx.reply(emb.build());
                 builder = new StringBuilder();
