@@ -72,8 +72,10 @@ public class Recruitment implements ICommand {
                 builder.append(cb).append("\n\n");
             }
         }
-        emb.setDescription(builder.toString());
-        ctx.reply(emb.build());
+        if (builder.length() > 0) {
+            emb.setDescription(builder.toString());
+            ctx.reply(emb.build());
+        }
     }
 
     @Override
