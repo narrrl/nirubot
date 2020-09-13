@@ -35,7 +35,7 @@ public class Operator implements Comparable<Operator> {
     }
 
     public String toStringWithoutHyperlink() {
-        return this.name + rarity + "☆";
+        return this.name + " " + rarity + "☆";
     }
 
     @Override
