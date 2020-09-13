@@ -565,7 +565,7 @@
         "name": "Castle-3",
         "rarity": 1,
         "position": "MELEE",
-        "qualification": "STARTER",
+        "qualification": "NONE",
         "operatorClass": "GUARD",
         "affixes": ["ROBOT", "SUPPORT"]
     }

@@ -71,11 +71,10 @@ public class TagCombination implements Comparable<TagCombination> {
         out.append("Tags: **");
         tags.forEach(str -> out.append(str).append(", "));
         out.replace(out.length() - 2, out.length() - 1, "");
-        out.append("** Operators: **");
+        out.append("** Operators: ");
         ops.forEach(op -> out.append(op).append(", "));
         out.replace(out.length() - 2, out.length() - 1, "");
-        out.append("**");
-        return out.toString() + " Lowest Rarity: "  + getLowestRarity();
+        return out.toString();
     }
 
     public int getLowestRarity() {

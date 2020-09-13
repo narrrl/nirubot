@@ -31,7 +31,7 @@ public class Operator implements Comparable<Operator> {
 
     @Override
     public String toString() {
-        return "[" + this.name + "](" + "https://aceship.github.io/AN-EN-Tags/akhrchars.html?opname=" + this.name.replace(" ", "_") + ")";
+        return "[" + this.name + "](" + "https://aceship.github.io/AN-EN-Tags/akhrchars.html?opname=" + this.name.replace(" ", "_") + ") " + rarity + "☆";
     }
 
     @Override
@@ -66,15 +66,27 @@ public class Operator implements Comparable<Operator> {
 		return this.rarity;
     }
 
-    static List<String> convertTags(final List<String> oldTags) {
+    static List<String> convertTags(final List<String> oldTags, final String total) {
         List<String> newTags = new ArrayList<>();
         for (String str : oldTags) {
             newTags.add(str.replace("-", "_").toUpperCase());
         }
-        if (newTags.contains("CROWD") && newTags.contains("CONTROL")) {
+
+        if (total.toUpperCase().contains("TOP OPERATOR")) {
+            newTags.remove("TOP");
+            newTags.remove("OPERATOR");
+            newTags.add("TOP_OPERATOR");
+        }
+        if (total.toUpperCase().contains("SENIOR OPERATOR")) {
+            newTags.remove("SENIOR");
+            newTags.remove("OPERATOR");
+            newTags.add("SENIOR_OPERATOR");
+        }
+        if (total.toUpperCase().contains("CROWD CONTROL")) {
             newTags.remove("CROWD");
             newTags.remove("CONTROL");
             newTags.add("CROWD_CONTROL");
+
         }
         return newTags;
     }

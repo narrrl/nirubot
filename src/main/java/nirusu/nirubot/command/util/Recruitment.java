@@ -20,16 +20,22 @@ public class Recruitment implements ICommand {
     public void execute(CommandContext ctx) {
         List<String> args = ctx.getArgs();
 
-        if (args.size() > 7 || args.size() < 2) {
+        if (args.size() >  15 || args.size() < 2) {
             return;
         }
         List<String> tags = new ArrayList<>();
+        StringBuilder b = new StringBuilder();
 
         for (int i = 1; i < args.size(); i++) {
             tags.add(args.get(i));
+            b.append(args.get(i));
+            if (i + 1  < args.size()) {
+                b.append(" ");
+            }
         }
 
-        List<TagCombination> all = nirusu.nirubot.util.arknight.Recruitment.getRecruitment().calculate(tags);
+        List<TagCombination> all = nirusu.nirubot.util.arknight.Recruitment
+        .getRecruitment().calculate(tags, b.toString());
 
         Collections.reverse(all);
 
@@ -38,14 +44,14 @@ public class Recruitment implements ICommand {
         StringBuilder builder = new StringBuilder();
 
         for (TagCombination cb : all) {
-            if (builder.length() > 1500) {
+            if (builder.length() > 1200) {
                 emb.setDescription(builder.toString());
                 ctx.reply(emb.build());
                 builder = new StringBuilder();
                 emb = new EmbedBuilder();
                 emb.setColor(Nirubot.getColor());
             }
-            builder.append(cb).append("\n");
+            builder.append(cb).append("\n\n");
         }
         emb.setDescription(builder.toString());
         ctx.reply(emb.build());

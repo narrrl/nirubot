@@ -44,8 +44,8 @@ public class Recruitment {
         return list;
     }
 
-    public List<TagCombination> calculate(@Nonnull final List<String> userInput) {
-        List<String> tags = Operator.convertTags(userInput);
+    public List<TagCombination> calculate(@Nonnull final List<String> userInput, final String totalInput) {
+        List<String> tags = Operator.convertTags(userInput, totalInput);
         HashSet<TagCombination> tagCombinations = new HashSet<>();
         for (String tag : tags) {
             tagCombinations.add(new TagCombination(Arrays.asList(new String[] {tag})));
