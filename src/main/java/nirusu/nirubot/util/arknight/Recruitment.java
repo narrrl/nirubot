@@ -48,13 +48,13 @@ public class Recruitment {
         List<String> tags = Operator.convertTags(userInput, totalInput);
         HashSet<TagCombination> tagCombinations = new HashSet<>();
         for (String tag : tags) {
-            tagCombinations.add(new TagCombination(Arrays.asList(new String[] {tag})));
+            tagCombinations.add(new TagCombination(Arrays.asList(tag)));
         }
 
         for (String tag : tags) {
             for (String tag2 : tags) {
                 if (!tag.equals(tag2)) {
-                    tagCombinations.add(new TagCombination(Arrays.asList(new String[] {tag, tag2})));
+                    tagCombinations.add(new TagCombination(Arrays.asList(tag, tag2)));
                 }
             }
         }
@@ -63,7 +63,7 @@ public class Recruitment {
             for (String tag2 : tags) {
                 for (String tag3 : tags) {
                     if (!tag.equals(tag2) && !tag.equals(tag3) && !tag2.equals(tag3)) {
-                        tagCombinations.add(new TagCombination(Arrays.asList(new String[] {tag, tag2, tag3})));
+                        tagCombinations.add(new TagCombination(Arrays.asList(tag, tag2, tag3)));
                     }
                 }
             }
