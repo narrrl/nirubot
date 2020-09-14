@@ -3,6 +3,7 @@ package nirusu.nirubot.command.util;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -23,6 +24,7 @@ public class Recruitment implements ICommand {
         if (args.size() >  15 || args.size() < 2) {
             return;
         }
+
         List<String> tags = new ArrayList<>();
         StringBuilder b = new StringBuilder();
 
@@ -42,6 +44,13 @@ public class Recruitment implements ICommand {
         EmbedBuilder emb = new EmbedBuilder();
         emb.setColor(Nirubot.getColor()).setTitle("All combinations:");
         StringBuilder builder = new StringBuilder();
+
+        for (int i = 0; i < all.size(); i++) {
+            if (all.get(i).hasOnlyPositions()) {
+                all.remove(i);
+                i--;
+            }
+        }
 
         for (TagCombination cb : all) {
 

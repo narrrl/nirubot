@@ -13,7 +13,7 @@ public class TagCombination implements Comparable<TagCombination> {
 
     public TagCombination(final List<String> tags) {
         this.tags = new ArrayList<>();
-        tags.forEach(this.tags::add);
+        tags.forEach(str -> this.tags.add(str.toUpperCase()));
         this.possibleOperator = new HashSet<>();
     }
 
@@ -99,5 +99,19 @@ public class TagCombination implements Comparable<TagCombination> {
         }
         return lowest;
     }
+
+	public boolean hasOnlyPositions() {
+
+        if (this.tags.size() == 1) {
+
+            if (this.tags.contains("RANGED")) {
+                return true;
+            } else if (this.tags.contains("MELEE")) {
+                return true;
+            }
+        }
+
+        return false;
+	}
     
 }
