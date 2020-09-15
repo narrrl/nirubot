@@ -70,34 +70,63 @@ public class TagCombination implements Comparable<TagCombination> {
         List<Operator> ops = possibleOperator.stream().sorted(Comparator.comparingInt(Operator::getRarity)).collect(Collectors.toList());
         out.append("**");
         tags.forEach(str -> out.append(str).append(","));
-        out.replace(out.length() - 1, out.length() - 1, "");
-        out.append("** Operators: ");
-        ops.forEach(op -> out.append(op));
-        return out.toString();
+        out.replace(out.length() - 1, out.length(), "");
+        out.append("** \nOperators: ");
+        ops.forEach(op -> out.append(op).append(" "));
+        return out.substring(0, out.length() - 1);
     }
 
-    public String toStringWithoutHyperlinks() {
-        StringBuilder out = new StringBuilder();
+    // when the embed is bigger than 2048 because of hyperlinks
+    public List<String> toStringAsList() {
+        List<String> strings = new ArrayList<>();
         List<Operator> ops = possibleOperator.stream().sorted(Comparator.comparingInt(Operator::getRarity)).collect(Collectors.toList());
-        out.append("**");
-        tags.forEach(str -> out.append(str).append(","));
-        out.replace(out.length() - 1, out.length() - 1, "");
-        out.append("** Operators: ");
-        ops.forEach(op -> out.append(op.toStringWithoutHyperlink()));
-        return out.toString();
+        StringBuilder str = new StringBuilder();
+        str.append("**");
+        tags.forEach(tagsStr -> str.append(tagsStr).append(","));
+        str.replace(str.length() - 1, str.length(), "");
+        str.append("** \nOperators: ");
+        strings.add(str.toString());
+        ops.forEach(op -> strings.add(op.toString()));
+        return strings;
     }
 
     public int getLowestRarity() {
+        if (possibleOperator.isEmpty()) {
+            return 0;
+        }
+
         int lowest = 7;
+
         for (Operator o : possibleOperator) {
             if (o.getRarity() < lowest) {
                 lowest = o.getRarity();
             }
         }
-        if (lowest == 7) {
-            return -1;
-        }
         return lowest;
+    }
+
+    public int getHighestRarity() {
+        int highest = 0;
+
+        for (Operator o : possibleOperator) {
+            if (o.getRarity() > highest) {
+                highest = o.getRarity();
+            }
+        }
+        return highest;
+    }
+
+    public float getAvgRarity() {
+
+        if (possibleOperator.isEmpty()) {
+            return 0;
+        }
+
+        int lowest = getLowestRarity();
+        int highest = getHighestRarity();
+
+        return lowest + ((float) highest / 10);
+
     }
 
 	public boolean hasOnlyPositions() {

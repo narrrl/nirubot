@@ -31,11 +31,7 @@ public class Operator implements Comparable<Operator> {
 
     @Override
     public String toString() {
-        return "[" + this.name + "](" + "https://aceship.github.io/AN-EN-Tags/akhrchars.html?opname=" + this.name.replace(" ", "_") + ")" + rarity + "☆";
-    }
-
-    public String toStringWithoutHyperlink() {
-        return this.name + " " + rarity + "☆";
+        return "[" + this.name + "](" + "https://aceship.github.io/AN-EN-Tags/akhrchars.html?opname=" + this.name.replace(" ", "_") + ") " + rarity + "☆";
     }
 
     @Override

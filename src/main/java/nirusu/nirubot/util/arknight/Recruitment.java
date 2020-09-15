@@ -85,7 +85,7 @@ public class Recruitment {
         }
         toRemove.forEach(cb -> tagCombinations.remove(cb));
 
-        return tagCombinations.stream().sorted(Comparator.comparingInt(TagCombination::getLowestRarity)).collect(Collectors.toList());
+        return tagCombinations.stream().sorted(Comparator.comparingDouble(TagCombination::getAvgRarity)).collect(Collectors.toList());
 
     }
 }

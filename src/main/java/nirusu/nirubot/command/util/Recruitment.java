@@ -45,13 +45,6 @@ public class Recruitment implements ICommand {
         emb.setColor(Nirubot.getColor()).setTitle("All combinations:");
         StringBuilder builder = new StringBuilder();
 
-        for (int i = 0; i < all.size(); i++) {
-            if (all.get(i).hasOnlyPositions()) {
-                all.remove(i);
-                i--;
-            }
-        }
-
         for (TagCombination cb : all) {
 
             if (cb.toString().length() > 2000) {
@@ -64,11 +57,33 @@ public class Recruitment implements ICommand {
                     emb.setColor(Nirubot.getColor());
                 }
 
-                emb.setDescription(cb.toStringWithoutHyperlinks());
-                ctx.reply(emb.build());
-                builder = new StringBuilder();
-                emb = new EmbedBuilder();
-                emb.setColor(Nirubot.getColor());
+                Iterator<String> i = cb.toStringAsList().iterator();
+                StringBuilder tmp = new StringBuilder();
+
+                if (i.hasNext()) {
+                    tmp.append(i.next());
+                }
+
+                while (i.hasNext()) {
+                    String n = i.next();
+                    if (tmp.length() + n.length() > 1800) {
+                        emb.setDescription(tmp.substring(0, tmp.length() - 1));
+                        ctx.reply(emb.build());
+                        tmp = new StringBuilder();
+                        emb = new EmbedBuilder();
+                        emb.setColor(Nirubot.getColor());
+                    }
+                    tmp.append(n).append(" ");
+                }
+
+                if (tmp.length() > 0) {
+                    emb.setDescription(tmp.substring(0, tmp.length() - 1));
+                    ctx.reply(emb.build());
+                    tmp = new StringBuilder();
+                    emb = new EmbedBuilder();
+                    emb.setColor(Nirubot.getColor());
+
+                }
 
             } else {
                 if (builder.length() + cb.toString().length() > 1800) {
