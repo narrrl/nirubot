@@ -34,7 +34,7 @@ public class Recruitment {
         operators = loadOperators();
     }
 
-    public List<Operator> loadOperators() {
+    public synchronized List<Operator> loadOperators() {
         // file must be in root directory
         File opList = new File(System.getProperty("user.dir").concat(File.separator + "operators.json"));
         ArrayList<Operator> list;
