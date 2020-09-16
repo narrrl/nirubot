@@ -2,6 +2,11 @@ package nirusu.nirubot.util;
 
 import com.google.gson.annotations.SerializedName;
 
+/**
+ * This class is the skeleton for a youtube video json 
+ * that get requested in {@link nirusu.nirubot.command.fun.music.YTSearch#execute(nirusu.nirubot.command.CommandContext)}
+ * 
+ */
 public class YouTubeVideo {
     private Id id;
     private Snippet snippet;

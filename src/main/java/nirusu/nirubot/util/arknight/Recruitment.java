@@ -30,27 +30,45 @@ public class Recruitment {
     }
 
     private Recruitment() {
+        // loads all operator data from a json
         operators = loadOperators();
     }
 
     public List<Operator> loadOperators() {
+        // file must be in root directory
         File opList = new File(System.getProperty("user.dir").concat(File.separator + "operators.json"));
         ArrayList<Operator> list;
+
+        // gets parsed by Gson
         try {
             list = Nirubot.getGson().fromJson(Files.readString(opList.toPath(), StandardCharsets.UTF_8), new TypeToken<List<Operator>>(){}.getType());
         } catch (JsonSyntaxException | IOException e) {
             throw new IllegalArgumentException("Couldn't read operator list");
         }
+
         return list;
     }
 
+    /**
+     * Calculates all possible combinations with fitting operators.
+     * Tags dont have to be formatted right, because they're getting converted anyway.
+     * @param userInput the tags as list
+     * @param totalInput all tags as one big string
+     * @return a sorted list from worst to best of {@link nirusu.nirubot.util.arknight.TagCombination}
+     */
     public List<TagCombination> calculate(@Nonnull final List<String> userInput, final String totalInput) {
+        // convert the tags first because users input might be wrong
+        // everything gets converted to upper case and spaced are swapped with underscore
         List<String> tags = Operator.convertTags(userInput, totalInput);
+
+        // create set to prevent duplicates
         HashSet<TagCombination> tagCombinations = new HashSet<>();
         for (String tag : tags) {
             tagCombinations.add(new TagCombination(Arrays.asList(tag)));
         }
 
+
+        // create all possible tag combinations (with duplicate might need some rework for performance)
         for (String tag : tags) {
             for (String tag2 : tags) {
                 if (!tag.equals(tag2)) {
@@ -69,6 +87,7 @@ public class Recruitment {
             }
         }
 
+        // add operator who have the tags
         for (TagCombination cb : tagCombinations) {
             for (Operator o : operators) {
                 if (cb.accepts(o)) {
@@ -77,6 +96,7 @@ public class Recruitment {
             }
         }
 
+        // remove tags without operators
         List<TagCombination> toRemove = new ArrayList<>();
         for (TagCombination cb : tagCombinations) {
             if (!cb.hasOperator()) {
@@ -85,6 +105,7 @@ public class Recruitment {
         }
         toRemove.forEach(cb -> tagCombinations.remove(cb));
 
+        // sort list from worst to best and return
         return tagCombinations.stream().sorted(Comparator.comparingDouble(TagCombination::getAvgRarity)).collect(Collectors.toList());
 
     }

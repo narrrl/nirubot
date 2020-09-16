@@ -7,22 +7,32 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.annotation.Nonnull;
+
 public class TagCombination implements Comparable<TagCombination> {
     private Set<Operator> possibleOperator;
     private List<String> tags;
 
+    /**
+     * Case sensitive convert @param tags to upper case first
+     */
     public TagCombination(final List<String> tags) {
         this.tags = new ArrayList<>();
-        tags.forEach(str -> this.tags.add(str.toUpperCase()));
+        tags.forEach(str -> this.tags.add(str));
         this.possibleOperator = new HashSet<>();
     }
 
-    public void addOperator(final Operator op) {
+    public void addOperator(@Nonnull final Operator op) {
         possibleOperator.add(op);
     }
 
     @Override
     public int compareTo(TagCombination o) {
+
+        if (o == null) {
+            return 1;
+        }
+
         return this.hashCode() - o.hashCode();
     }
 
@@ -35,12 +45,19 @@ public class TagCombination implements Comparable<TagCombination> {
         return hash;
     }
 
+    /**
+     * Checks if a operator is a possibility for given tag combination
+     * @param o the operator
+     * @return true if operator has the right tags
+     */
 	public boolean accepts(Operator o) {
         for (String tag : tags) {
             if (!o.hasTag(tag)) {
                 return false;
             }
         }
+
+        // you cant get an 6 star without TOP_OPERATOR tag
         if (o.getRarity() == 6 && !tags.contains("TOP_OPERATOR")) {
             return false;
         }

@@ -3,6 +3,9 @@ package nirusu.nirubot.util.arknight;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This class represents a operator in arknights.
+ */
 public class Operator implements Comparable<Operator> {
     public enum Qualification {
         STARTER,SENIOR_OPERATOR,TOP_OPERATOR, NONE
@@ -45,16 +48,20 @@ public class Operator implements Comparable<Operator> {
     }
 
 	public boolean hasTag(final String tag) {
-        String tmp = tag.toLowerCase();
-        if (qualification.name().toLowerCase().equals(tmp)) {
+
+        if (tag == null) {
+            return false;
+        }
+
+        if (tag.equals(qualification.name())) {
             return true;
-        } else if (position.name().toLowerCase().equals(tmp)) {
+        } else if (tag.equals(position.name())) {
             return true;
-        } else if (operatorClass.name().toLowerCase().equals(tmp)) {
+        } else if (tag.equals(operatorClass.name())) {
             return true;
         } else {
             for (Affix a : affixes) {
-                if (a.name().toLowerCase().equals(tmp)) {
+                if (tag.equals(a.name())) {
                     return true;
                 }
             }
@@ -67,22 +74,25 @@ public class Operator implements Comparable<Operator> {
     }
 
     static List<String> convertTags(final List<String> oldTags, final String total) {
+
         List<String> newTags = new ArrayList<>();
+        String newTotal = total.toUpperCase();
+
         for (String str : oldTags) {
-            newTags.add(str.replace("-", "_").toUpperCase());
+            newTags.add(str.toUpperCase().replace("-", "_").toUpperCase());
         }
 
-        if (total.toUpperCase().contains("TOP OPERATOR")) {
+        if (newTotal.contains("TOP OPERATOR")) {
             newTags.remove("TOP");
             newTags.remove("OPERATOR");
             newTags.add("TOP_OPERATOR");
         }
-        if (total.toUpperCase().contains("SENIOR OPERATOR")) {
+        if (newTotal.contains("SENIOR OPERATOR")) {
             newTags.remove("SENIOR");
             newTags.remove("OPERATOR");
             newTags.add("SENIOR_OPERATOR");
         }
-        if (total.toUpperCase().contains("CROWD CONTROL")) {
+        if (newTotal.contains("CROWD CONTROL")) {
             newTags.remove("CROWD");
             newTags.remove("CONTROL");
             newTags.add("CROWD_CONTROL");

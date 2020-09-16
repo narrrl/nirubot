@@ -47,8 +47,10 @@ public class Recruitment implements ICommand {
 
         for (TagCombination cb : all) {
 
+            // if the tag combination string is bigger than discord limit
             if (cb.toString().length() > 2000) {
 
+                // checks if the stringbuilder is not empty and sends the message to clear it
                 if (builder.length() != 0) {
                     emb.setDescription(builder.toString());
                     ctx.reply(emb.build());
@@ -57,35 +59,39 @@ public class Recruitment implements ICommand {
                     emb.setColor(Nirubot.getColor());
                 }
 
+                // creates a new stringbuilder tmp to get one big string
                 Iterator<String> i = cb.toStringAsList().iterator();
-                StringBuilder tmp = new StringBuilder();
 
-                if (i.hasNext()) {
-                    tmp.append(i.next());
-                }
-
+                // append string from the list
                 while (i.hasNext()) {
                     String n = i.next();
-                    if (tmp.length() + n.length() > 1800) {
-                        emb.setDescription(tmp.substring(0, tmp.length() - 1));
+
+                    // when the string is longer than the discord limit
+                    // send it and continue building the string
+                    if (builder.length() + n.length() > 2000) {
+                        emb.setDescription(builder.substring(0, builder.length() - 1));
                         ctx.reply(emb.build());
-                        tmp = new StringBuilder();
+                        builder = new StringBuilder();
                         emb = new EmbedBuilder();
                         emb.setColor(Nirubot.getColor());
                     }
-                    tmp.append(n).append(" ");
+                    builder.append(n).append(" ");
                 }
 
-                if (tmp.length() > 0) {
-                    emb.setDescription(tmp.substring(0, tmp.length() - 1));
+                // send rest of the string
+                if (builder.length() > 0) {
+                    emb.setDescription(builder.substring(0, builder.length() - 1));
                     ctx.reply(emb.build());
-                    tmp = new StringBuilder();
+                    builder = new StringBuilder();
                     emb = new EmbedBuilder();
                     emb.setColor(Nirubot.getColor());
 
                 }
 
             } else {
+
+                // string would be longer than discord limit
+                // send it and continue
                 if (builder.length() + cb.toString().length() > 1800) {
                     emb.setDescription(builder.toString());
                     ctx.reply(emb.build());
@@ -96,6 +102,8 @@ public class Recruitment implements ICommand {
                 builder.append(cb).append("\n\n");
             }
         }
+
+        // send rest of the string
         if (builder.length() > 0) {
             emb.setDescription(builder.toString());
             ctx.reply(emb.build());
