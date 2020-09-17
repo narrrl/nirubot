@@ -46,8 +46,7 @@ public class YTSearch implements ICommand {
 
         emb.setColor(Nirubot.getColor()).setTitle(video.getTitle(), "https://www.youtube.com/watch?v=" + video.getVideoId()).setThumbnail(video.getThumbnailUrl());
         try {
-            // TODO: bot is banned from youtube lol
-            // PlayerManager.getInstance().loadAndPlay(ctx, video.getVideoId());
+            PlayerManager.getInstance().loadAndPlay(ctx, video.getVideoId());
         } catch (IllegalArgumentException e) {
             return;
         }
@@ -83,7 +82,7 @@ public class YTSearch implements ICommand {
         search.setFields("items(id/kind,id/videoId,snippet/title,snippet/thumbnails/default/url)");
 
         search.setMaxResults(1L);
-        
+
         try {
             return search.execute();
         } catch (IOException e) {
@@ -101,5 +100,5 @@ public class YTSearch implements ICommand {
     public List<String> alias() {
         return Arrays.asList("yt", "yp");
     }
-    
+
 }
