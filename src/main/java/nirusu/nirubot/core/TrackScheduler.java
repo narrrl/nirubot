@@ -87,14 +87,14 @@ public class TrackScheduler extends AudioEventAdapter {
     }
 
     public boolean setRepeat() {
-        this.repeat = !repeat;
+        this.repeat = !this.repeat;
         return repeat;
     }
 
 	public AudioTrack remove(final int num) {
-        Iterator<AudioTrack> it = queue.iterator();
         int i = 1;
-        while (it.hasNext()) {
+        Iterator<AudioTrack> it = new ArrayList<>(queue).iterator();
+        while(it.hasNext()) {
             if (i == num) {
                 AudioTrack t = it.next();
                 queue.remove(t);
@@ -107,7 +107,7 @@ public class TrackScheduler extends AudioEventAdapter {
     }
     
     public AudioTrack remove(final String keyWord) {
-        Iterator<AudioTrack> it = queue.iterator();
+        Iterator<AudioTrack> it = new ArrayList<>(queue).iterator();
         while (it.hasNext()) {
             AudioTrack tr = it.next();
             if (tr.getInfo().title.toLowerCase().contains(keyWord.toLowerCase())) {
@@ -117,4 +117,8 @@ public class TrackScheduler extends AudioEventAdapter {
         }
         return null;
     }
+
+	public int size() {
+		return queue.size();
+	}
 }
