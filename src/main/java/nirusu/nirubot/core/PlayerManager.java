@@ -93,7 +93,11 @@ public class PlayerManager {
     }
 
     public synchronized void destroy(@Nonnull final Guild guild) {
-        musicManagers.get(guild.getIdLong()).getPlayer().destroy();
+        GuildMusicManager mg = musicManagers.get(guild.getIdLong());
+        // destroy if exists
+        if (mg != null) {
+            mg.getPlayer().destroy();
+        }
         musicManagers.remove(guild.getIdLong());
     }
 
@@ -142,4 +146,4 @@ public class PlayerManager {
     }
 
 }
-        
+

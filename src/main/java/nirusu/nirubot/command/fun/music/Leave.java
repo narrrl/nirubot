@@ -31,11 +31,6 @@ public final class Leave implements ICommand {
 
         PlayerManager manager = PlayerManager.getInstance();
 
-        if (manager.getGuildMusicManager(ctx.getGuild()).getPlayer().getPlayingTrack() == null) {
-            ctx.reply("Bot is not connected to any voice channel");
-            return;
-        }
-
         manager.destroy(ctx.getGuild());
         ctx.getGuild().getAudioManager().closeAudioConnection();
     }
