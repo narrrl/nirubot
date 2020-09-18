@@ -29,7 +29,7 @@ public class ServerInfo implements ICommand {
                 .setDescription("Name: " + g.getName() + "\nCreation Date: "
                         + g.getTimeCreated().format(DateTimeFormatter.ofPattern("MM-dd-yyyy HH:mm"))
                         + "\nMember Count: " + g.getMemberCount() + "\nRegion: " + g.getRegionRaw() + "\nOwner: "
-                        + g.getOwner().getAsMention())
+                        + g.getOwner().getAsMention() + "\nId: " + g.getId())
                 .setThumbnail(g.getIconUrl()).setColor(Nirubot.getColor());
         ctx.reply(emb.build());
 
@@ -45,5 +45,5 @@ public class ServerInfo implements ICommand {
         return Arrays.asList("server");
     }
 
-    
+
 }
