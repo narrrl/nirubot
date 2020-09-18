@@ -57,6 +57,7 @@ public class PlayerManager {
 
         musicManager.setVolume(gm.volume());
 
+
         playerManager.loadItemOrdered(musicManager, trackUrl, new AudioLoadResultHandler() {
             @Override
             public void trackLoaded(@Nonnull AudioTrack track) {
@@ -66,7 +67,6 @@ public class PlayerManager {
             @Override
             public void playlistLoaded(@Nonnull final AudioPlaylist playlist) {
                 ctx.reply("Playlist are deactivated! YouTube blocked my IP last time :(");
-                throw new IllegalArgumentException("No playlists :D");
             }
 
             @Override
