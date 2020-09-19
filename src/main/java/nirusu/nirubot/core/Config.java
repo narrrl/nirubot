@@ -8,10 +8,19 @@ import java.nio.file.Files;
 
 import nirusu.nirubot.Nirubot;
 
+/**
+ * This class handles all the configurations for the bot. The configurations
+ * get loaded on startup and writes all changes to the config.json.
+ * The json gets readed with {@link Gson}.
+ */
 public class Config {
     private final File configFile;
     private final Data data;
 
+    /**
+     * Stores all the attributes for the config.json. Is needed to parse
+     * with {@link Gson}
+     */
     public class Data {
         private String prefix;
         private String activity;
@@ -22,24 +31,38 @@ public class Config {
     }
 
     public Config() throws IOException {
-        configFile = new File(System.getProperty("user.dir").concat(File.separator + "config.json"));
-        data = Nirubot.getGson().fromJson(Files.readString(configFile.toPath(), StandardCharsets.UTF_8), Data.class);
+        // reades config file from root dir
+        configFile = new File(System.getProperty("user.dir")
+                .concat(File.separator + "config.json"));
+        // convert to data object with gson
+        data = Nirubot.getGson().fromJson(Files.readString(configFile.toPath(),
+                    StandardCharsets.UTF_8), Data.class);
     }
 
-    public String getActivityType() {
-        return data.activityType;
-    }
 
-    public synchronized void setActivityType(final String newType) {
-        data.activityType = newType;
-        write();
-    }
 
-    public String getPrefix() {
-        if (data.prefix == null) {
-            throw new IllegalArgumentException("Set prefix in config.json!");
+    /**
+     * Writes the {@link #data} to the config file with {@link Gson}. If the
+     * config couldn't be written the bot prints a warning message but will
+     * continue as nothing happened. That means the changed settings won't be
+     * saved after a bot restart and have to be setted again.
+     */
+    private synchronized void write() {
+        try {
+            FileWriter writer = new FileWriter(configFile);
+            String json = Nirubot.getGson().toJson(data);
+            writer.write(json);
+            writer.flush();
+            writer.close();
+        } catch (IOException e) {
+            Nirubot.warning("Couldn't write to config file");
         }
-        return data.prefix;
+
+    }
+
+    public synchronized void setActivity(final String newActivity) {
+        data.activity = newActivity;
+        write();
     }
 
     public synchronized void setPrefix(final String newPrefix) {
@@ -47,12 +70,8 @@ public class Config {
         write();
     }
 
-    public String getActivity() {
-        return data.activity;
-    }
-
-    public synchronized void setActivity(final String newActivity) {
-        data.activity = newActivity;
+    public synchronized void setActivityType(final String newType) {
+        data.activityType = newType;
         write();
     }
 
@@ -68,17 +87,23 @@ public class Config {
         return data.owners;
     }
 
-    private void write() {
-        try {
-            FileWriter writer = new FileWriter(configFile);
-            String json = Nirubot.getGson().toJson(data);
-            writer.write(json);
-            writer.flush();
-            writer.close();
-        } catch (IOException e) {
-            Nirubot.warning("Couldn't write to config file");
+    public String getActivity() {
+        return data.activity;
+    }
+
+    public String getActivityType() {
+        return data.activityType;
+    }
+
+
+    public String getPrefix() {
+
+        // gson parses prefix as null if its not set in the config.json
+        if (data.prefix == null) {
+            throw new IllegalArgumentException("Set prefix in config.json!");
         }
 
+        return data.prefix;
     }
 
 }

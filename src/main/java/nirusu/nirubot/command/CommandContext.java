@@ -34,11 +34,13 @@ public class CommandContext implements ICommandContext {
         return args;
     }
 
+    // ez shortcut to send an message async
     public synchronized void reply(final String message) {
         getChannel().sendTyping().queue(rep ->
             getChannel().sendMessage(message).queue());
     }
 
+    // ez shortcut to send an embed async
     public synchronized void reply(final MessageEmbed emb) {
         getChannel().sendTyping().queue(rep ->
             getChannel().sendMessage(emb).queue());

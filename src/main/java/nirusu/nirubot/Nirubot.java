@@ -149,7 +149,7 @@ public class Nirubot extends AbstractIdleService {
             System.exit(EXIT_CODE_ERROR);
         }
     }
-    
+
     public static boolean isOwner(long id) {
         for (long l : getConfig().getOwners()) {
             if (id == l) {
