@@ -66,18 +66,24 @@ public class PlayerManager {
 
             @Override
             public void playlistLoaded(@Nonnull final AudioPlaylist playlist) {
-                ctx.reply("Playlist are deactivated! YouTube blocked my IP last time :(");
+
+                if (playlist.getTracks().size() == 0) return;
+
+                for (AudioTrack t : playlist.getTracks()) {
+                    play(musicManager, t);
+                }
             }
 
             @Override
             public void noMatches() {
-                throw new IllegalArgumentException("Song not found!");
+                ctx.reply("No matches found!");
+                throw new IllegalArgumentException();
             }
 
             @Override
             public void loadFailed(@Nonnull FriendlyException exception) {
-                Nirubot.warning(exception.getMessage());
-                throw new IllegalArgumentException("Couldn't load song. Maybe google is down? lol");
+                Nirubot.warning("Couldn't load song!");
+                throw new IllegalArgumentException();
             }
         });
 
@@ -101,7 +107,7 @@ public class PlayerManager {
         musicManagers.remove(guild.getIdLong());
     }
 
-    public void next(@Nonnull final GuildMusicManager musicManager) {
+    public synchronized void next(@Nonnull final GuildMusicManager musicManager) {
         musicManager.getScheduler().nextTrack();
     }
 

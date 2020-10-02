@@ -26,7 +26,11 @@ public final class Play implements ICommand {
             return;
         }
 
-        PlayerManager.getInstance().loadAndPlay(ctx, ctx.getArgs().get(1));
+        try {
+            PlayerManager.getInstance().loadAndPlay(ctx, ctx.getArgs().get(1));
+        } catch (IllegalArgumentException e) {
+            return;
+        }
 
         EmbedBuilder emb = new EmbedBuilder();
         emb.setColor(Nirubot.getColor()).setTitle("Song/Playlist loaded!");
