@@ -102,3 +102,8 @@ logs
 guilds/
 /operators.json
 
+# better version of lavaplayer lol
+/src/main/java/com/sedmelluq/discord/lavaplayer/
+/src/main/resources/com/
+/src/main/resources/certificates/
+
