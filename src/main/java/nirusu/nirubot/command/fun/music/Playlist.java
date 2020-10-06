@@ -55,9 +55,9 @@ public class Playlist implements ICommand {
 
     @Override
     public MessageEmbed helpMessage(GuildManager gm) {
-        return ICommand.createHelp("'" + gm.prefix()
-        + "playlist save <name> ' saves current playing queue under a given name for the guild which can then be loaded anytime in the future with "
-        + gm.prefix() + "playlist load <name>", gm.prefix() + "\n An old playlist can be deleted with " + gm.prefix() + "playlist remove <name>", this);
+        return ICommand.createHelp(gm.prefix()
+        + "playlist save <name> saves current playing queue under a given name for the guild which can then be loaded anytime in the future with "
+        + gm.prefix() + "playlist load <name>," + gm.prefix() + "\n An old playlist can be deleted with " + gm.prefix() + "playlist remove <name>", gm.prefix(), this);
     }
 
 }

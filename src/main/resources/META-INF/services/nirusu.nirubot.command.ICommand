@@ -20,3 +20,4 @@ nirusu.nirubot.command.util.ChangeName
 nirusu.nirubot.command.util.ServerInfo
 nirusu.nirubot.command.fun.music.YTSearch
 nirusu.nirubot.command.util.Recruitment
+nirusu.nirubot.command.fun.music.Playlist
