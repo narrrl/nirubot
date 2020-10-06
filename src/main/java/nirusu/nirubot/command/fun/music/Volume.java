@@ -43,6 +43,10 @@ public final class Volume implements ICommand {
             return;
         }
 
+        if (volume < 0) return;
+
+        volume = volume > 100 ? 100 : volume;
+
         GuildManager.getManager(ctx.getGuild().getIdLong()).setVolume(volume);
         musicManager.setVolume(volume);
 
@@ -56,7 +60,7 @@ public final class Volume implements ICommand {
                 out.append("░");
             }
         }
-        out.append("◄\n" + volume + "%");
+        out.append("◄\n" + GuildManager.getManager(ctx.getGuild().getIdLong()).volume() + "%");
         EmbedBuilder emb = new EmbedBuilder();
         emb.setColor(Nirubot.getColor()).setDescription(out.toString());
         ctx.reply(emb.build());
