@@ -33,7 +33,7 @@ public final class List implements ICommand {
         }
 
         EmbedBuilder emb = new EmbedBuilder();
-        emb.setColor(Nirubot.getColor()).setThumbnail(ctx.getGuild().getIconUrl()).setTitle("Current Queue:");
+        emb.setColor(Nirubot.getColor()).setTitle("Current Queue:");
 
         ArrayList<AudioTrackInfo> tracks = musicManager.getScheduler().getAllTrackInfos();
 

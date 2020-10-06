@@ -33,7 +33,7 @@ public class TrackScheduler extends AudioEventAdapter {
      *
      * @param track The track to play or add to queue.
      */
-    public void queue(AudioTrack track) {
+    public synchronized void queue(AudioTrack track) {
         if (!player.startTrack(track, true)) {
             queue.offer(track);
         }
@@ -70,7 +70,7 @@ public class TrackScheduler extends AudioEventAdapter {
     /**
      * Start the next track, stopping the current one if it is playing.
      */
-    public void nextTrack() {
+    public synchronized void nextTrack() {
         player.startTrack(queue.poll(), false);
     }
 
