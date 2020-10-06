@@ -19,6 +19,7 @@ public class TrackScheduler extends AudioEventAdapter {
     private final AudioPlayer player;
     private final BlockingQueue<AudioTrack> queue;
     private boolean repeat = false;
+    private transient int failCounter = 0;
 
     /**
      * @param player The audio player this scheduler uses
@@ -76,6 +77,14 @@ public class TrackScheduler extends AudioEventAdapter {
 
     @Override
     public void onTrackEnd(AudioPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
+
+        if (endReason.equals(AudioTrackEndReason.LOAD_FAILED)) {
+            failCounter++;
+
+            if (failCounter > 10) {
+                repeat = false;
+            }
+        }
 
         if (repeat) {
             queue(track.makeClone());
