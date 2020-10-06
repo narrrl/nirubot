@@ -55,7 +55,7 @@ public final class Playing implements ICommand {
         minutes = track.getDuration() / 1000 / 60;
         seconds = track.getDuration() / 1000 % 60;
         progress.append(formatTime(minutes, seconds));
-        emb.setColor(Nirubot.getColor()).setThumbnail(ctx.getGuild().getIconUrl()).setTitle("Now playing:")
+        emb.setColor(Nirubot.getColor()).setTitle("Now playing:")
                 .setDescription("[" + info.title + "]" + "(" + uri + ")\n" + progress.toString());
         ctx.reply(emb.build());
 
