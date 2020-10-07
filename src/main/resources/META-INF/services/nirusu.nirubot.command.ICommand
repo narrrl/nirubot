@@ -21,3 +21,4 @@ nirusu.nirubot.command.util.ServerInfo
 nirusu.nirubot.command.fun.music.YTSearch
 nirusu.nirubot.command.util.Recruitment
 nirusu.nirubot.command.fun.music.Playlist
+nirusu.nirubot.command.util.GameRequest
