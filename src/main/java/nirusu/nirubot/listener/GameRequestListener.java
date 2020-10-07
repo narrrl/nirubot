@@ -7,6 +7,7 @@ import java.util.List;
 
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
+import nirusu.nirubot.Nirubot;
 import nirusu.nirubot.util.GameRequestManager;
 
 public class GameRequestListener {
@@ -52,10 +53,10 @@ public class GameRequestListener {
                 GameRequestListener.getInstance().cancel(ch, user);
             }
         },
+        // null object
         INVALID {
             @Override
             public void run(List<User> users, TextChannel ch, User user) {
-                throw new IllegalAccessError("The fuck?");
             }
         };
 
@@ -85,31 +86,38 @@ public class GameRequestListener {
     private GameRequestListener() {
         managers = new ArrayList<>();
 
+        // create thread to check every minute if a request timelimit is reached
         Thread t = new Thread() {
             @Override
             public void run() {
                 try {
                     while (true) {
                         Date d = Calendar.getInstance().getTime();
-                        ArrayList<GameRequestManager> ls = new ArrayList<>();
-                        for (GameRequestManager m : managers) {
+                        // copy managers
+                        ArrayList<GameRequestManager> ls = new ArrayList<>(managers);
+                        for (GameRequestManager m : ls) {
                             if (m.timeReached(d)) {
+                                // send notification
                                 m.send();
-                                ls.add(m);
+                                // remove from the managers list
+                                managers.remove(m);
                             }
                         }
-                        ls.forEach(managers::remove);
+                        // sleep 60s
                         sleep(60000);
                     }
                 } catch (InterruptedException e) {
+                    Nirubot.warning(e.getMessage());
                     run();
                 }
             }
         };
+
         t.start();
     }
 
     public void addManager(final GameRequestManager mg) {
+        // check if user already added a request in this channel
         if (managers.contains(mg)) {
             throw new IllegalArgumentException("You can't create two request in one channel");
         }
@@ -117,7 +125,9 @@ public class GameRequestListener {
     }
 
 	public GameRequestManager setUser(TextChannel channel, User user, boolean b, User author) {
+        // cant be null
         GameRequestManager m = getManager(channel, author);
+        // if user is not in the request nothing happens
         m.setUser(b, user);
         channel.sendMessage(m.toEmb()).queue();;
         return m;
@@ -125,6 +135,7 @@ public class GameRequestListener {
 
 	public GameRequestManager getManager(TextChannel channel, User author) {
         for (GameRequestManager m : managers) {
+            // identified by author and channel of the request
             if (channel.equals(m.getChannel()) && m.getAuthor().getIdLong() == author.getIdLong()) {
                 return m;
             }
@@ -133,6 +144,7 @@ public class GameRequestListener {
 	}
 
 	public GameRequestManager cancel(TextChannel channel, User author) {
+        // cant be null
         GameRequestManager rq = getManager(channel, author);
         managers.remove(rq);
         channel.sendMessage("GameRequest deleted").queue();;
