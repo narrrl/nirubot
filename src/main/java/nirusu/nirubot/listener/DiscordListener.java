@@ -20,6 +20,8 @@ import nirusu.nirubot.command.ICommand;
 import nirusu.nirubot.core.Config;
 import nirusu.nirubot.core.DiscordUtil;
 import nirusu.nirubot.core.GuildManager;
+import nirusu.nirubot.core.GuildMusicManager;
+import nirusu.nirubot.core.PlayerManager;
 import nirusu.nirubot.listener.GameRequestListener.RequestCMD;
 
 public class DiscordListener extends ListenerAdapter implements NiruListener {
@@ -91,6 +93,9 @@ public class DiscordListener extends ListenerAdapter implements NiruListener {
 
     @Override
 	public void shutdown() {
+        for (GuildMusicManager m : PlayerManager.getInstance().getAllManager()) {
+            m.getPlayer().destroy();
+        }
         for (JDA j : shardManager.getShards()) {
             j.shutdown();
         }

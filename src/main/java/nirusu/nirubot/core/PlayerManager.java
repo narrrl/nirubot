@@ -16,7 +16,9 @@ import net.dv8tion.jda.api.entities.Guild;
 import javax.annotation.Nonnull;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -150,6 +152,10 @@ public class PlayerManager {
         }
         return uris;
     }
+
+	public Collection<GuildMusicManager> getAllManager() {
+		return musicManagers.values();
+	}
 
 }
 
