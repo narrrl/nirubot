@@ -148,6 +148,6 @@ public class GameRequestManager implements Comparable<GameRequestManager> {
 
         GameRequestManager mg = (GameRequestManager) o;
 
-        return mg.compareTo(this) != 0;
+        return mg.compareTo(this) == 0;
     }
 }
