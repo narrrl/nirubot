@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
@@ -94,7 +95,7 @@ public class GameRequestListener {
                     while (true) {
                         Date d = Calendar.getInstance().getTime();
                         // copy managers
-                        ArrayList<GameRequestManager> ls = new ArrayList<>(managers);
+                        List<GameRequestManager> ls = getManagers();
                         for (GameRequestManager m : ls) {
                             if (m.timeReached(d)) {
                                 // send notification
@@ -114,6 +115,10 @@ public class GameRequestListener {
         };
 
         t.start();
+    }
+
+    private synchronized List<GameRequestManager> getManagers() {
+        return managers.stream().collect(Collectors.toList());
     }
 
     public void addManager(final GameRequestManager mg) {
