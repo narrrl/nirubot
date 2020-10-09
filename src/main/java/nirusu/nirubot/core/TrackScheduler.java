@@ -16,6 +16,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
  * This class schedules tracks for the audio player. It contains the queue of tracks.
  */
 public class TrackScheduler extends AudioEventAdapter {
+    private static final int FAIL_LIMIT = 3;
     private final AudioPlayer player;
     private final BlockingQueue<AudioTrack> queue;
     private boolean repeat = false;
@@ -81,7 +82,7 @@ public class TrackScheduler extends AudioEventAdapter {
         if (endReason.equals(AudioTrackEndReason.LOAD_FAILED)) {
             failCounter++;
 
-            if (failCounter > 10) {
+            if (failCounter > FAIL_LIMIT) {
                 repeat = false;
             }
         }
