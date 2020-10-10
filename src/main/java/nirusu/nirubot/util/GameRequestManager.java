@@ -136,6 +136,8 @@ public class GameRequestManager {
     public boolean equals(Object o) {
         if (o == null) return false;
 
+        if (o == this) return true;
+
         if (!o.getClass().equals(this.getClass())) return false;
 
         GameRequestManager mg = (GameRequestManager) o;
