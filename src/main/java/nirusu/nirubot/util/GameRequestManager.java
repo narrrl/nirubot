@@ -109,7 +109,9 @@ public class GameRequestManager {
         String prefix = GuildManager.getManager(channel.getGuild().getIdLong()).prefix();
         emb.setColor(Nirubot.getColor()).setTitle(game + " at " + dateFormat.format(date)).setDescription(us.substring(0, us.length() - 1) 
         + "\nType **" + prefix + "yes " + author.getAsMention() + "** or **" + prefix + "no " + author.getAsMention() 
-        + "** to verify\nYou can check the status with **" + prefix + "status " + author.getAsMention() + "**\nIf you want to cancel the request type **" + prefix + "cancel**");
+        + "** to verify\nYou can check the status with **" + prefix + "status " + author.getAsMention() 
+        + "**\nIf you want to cancel the request type **" + prefix + "cancel**\nAnd if you didn't get mention but you want to invite yourself type **" 
+        + prefix + "metoo " + author.getAsMention() + "**");
         return emb.build();
     }
 
@@ -144,4 +146,13 @@ public class GameRequestManager {
 
         return this.channel.equals(mg.channel) && this.author.equals(mg.author);
     }
+
+	public void addUser(User user) {
+        RequestedUser u = new RequestedUser(user);
+        u.isDown = true;
+
+        if (users.contains(u)) throw new IllegalArgumentException("You are already part of the request");
+
+        users.add(u);
+	}
 }

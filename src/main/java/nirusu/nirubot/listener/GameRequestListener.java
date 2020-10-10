@@ -37,6 +37,19 @@ public class GameRequestListener implements NiruListener {
                 GameRequestListener.getInstance().setUser(ch, user, false, users.get(0));
             }
         },
+        ME_TOO {
+            @Override
+            public void run(List<User> users, TextChannel ch, User user) {
+                if (users.size() != 1) {
+                    throw new IllegalArgumentException("You have to mention the author of the request!");
+                }
+
+                GameRequestManager mg = GameRequestListener.getInstance().addUser(ch, user, users.get(0));
+
+                mg.getChannel().sendMessage(mg.toEmb()).queue();
+            }
+            
+        },
         STATUS {
             @Override
             public void run(List<User> users, TextChannel ch, User user) {
@@ -68,7 +81,7 @@ public class GameRequestListener implements NiruListener {
 
         public static RequestCMD getRequestCMD(final String cmd) {
             for (RequestCMD c : RequestCMD.values()) {
-                if (cmd.toUpperCase().equals(c.name())) {
+                if (c.name().replace("_", "").equals(cmd.toUpperCase())) {
                     return c;
                 }
             }
@@ -125,6 +138,12 @@ public class GameRequestListener implements NiruListener {
         return listener;
     }
 
+    public GameRequestManager addUser(TextChannel channel, User user, User author) {
+        GameRequestManager m = getManager(channel, author);
+        m.addUser(user);
+        return m;
+    }
+
     private GameRequestListener() {
         managers = new ArrayList<>();
 
@@ -171,7 +190,7 @@ public class GameRequestListener implements NiruListener {
         // cant be null
         GameRequestManager rq = getManager(channel, author);
         managers.remove(rq);
-        channel.sendMessage("GameRequest deleted").queue();;
+        channel.sendMessage("GameRequest deleted").queue();
         return rq;
 	}
 
