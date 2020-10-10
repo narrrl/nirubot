@@ -14,7 +14,7 @@ import net.dv8tion.jda.api.entities.User;
 import nirusu.nirubot.Nirubot;
 import nirusu.nirubot.core.GuildManager;
 
-public class GameRequestManager implements Comparable<GameRequestManager> {
+public class GameRequestManager {
 
     class RequestedUser {
         private User user;
@@ -133,14 +133,6 @@ public class GameRequestManager implements Comparable<GameRequestManager> {
 	}
 
     @Override
-    public int compareTo(GameRequestManager o) {
-        if (o == null) {
-            return -1;
-        }
-        return (this.author.getId() + this.channel.getId().hashCode()).hashCode() - (o.author.getId() + o.channel.getId()).hashCode();
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (o == null) return false;
 
@@ -148,6 +140,6 @@ public class GameRequestManager implements Comparable<GameRequestManager> {
 
         GameRequestManager mg = (GameRequestManager) o;
 
-        return mg.compareTo(this) == 0;
+        return this.channel.equals(mg.channel) && this.author.equals(mg.author);
     }
 }

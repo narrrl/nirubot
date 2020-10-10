@@ -76,11 +76,10 @@ public class GameRequestListener {
     private static GameRequestListener listener;
     private ArrayList<GameRequestManager> managers;
 
-    public static GameRequestListener getInstance() {
+    public static synchronized GameRequestListener getInstance() {
         if (listener == null) {
             listener = new GameRequestListener();
         }
-
         return listener;
     }
 
@@ -91,25 +90,24 @@ public class GameRequestListener {
         Thread t = new Thread() {
             @Override
             public void run() {
-                try {
-                    while (true) {
-                        Date d = Calendar.getInstance().getTime();
-                        // copy managers
-                        List<GameRequestManager> ls = getManagers();
-                        for (GameRequestManager m : ls) {
-                            if (m.timeReached(d)) {
-                                // send notification
-                                m.send();
-                                // remove from the managers list
-                                managers.remove(m);
-                            }
+                while (true) {
+                    Date d = Calendar.getInstance().getTime();
+                    // copy managers
+                    List<GameRequestManager> ls = getManagers();
+                    for (GameRequestManager m : ls) {
+                        if (m.timeReached(d)) {
+                            // send notification
+                            m.send();
+                            // remove from the managers list
+                            managers.remove(m);
                         }
-                        // sleep 60s
-                        sleep(60000);
                     }
-                } catch (InterruptedException e) {
-                    Nirubot.warning(e.getMessage());
-                    run();
+                    // sleep 60s
+                    try {
+                        sleep(60000);
+                    } catch (InterruptedException e) {
+                        Nirubot.warning(e.getMessage());
+                    }
                 }
             }
         };
