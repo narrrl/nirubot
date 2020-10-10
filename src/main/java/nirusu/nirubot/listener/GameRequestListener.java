@@ -11,7 +11,10 @@ import net.dv8tion.jda.api.entities.User;
 import nirusu.nirubot.Nirubot;
 import nirusu.nirubot.util.GameRequestManager;
 
-public class GameRequestListener {
+/**
+ * This class checks for GameRequest-Events every minute.
+ */
+public class GameRequestListener implements NiruListener {
 
     public enum RequestCMD {
         YES {
@@ -73,8 +76,47 @@ public class GameRequestListener {
         }
     }
 
+    class EventThread extends Thread {
+
+        private boolean isRunning;
+
+        EventThread() {
+            super();
+            isRunning = true;
+        }
+
+        @Override
+        public void run() {
+            while (isRunning) {
+                Date d = Calendar.getInstance().getTime();
+                // copy managers
+                List<GameRequestManager> ls = getManagers();
+                for (GameRequestManager m : ls) {
+                    if (m.timeReached(d)) {
+                        // send notification
+                        m.send();
+                        // remove from the managers list
+                        managers.remove(m);
+                    }
+                }
+                // sleep 60s
+                try {
+                    sleep(60000);
+                } catch (InterruptedException e) {
+                    Nirubot.warning(e.getMessage());
+                }
+            }
+        }
+
+        public void shutdown() {
+            this.isRunning = false;
+        }
+
+    }
+
     private static GameRequestListener listener;
     private ArrayList<GameRequestManager> managers;
+    private EventThread t;
 
     public static synchronized GameRequestListener getInstance() {
         if (listener == null) {
@@ -87,30 +129,9 @@ public class GameRequestListener {
         managers = new ArrayList<>();
 
         // create thread to check every minute if a request timelimit is reached
-        Thread t = new Thread() {
-            @Override
-            public void run() {
-                while (true) {
-                    Date d = Calendar.getInstance().getTime();
-                    // copy managers
-                    List<GameRequestManager> ls = getManagers();
-                    for (GameRequestManager m : ls) {
-                        if (m.timeReached(d)) {
-                            // send notification
-                            m.send();
-                            // remove from the managers list
-                            managers.remove(m);
-                        }
-                    }
-                    // sleep 60s
-                    try {
-                        sleep(60000);
-                    } catch (InterruptedException e) {
-                        Nirubot.warning(e.getMessage());
-                    }
-                }
-            }
-        };
+
+
+        t = new EventThread();
 
         t.start();
     }
@@ -153,4 +174,10 @@ public class GameRequestListener {
         channel.sendMessage("GameRequest deleted").queue();;
         return rq;
 	}
+
+    @Override
+    public void shutdown() {
+        t.shutdown();
+        Nirubot.info("GameRequest is shutting down");
+    }
 }

@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 
 import nirusu.nirubot.core.Config;
 import nirusu.nirubot.listener.DiscordListener;
+import nirusu.nirubot.listener.GameRequestListener;
 import nirusu.nirubot.listener.NiruListener;
 
 public class Nirubot extends AbstractIdleService {
@@ -121,6 +122,7 @@ public class Nirubot extends AbstractIdleService {
     protected void startUp() throws Exception {
         // command handling etc for discord
         listeners.add(new DiscordListener());
+        listeners.add(GameRequestListener.getInstance());
     }
 
     @Override
