@@ -43,9 +43,10 @@ public class Mock implements ICommand {
         }
         Iterator<Byte> it = nums.iterator();
         builder = new StringBuilder();
-        for (char ch : message.toCharArray()) {
+        char[] ch = message.toCharArray();
+        for (int i = 0; i < message.length() && it.hasNext(); i++) {
             byte num = it.next();
-            char c = num == 0 ? Character.toUpperCase(ch) : Character.toLowerCase(ch);
+            char c = num == 0 ? Character.toUpperCase(ch[i]) : Character.toLowerCase(ch[i]);
             builder.append(c);
         }
 
