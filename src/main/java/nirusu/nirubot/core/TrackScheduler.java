@@ -87,7 +87,7 @@ public class TrackScheduler extends AudioEventAdapter {
             }
         }
 
-        if (repeat) {
+        if (!endReason.equals(AudioTrackEndReason.LOAD_FAILED) && repeat) {
             queue(track.makeClone());
         }
 
