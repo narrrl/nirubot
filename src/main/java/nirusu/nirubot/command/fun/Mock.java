@@ -1,6 +1,9 @@
 package nirusu.nirubot.command.fun;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
@@ -8,6 +11,7 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 import nirusu.nirubot.command.CommandContext;
 import nirusu.nirubot.command.ICommand;
 import nirusu.nirubot.core.GuildManager;
+import nirusu.nirubot.util.RandomHttpClient;
 
 public class Mock implements ICommand {
 
@@ -30,10 +34,17 @@ public class Mock implements ICommand {
 
         String message = builder.substring(0, builder.length() - 1);
 
-        Random rand = new Random();
+        List<Byte> nums;
+        try {
+            nums = RandomHttpClient.getRandomBit(message.length());
+        } catch (IOException e) {
+            ctx.reply(e.getMessage());
+            return;
+        }
+        Iterator<Byte> it = nums.iterator();
         builder = new StringBuilder();
         for (char ch : message.toCharArray()) {
-            int num = rand.nextInt(2);
+            byte num = it.next();
             char c = num == 0 ? Character.toUpperCase(ch) : Character.toLowerCase(ch);
             builder.append(c);
         }

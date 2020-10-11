@@ -79,6 +79,7 @@ public class TrackScheduler extends AudioEventAdapter {
     @Override
     public void onTrackEnd(AudioPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
 
+        // fail counter to prevent fail loops with repeat
         if (endReason.equals(AudioTrackEndReason.LOAD_FAILED)) {
             failCounter++;
 
@@ -87,10 +88,12 @@ public class TrackScheduler extends AudioEventAdapter {
             }
         }
 
+        // requeue song if it played normally
         if (!endReason.equals(AudioTrackEndReason.LOAD_FAILED) && repeat) {
             queue(track.makeClone());
         }
 
+        // start next track
         if (endReason.mayStartNext) {
             nextTrack();
         }

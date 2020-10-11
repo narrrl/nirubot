@@ -83,6 +83,7 @@ public class PlayerManager {
 
             @Override
             public void loadFailed(@Nonnull FriendlyException exception) {
+                ctx.reply("Couldn't load song");
                 Nirubot.warning("Couldn't load song!");
                 throw new IllegalArgumentException();
             }
