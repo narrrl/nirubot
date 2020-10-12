@@ -9,10 +9,8 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 public class ZipMaker {
-    public static File compressFiles(Map<String, File> files, final String name) 
+    public static File compressFiles(Map<String, File> files, final String name, final File tmpDir) 
         throws IOException {        
-        
-        File tmpDir = new File(System.getProperty("user.dir").concat(File.separator).concat("tmp"));
 
         tmpDir.mkdir();
 

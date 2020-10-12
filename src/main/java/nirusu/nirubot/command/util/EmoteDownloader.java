@@ -33,7 +33,11 @@ public class EmoteDownloader implements ICommand {
             return;
         }
 
-        File tmpDir = new File(System.getProperty("user.dir").concat(File.separator).concat("tmp"));
+        File tmp = new File(System.getProperty("user.dir").concat(File.separator).concat("tmp"));
+
+        tmp.mkdir();
+
+        File tmpDir = new File(tmp.getAbsolutePath().concat(File.separator) + ctx.getGuild().getIdLong());
 
         tmpDir.mkdir();
 
@@ -66,7 +70,7 @@ public class EmoteDownloader implements ICommand {
 
         try {
             if (totalSizeOf(files.values()) <= ctx.getGuild().getMaxFileSize())
-                zips.add(ZipMaker.compressFiles(files,"emotes.zip"));
+                zips.add(ZipMaker.compressFiles(files,"emotes.zip", tmpDir));
             else {
                 Map<String, File> tmpList = new HashMap<>();
                 int it = 0;
@@ -74,7 +78,7 @@ public class EmoteDownloader implements ICommand {
                     File f = files.get(key);
 
                     if (totalSizeOf(tmpList.values()) + f.length() > ctx.getGuild().getMaxFileSize()) {
-                        zips.add(ZipMaker.compressFiles(tmpList, String.format("emotes%d.zip", it)));
+                        zips.add(ZipMaker.compressFiles(tmpList, String.format("emotes%d.zip", it), tmpDir));
                         tmpList = new HashMap<>();
                         it++;
                     }
@@ -83,21 +87,17 @@ public class EmoteDownloader implements ICommand {
                 }
 
                 if(!tmpList.isEmpty()) {
-                    zips.add(ZipMaker.compressFiles(tmpList, String.format("emotes%d.zip", it)));
+                    zips.add(ZipMaker.compressFiles(tmpList, String.format("emotes%d.zip", it), tmpDir));
                 }
 
             }
         } catch (IOException e) {
             ctx.reply(e.getMessage());
-            for (File f : files.values()) {
-                f.delete();
-            }
+            files.values().forEach(File::delete);
             return;
         }
 
-        for (File f : files.values()) {
-            f.delete();
-        }
+        files.values().forEach(File::delete);
 
         try {
             for (File zip : zips) {
