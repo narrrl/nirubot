@@ -33,6 +33,8 @@ public class EmoteDownloader implements ICommand {
             return;
         }
 
+        ctx.reply("Started downloadig emotes!");
+
         HashMap<String, File> files = new HashMap<>();
         int i = 1;
         for (Emote e : ctx.getGuild().getEmotes()) {
@@ -57,6 +59,8 @@ public class EmoteDownloader implements ICommand {
         }
 
         List<File> zips = new ArrayList<>();
+
+        ctx.reply("Started compressing files!");
 
         try {
             if (totalSizeOf(files.values()) <= 8000000)
@@ -93,6 +97,7 @@ public class EmoteDownloader implements ICommand {
             f.delete();
         }
 
+        ctx.reply("Started uploading!");
         try {
             for (File zip : zips) {
                 ctx.getEvent().getChannel().sendFile(zip, "emotes.zip").queue();
