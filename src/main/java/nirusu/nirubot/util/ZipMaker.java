@@ -9,10 +9,14 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 public class ZipMaker {
-    public static File compressFiles(Map<String, File> files, int num) 
-        throws IOException {
+    public static File compressFiles(Map<String, File> files, final String name) 
+        throws IOException {        
+        
+        File tmpDir = new File(System.getProperty("user.dir").concat(File.separator).concat("tmp"));
 
-        File out = new File(String.format("emotes%d.zip", num));
+        tmpDir.mkdir();
+
+        File out = new File(tmpDir.getAbsolutePath() + File.separator + name);
 
         FileOutputStream fos = new FileOutputStream(out);
 
@@ -32,12 +36,6 @@ public class ZipMaker {
                 zipOut.write(bytes, 0, length);
             }
             fis.close();
-
-            if (out.length() + f.length() > 8000000) {
-                zipOut.close();
-                fos.close();
-                return out;
-            }
         }
 
         zipOut.close();

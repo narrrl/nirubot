@@ -33,7 +33,11 @@ public class EmoteDownloader implements ICommand {
             return;
         }
 
-        ctx.reply("Started downloadig emotes!");
+        File tmpDir = new File(System.getProperty("user.dir").concat(File.separator).concat("tmp"));
+
+        tmpDir.mkdir();
+
+        ctx.reply("Started downloadig and compressing emotes! Might take some time");
 
         HashMap<String, File> files = new HashMap<>();
         int i = 1;
@@ -41,7 +45,7 @@ public class EmoteDownloader implements ICommand {
             try {
                 InputStream in = new URL(e.getImageUrl()).openStream();
                 String[] arr = e.getImageUrl().split("/");
-                URI uri = new URI(System.getProperty("user.dir") + File.separator + arr[arr.length - 1]);
+                URI uri = new URI(tmpDir.getAbsolutePath() + File.separator + arr[arr.length - 1]);
                 File f = new File(uri.getPath());
                 Files.copy(in, Paths.get(uri.getPath()), StandardCopyOption.REPLACE_EXISTING);
                 String key = e.getName();
@@ -60,19 +64,17 @@ public class EmoteDownloader implements ICommand {
 
         List<File> zips = new ArrayList<>();
 
-        ctx.reply("Started compressing files!");
-
         try {
-            if (totalSizeOf(files.values()) <= 8000000)
-                zips.add(ZipMaker.compressFiles(files, 0));
+            if (totalSizeOf(files.values()) <= ctx.getGuild().getMaxFileSize())
+                zips.add(ZipMaker.compressFiles(files,"emotes.zip"));
             else {
                 Map<String, File> tmpList = new HashMap<>();
                 int it = 0;
                 for (String key : files.keySet()) {
                     File f = files.get(key);
 
-                    if (totalSizeOf(tmpList.values()) + f.length() > 8000000) {
-                        zips.add(ZipMaker.compressFiles(tmpList, it));
+                    if (totalSizeOf(tmpList.values()) + f.length() > ctx.getGuild().getMaxFileSize()) {
+                        zips.add(ZipMaker.compressFiles(tmpList, String.format("emotes%d.zip", it)));
                         tmpList = new HashMap<>();
                         it++;
                     }
@@ -81,7 +83,7 @@ public class EmoteDownloader implements ICommand {
                 }
 
                 if(!tmpList.isEmpty()) {
-                    zips.add(ZipMaker.compressFiles(tmpList, it));
+                    zips.add(ZipMaker.compressFiles(tmpList, String.format("emotes%d.zip", it)));
                 }
 
             }
