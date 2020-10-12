@@ -107,3 +107,6 @@ guilds/
 /src/main/resources/com/
 /src/main/resources/certificates/
 
+#tmp dir
+/tmp/
+
