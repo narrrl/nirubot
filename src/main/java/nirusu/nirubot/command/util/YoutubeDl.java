@@ -97,12 +97,14 @@ public class YoutubeDl implements ICommand {
             ctx.reply("Provide a link to download!");
         }
 
+        // stores in /tmp/youtube-dl/{userid}
         File tmpDir = new File(
-                Nirubot.getTmpDirectory().getAbsolutePath().concat(File.separator) + ctx.getGuild().getIdLong()
-                        + File.separator + "youtube-dl" + File.separator + ctx.getAuthor().getId());
+                Nirubot.getTmpDirectory().getAbsolutePath().concat(File.separator) 
+                + "youtube-dl" + File.separator + ctx.getAuthor().getId());
 
         tmpDir.mkdirs();
 
+        // if there are files already -> user is already converting something
         if (tmpDir.listFiles().length != 0) {
             ctx.reply("You can only request one download at a time (per server lol)");
             return;
@@ -120,6 +122,7 @@ public class YoutubeDl implements ICommand {
 
         // specific options by user
         for (String arg : args) {
+            // if the given arg matches the regex for an option
             if (YoutubeDl.OPTION_REGEX.matcher(arg).matches()) {
                 try {
                     // set option
@@ -134,10 +137,12 @@ public class YoutubeDl implements ICommand {
 
         ctx.reply("Started, can take some times if the playlist is big or if you download videos in general");
 
-        // dumb work to another thread, that the bot wont get blockt
+        // dumb work to a new thread that the bot wont get blocked
         new Thread() {
             @Override
             public void run() {
+
+                // download files
                 try {
                     YoutubeDL.execute(req);
                 } catch (YoutubeDLException e) {
@@ -148,8 +153,10 @@ public class YoutubeDl implements ICommand {
                 if (tmpDir.listFiles().length > 5)
                     asZip = true;
 
+                // hashmap for zip
                 HashMap<String, File> files = new HashMap<>();
 
+                // iterate through all the downloaded files
                 for (File f : tmpDir.listFiles()) {
                     if (!asZip && f.length() <= ctx.getGuild().getMaxFileSize()) {
                         // send files directly
@@ -167,9 +174,11 @@ public class YoutubeDl implements ICommand {
                         // make zip
                         zip = ZipMaker.compressFiles(files, ctx.getAuthor().getId() + ".zip", Nirubot.getWebDir());
 
+                        // if zip is not too big send directly
                         if (zip.length() <= ctx.getGuild().getMaxFileSize()) {
                             ctx.getChannel().sendFile(zip).queue();
-                        } else if (!asZip) {
+                        } else if (!asZip) { 
+                            // if user didnt want a zip but got one
                             ctx.reply(String.format("Some files were to big for discord, you can download them here: %s%s %s",
                                     Nirubot.getHost() + Nirubot.getTmpDirPath(), zip.getName(), ctx.getAuthor().getAsMention()));
                         } else {
@@ -177,6 +186,7 @@ public class YoutubeDl implements ICommand {
                                     Nirubot.getHost() + Nirubot.getTmpDirPath(), zip.getName(),
                                     ctx.getAuthor().getAsMention()));
                         }
+
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -185,7 +195,7 @@ public class YoutubeDl implements ICommand {
                     f.delete();
                 }
             }
-        }.start();
+        }.start(); // there he goes
     }
 
     @Override
