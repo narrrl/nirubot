@@ -198,4 +198,12 @@ public class Nirubot extends AbstractIdleService {
         }
         return yt;
     }
+
+	public static String getHost() {
+		return getConfig().getHost();
+	}
+
+	public static String getTmpDirPath() {
+		return getConfig().getTmpDirPath();
+	}
 }

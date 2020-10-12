@@ -27,6 +27,8 @@ public class Config {
         private String activityType;
         private String token;
         private String googleApiToken;
+        private String host;
+        private String tmpDirPath;
         private long[] owners;
     }
 
@@ -105,5 +107,19 @@ public class Config {
 
         return data.prefix;
     }
+
+
+
+	public String getTmpDirPath() {
+        if (data.tmpDirPath == null) throw new IllegalArgumentException("No temp dir set in config!");
+		return this.data.tmpDirPath;
+	}
+
+
+
+	public String getHost() {
+        if (data.host == null) throw new IllegalArgumentException("No hostname declared in config!");
+		return this.data.host;
+	}
 
 }

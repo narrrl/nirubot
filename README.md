@@ -15,11 +15,13 @@ The config shoulde look something like this:
 ```json
 {
   "prefix":"!",
-  "activity":"!help",
+  "activity":"!help / !h",
   "activityType":"listening",
   "token":"YOUR BOT TOKEN",
   "owners":[208979474988007425, 208981656999034890],
-  "googleApiToken":"YOUR_GOOGLE_API_TOKEN"
+  "googleApiToken":"YOUR_GOOGLE_API_TOKEN",
+  "host": "https://nirusu99.de",
+  "tmpDirPath": "/discord/tmp/"
 }
 ```
 
@@ -38,6 +40,8 @@ bot-directory
     └── guilds
         └── GUILD_ID_LONG.json
         └── ...
+    └── tmp
+        └── ... tmp files
 ```
 
 ## Contact
