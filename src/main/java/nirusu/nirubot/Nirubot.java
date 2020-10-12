@@ -1,6 +1,7 @@
 package nirusu.nirubot;
 
 import java.awt.Color;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -28,6 +29,8 @@ public class Nirubot extends AbstractIdleService {
     private static Gson gson;
     private static Config conf;
     private static YouTube yt;
+    private static File tmpDir;
+    private static File tmpWebDir;
     private ArrayList<NiruListener> listeners;
 
     public static Nirubot getNirubot() {
@@ -55,9 +58,29 @@ public class Nirubot extends AbstractIdleService {
         return conf;
     }
 
+    public static File getTmpDirectory() {
+
+        if (tmpDir == null) {
+            tmpDir = new File(System.getProperty("user.dir").concat(File.separator).concat("tmp"));
+            tmpDir.mkdir();
+        }
+
+        return tmpDir;
+    }
+
+    public static File getWebDir() {
+
+        if (tmpWebDir == null) {
+            tmpWebDir = new File("/var/www/html/discord/tmp");
+        }
+
+        return tmpWebDir;
+    }
+
     public Nirubot() {
         super();
         listeners = new ArrayList<>();
+
     }
 
 
@@ -88,7 +111,7 @@ public class Nirubot extends AbstractIdleService {
 
             @Override
             public void failed(State from, Throwable failure) {
-                error("Nirubot couldn't start due to a critical error during {} and will now terminate", from);
+                error("Nirubot couldn't start due to a critical error during {} from and will now terminate", from, failure);
                 System.exit(EXIT_CODE_ERROR);
             }
 
@@ -112,10 +135,14 @@ public class Nirubot extends AbstractIdleService {
 
     public static void warning(final String message) {
         LOGGER.warn(message);
-    }
-
+    }    
+    
     public static void error(final String message, Object from) {
         LOGGER.error(message, from);
+    }
+
+    public static void error(final String message, Object from, Object cause) {
+        LOGGER.error(message, from, cause);
     }
 
     @Override

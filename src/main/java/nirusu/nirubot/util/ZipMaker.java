@@ -24,7 +24,9 @@ public class ZipMaker {
             File f = files.get(key);
             FileInputStream fis = new FileInputStream(f);
 
-            ZipEntry zipEntry = new ZipEntry(key + "." + f.getName().split("\\.", -1)[1]);
+            String[] arr = f.getName().split("\\.", -1);
+            String fileEnding = key.endsWith(arr[arr.length - 1]) ? key : key + arr[arr.length -1];
+            ZipEntry zipEntry = new ZipEntry(fileEnding);
 
             zipOut.putNextEntry(zipEntry);
 
