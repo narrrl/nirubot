@@ -11,8 +11,6 @@ import nirusu.nirubot.core.PlayerManager;
 
 public class Playlist implements ICommand {
 
-    //TODO proper implementation
-
     @Override
     public void execute(CommandContext ctx) {
         List<String> args = ctx.getArgs();
