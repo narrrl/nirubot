@@ -93,11 +93,12 @@ public class EmoteDownloader implements ICommand {
             return;
         }
 
+        ctx.reply("Started uploading!");
+
         for (File f : files.values()) {
             f.delete();
         }
 
-        ctx.reply("Started uploading!");
         try {
             for (File zip : zips) {
                 ctx.getEvent().getChannel().sendFile(zip, "emotes.zip").queue();
@@ -124,7 +125,7 @@ public class EmoteDownloader implements ICommand {
 
     @Override
     public MessageEmbed helpMessage(GuildManager gm) {
-        return null;
+        return ICommand.createHelp("Download all emotes on this server", gm.prefix(), this);
     }
     
 }
