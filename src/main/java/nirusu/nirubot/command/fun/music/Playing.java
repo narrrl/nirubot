@@ -3,6 +3,10 @@ package nirusu.nirubot.command.fun.music;
 import java.util.Arrays;
 import java.util.List;
 
+import com.sapher.youtubedl.YoutubeDL;
+import com.sapher.youtubedl.YoutubeDLException;
+import com.sapher.youtubedl.YoutubeDLRequest;
+import com.sapher.youtubedl.YoutubeDLResponse;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -57,6 +61,14 @@ public final class Playing implements ICommand {
         progress.append(formatTime(minutes, seconds));
         emb.setColor(Nirubot.getColor()).setTitle("Now playing:")
                 .setDescription("[" + info.title + "]" + "(" + uri + ")\n" + progress.toString());
+        try {
+            YoutubeDLRequest req = new YoutubeDLRequest(uri, Nirubot.getTmpDirectory().getAbsolutePath());
+            req.setOption("get-thumbnail");
+            YoutubeDLResponse res = YoutubeDL.execute(req);
+            emb.setThumbnail(res.getOut());
+        } catch (YoutubeDLException e) {
+            e.printStackTrace();
+        }
         ctx.reply(emb.build());
 
     }
