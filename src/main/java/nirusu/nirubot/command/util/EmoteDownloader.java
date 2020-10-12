@@ -41,6 +41,10 @@ public class EmoteDownloader implements ICommand {
 
         tmpDir.mkdir();
 
+        if (tmpDir.listFiles().length != 0) {
+            return;
+        }
+
         ctx.reply("Started downloadig and compressing emotes! Might take some time");
 
         HashMap<String, File> files = new HashMap<>();
