@@ -116,6 +116,8 @@ public class Nirubot extends AbstractIdleService {
             }
 
         }, executor -> new Thread(executor, "Watchdog").start());
+        Nirubot.info("Cleaning tmp directory");
+        cleanDir(getTmpDirectory());
         bot.startAsync();
     }
 
@@ -205,5 +207,15 @@ public class Nirubot extends AbstractIdleService {
 
 	public static String getTmpDirPath() {
 		return getConfig().getTmpDirPath();
-	}
+    }
+    
+    public static void cleanDir(final File dir) {
+        if (!dir.isDirectory() || !dir.exists()) return;
+        for (File f : dir.listFiles()) {
+            if (f.isDirectory()) {
+                cleanDir(f);
+            }
+            f.delete();
+        }
+    }
 }
