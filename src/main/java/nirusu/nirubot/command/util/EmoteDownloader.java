@@ -93,8 +93,6 @@ public class EmoteDownloader implements ICommand {
             return;
         }
 
-        ctx.reply("Started uploading!");
-
         for (File f : files.values()) {
             f.delete();
         }
