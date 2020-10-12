@@ -22,3 +22,4 @@ nirusu.nirubot.command.fun.music.YTSearch
 nirusu.nirubot.command.util.Recruitment
 nirusu.nirubot.command.fun.music.Playlist
 nirusu.nirubot.command.util.GameRequest
+nirusu.nirubot.command.util.EmoteDownloader
