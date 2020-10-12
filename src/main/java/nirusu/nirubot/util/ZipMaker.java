@@ -22,7 +22,7 @@ public class ZipMaker {
             File f = files.get(key);
             FileInputStream fis = new FileInputStream(f);
 
-            ZipEntry zipEntry = new ZipEntry(key + f.getName().split("\\.", -1)[1]);
+            ZipEntry zipEntry = new ZipEntry(key + "." + f.getName().split("\\.", -1)[1]);
 
             zipOut.putNextEntry(zipEntry);
 
