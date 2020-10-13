@@ -59,7 +59,7 @@ public final class Next implements ICommand {
 
     @Override
     public List<String> alias() {
-        return Arrays.asList("skip");
+        return Arrays.asList("skip", "s");
     }
 
 }
