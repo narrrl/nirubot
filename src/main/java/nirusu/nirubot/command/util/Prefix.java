@@ -56,5 +56,10 @@ public class Prefix implements IPrivateCommand {
         ctx.reply("Change prefix to " + ctx.getArgs().get(1));
     }
 
+    @Override
+    public MessageEmbed helpMessage() {
+        return ICommand.createHelp("Sets a new prefix for this bot (global)", "", this);
+    }
+
     
 }

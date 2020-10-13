@@ -107,6 +107,15 @@ public class YoutubeDl implements IPrivateCommand {
                 gm.prefix(), this);
     }
 
+    @Override
+    public MessageEmbed helpMessage() {
+        return ICommand.createHelp("This command dowloads videos and playlists from youtube\n" + "Usage:\n`"
+                + "ytd -<audio|video|zip|best> <link>` where `-<music|video|zip>` means `-music` or `-video` and `-zip` and `-best` "
+                + "is an additional option that compresses all files into a zip (default for more then 5 files)"
+                + "\nAn example would be: `" + "ytd -audio https://www.youtube.com/watch?v=5MRH-yfgxB0`",
+                "", this);
+    }
+
     public void start(final ICommandContext ctx) {
         List<String> args = ctx.getArgs();
 
@@ -233,6 +242,8 @@ public class YoutubeDl implements IPrivateCommand {
             }
         }.start(); // there he goes
     }
+
+
 
 
 
