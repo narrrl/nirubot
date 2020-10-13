@@ -96,6 +96,7 @@ public class GameRequestListener implements NiruListener {
         EventThread() {
             super();
             isRunning = true;
+            setName("GameRequest");
         }
 
         @Override
