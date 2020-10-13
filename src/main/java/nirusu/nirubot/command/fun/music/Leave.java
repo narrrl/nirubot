@@ -31,7 +31,7 @@ public final class Leave implements ICommand {
 
         PlayerManager manager = PlayerManager.getInstance();
 
-        manager.destroy(ctx.getGuild());
+        manager.destroy(ctx.getGuild().getIdLong());
         ctx.getGuild().getAudioManager().closeAudioConnection();
     }
 

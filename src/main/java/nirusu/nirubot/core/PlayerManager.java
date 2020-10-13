@@ -100,13 +100,13 @@ public class PlayerManager {
         musicManager.getPlayer().setPaused(pause);
     }
 
-    public synchronized void destroy(@Nonnull final Guild guild) {
-        GuildMusicManager mg = musicManagers.get(guild.getIdLong());
+    public synchronized void destroy(@Nonnull final long guild) {
+        GuildMusicManager mg = musicManagers.get(guild);
         // destroy if exists
         if (mg != null) {
             mg.getPlayer().destroy();
         }
-        musicManagers.remove(guild.getIdLong());
+        musicManagers.remove(guild);
     }
 
     public synchronized void next(@Nonnull final GuildMusicManager musicManager) {
@@ -140,6 +140,12 @@ public class PlayerManager {
         }
 
         return instance;
+    }
+
+    public synchronized void shutdown() {
+        for (long l : musicManagers.keySet()) {
+            destroy(l);
+        }
     }
 
 	public String[] getCurrentSongs(Guild guild) {
