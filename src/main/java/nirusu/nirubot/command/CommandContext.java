@@ -12,36 +12,37 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.sharding.ShardManager;
 
 import javax.annotation.Nonnull;
+
 import java.util.List;
 
 /**
  * Class to make writing discord commands a bit more easy
  */
 public class CommandContext implements ICommandContext {
-    private final GuildMessageReceivedEvent event;
-    private final List<String> args;
+	private final GuildMessageReceivedEvent event;
+	private final List<String> args;
 
-    public CommandContext(@Nonnull final GuildMessageReceivedEvent event, @Nonnull final List<String> args) {
-        this.event = event;
-        this.args = args;
-    }
+	public CommandContext(@Nonnull final GuildMessageReceivedEvent event, @Nonnull final List<String> args) {
+		this.event = event;
+		this.args = args;
+	}
 
-    public Guild getGuild() {
-        return this.getEvent().getGuild();
-    }
+	public Guild getGuild() {
+		return this.getEvent().getGuild();
+	}
 
-    public GuildMessageReceivedEvent getEvent() {
-        return this.event;
-    }
+	public GuildMessageReceivedEvent getEvent() {
+		return this.event;
+	}
 
-    public List<String> getArgs() {
-        return args;
-    }
+	public List<String> getArgs() {
+		return args;
+	}
 
-    @Override
-    public MessageChannel getChannel() {
-        return event.getChannel();
-    }
+	@Override
+	public MessageChannel getChannel() {
+		return event.getChannel();
+	}
 
 	public Member getMember() {
 		return event.getMember();
@@ -73,5 +74,10 @@ public class CommandContext implements ICommandContext {
 
 	public Message getMessage() {
 		return event.getMessage();
+	}
+
+	@Override
+	public long getMaxFileSize() {
+		return getGuild().getMaxFileSize();
 	}
 }

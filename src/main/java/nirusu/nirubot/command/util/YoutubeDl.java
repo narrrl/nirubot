@@ -12,6 +12,7 @@ import com.sapher.youtubedl.YoutubeDLException;
 import com.sapher.youtubedl.YoutubeDLRequest;
 
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import nirusu.nirubot.command.ICommandContext;
 import nirusu.nirubot.Nirubot;
 import nirusu.nirubot.command.CommandContext;
 import nirusu.nirubot.command.ICommand;
@@ -82,7 +83,31 @@ public class YoutubeDl implements IPrivateCommand {
 
     @Override
     public void execute(CommandContext ctx) {
+        start(ctx);
+    }    
+    
+    @Override
+    public void execute(PrivateCommandContext ctx) {
+        start(ctx);
 
+    }
+
+    @Override
+    public List<String> alias() {
+        return Arrays.asList("ytd");
+    }
+
+    @Override
+    public MessageEmbed helpMessage(GuildManager gm) {
+        return ICommand.createHelp("This command dowloads videos and playlists from youtube\n" + "Usage:\n`"
+                + gm.prefix()
+                + "ytd -<audio|video|zip|best> <link>` where `-<music|video|zip>` means `-music` or `-video` and `-zip` and `-best` "
+                + "is an additional option that compresses all files into a zip (default for more then 5 files)"
+                + "\nAn example would be: `" + gm.prefix() + "ytd -audio https://www.youtube.com/watch?v=5MRH-yfgxB0`",
+                gm.prefix(), this);
+    }
+
+    public void start(final ICommandContext ctx) {
         List<String> args = ctx.getArgs();
 
         if (args.size() < 2) {
@@ -116,7 +141,7 @@ public class YoutubeDl implements IPrivateCommand {
 
         // if there are files already -> user is already converting something
         if (tmpDir.listFiles().length != 0) {
-            ctx.reply("You can only request one download at a time (per server lol)");
+            ctx.reply("You can only request one download at a time");
             return;
         }
 
@@ -167,9 +192,9 @@ public class YoutubeDl implements IPrivateCommand {
 
                 // iterate through all the downloaded files
                 for (File f : tmpDir.listFiles()) {
-                    if (!asZip && f.length() <= ctx.getGuild().getMaxFileSize()) {
+                    if (!asZip && f.length() <= ctx.getMaxFileSize()) {
                         // send files directly
-                        ctx.getEvent().getChannel().sendFile(f, f.getName()).complete();
+                        ctx.sendFile(f, f.getName());
                     } else {
                         // hash map to zip later
                         files.put(f.getName(), f);
@@ -184,7 +209,7 @@ public class YoutubeDl implements IPrivateCommand {
                         zip = ZipMaker.compressFiles(files, ctx.getAuthor().getId() + ".zip", Nirubot.getWebDir());
 
                         // if zip is not too big send directly
-                        if (zip.length() <= ctx.getGuild().getMaxFileSize()) {
+                        if (zip.length() <= ctx.getMaxFileSize()) {
                             ctx.getChannel().sendFile(zip).queue();
                         } else if (!asZip) {
                             // if user didnt want a zip but got one
@@ -207,27 +232,6 @@ public class YoutubeDl implements IPrivateCommand {
                 }
             }
         }.start(); // there he goes
-    }    
-    
-    @Override
-    public void execute(PrivateCommandContext ctx) {
-        ctx.reply("nice funktioniert");
-
-    }
-
-    @Override
-    public List<String> alias() {
-        return Arrays.asList("ytd");
-    }
-
-    @Override
-    public MessageEmbed helpMessage(GuildManager gm) {
-        return ICommand.createHelp("This command dowloads videos and playlists from youtube\n" + "Usage:\n`"
-                + gm.prefix()
-                + "ytd -<audio|video|zip|best> <link>` where `-<music|video|zip>` means `-music` or `-video` and `-zip` and `-best` "
-                + "is an additional option that compresses all files into a zip (default for more then 5 files)"
-                + "\nAn example would be: `" + gm.prefix() + "ytd -audio https://www.youtube.com/watch?v=5MRH-yfgxB0`",
-                gm.prefix(), this);
     }
 
 

@@ -16,6 +16,8 @@ public class ZipMaker {
 
         File out = new File(tmpDir.getAbsolutePath() + File.separator + name);
 
+        out.delete();
+
         FileOutputStream fos = new FileOutputStream(out);
 
         ZipOutputStream zipOut = new ZipOutputStream(fos);

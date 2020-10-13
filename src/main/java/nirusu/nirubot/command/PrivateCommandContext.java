@@ -1,5 +1,6 @@
 package nirusu.nirubot.command;
 
+import java.io.File;
 import java.util.List;
 
 import net.dv8tion.jda.api.entities.PrivateChannel;
@@ -21,6 +22,7 @@ public class PrivateCommandContext implements ICommandContext {
         return event;
     }
 
+    @Override
     public List<String> getArgs() {
         return args;
     }
@@ -29,13 +31,16 @@ public class PrivateCommandContext implements ICommandContext {
         return event.getChannel();
     }
 
-
-
     public User getAuthor() {
         return this.event.getAuthor();
     }
 
     public SelfUser getSelfUser() {
         return this.event.getJDA().getSelfUser();
+    }
+
+    @Override
+    public long getMaxFileSize() {
+        return 8388119;
     }
 }
