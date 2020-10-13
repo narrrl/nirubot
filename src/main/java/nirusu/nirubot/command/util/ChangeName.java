@@ -33,7 +33,7 @@ public class ChangeName implements ICommand {
                 return;
             }
 
-            ctx.getJDA().getSelfUser().getManager().setName(newName).complete();
+            ctx.getSelfUser().getManager().setName(newName).complete();
             ctx.reply("Updated name");
 
         } else {

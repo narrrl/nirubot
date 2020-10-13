@@ -15,10 +15,12 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 import nirusu.nirubot.Nirubot;
 import nirusu.nirubot.command.CommandContext;
 import nirusu.nirubot.command.ICommand;
+import nirusu.nirubot.command.IPrivateCommand;
+import nirusu.nirubot.command.PrivateCommandContext;
 import nirusu.nirubot.core.GuildManager;
 import nirusu.nirubot.util.ZipMaker;
 
-public class YoutubeDl implements ICommand {
+public class YoutubeDl implements IPrivateCommand {
     private static final Pattern URL_REGEX = Pattern
             .compile("^(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]");
     private static final Pattern OPTION_REGEX = Pattern.compile("-.+");
@@ -31,7 +33,8 @@ public class YoutubeDl implements ICommand {
         AUDIO("-audio") {
             @Override
             public void exec(YoutubeDl cmd) {
-                if (cmd.formatIsSet) throw new IllegalArgumentException("You can't use -audio and -video in one request");
+                if (cmd.formatIsSet)
+                    throw new IllegalArgumentException("You can't use -audio and -video in one request");
                 cmd.req.setOption("extract-audio");
                 cmd.req.setOption("audio-format", "mp3");
                 cmd.formatIsSet = true;
@@ -40,7 +43,8 @@ public class YoutubeDl implements ICommand {
         VIDEO("-video") {
             @Override
             public void exec(YoutubeDl cmd) {
-                if (cmd.formatIsSet) throw new IllegalArgumentException("You can't use -audio and -video in one request");
+                if (cmd.formatIsSet)
+                    throw new IllegalArgumentException("You can't use -audio and -video in one request");
                 cmd.req.setOption("recode-video", "mp4");
                 cmd.formatIsSet = true;
             }
@@ -101,12 +105,12 @@ public class YoutubeDl implements ICommand {
 
         if (videoURL == null) {
             ctx.reply("Provide a link to download!");
+            return;
         }
 
         // stores in /tmp/youtube-dl/{userid}
-        File tmpDir = new File(
-                Nirubot.getTmpDirectory().getAbsolutePath().concat(File.separator) 
-                + "youtube-dl" + File.separator + ctx.getAuthor().getId());
+        File tmpDir = new File(Nirubot.getTmpDirectory().getAbsolutePath().concat(File.separator) + "youtube-dl"
+                + File.separator + ctx.getAuthor().getId());
 
         tmpDir.mkdirs();
 
@@ -124,7 +128,6 @@ public class YoutubeDl implements ICommand {
         req.setOption("quiet");
         req.setOption("no-warnings");
         req.setOption("ignore-errors");
-
 
         // specific options by user
         for (String arg : args) {
@@ -183,10 +186,12 @@ public class YoutubeDl implements ICommand {
                         // if zip is not too big send directly
                         if (zip.length() <= ctx.getGuild().getMaxFileSize()) {
                             ctx.getChannel().sendFile(zip).queue();
-                        } else if (!asZip) { 
+                        } else if (!asZip) {
                             // if user didnt want a zip but got one
-                            ctx.reply(String.format("Some files were to big for discord, you can download them here: %s%s %s",
-                                    Nirubot.getHost() + Nirubot.getTmpDirPath(), zip.getName(), ctx.getAuthor().getAsMention()));
+                            ctx.reply(String.format(
+                                    "Some files were to big for discord, you can download them here: %s%s %s",
+                                    Nirubot.getHost() + Nirubot.getTmpDirPath(), zip.getName(),
+                                    ctx.getAuthor().getAsMention()));
                         } else {
                             ctx.reply(String.format("Here is your zip: %s%s %s",
                                     Nirubot.getHost() + Nirubot.getTmpDirPath(), zip.getName(),
@@ -202,6 +207,12 @@ public class YoutubeDl implements ICommand {
                 }
             }
         }.start(); // there he goes
+    }    
+    
+    @Override
+    public void execute(PrivateCommandContext ctx) {
+        ctx.reply("nice funktioniert");
+
     }
 
     @Override
@@ -213,10 +224,12 @@ public class YoutubeDl implements ICommand {
     public MessageEmbed helpMessage(GuildManager gm) {
         return ICommand.createHelp("This command dowloads videos and playlists from youtube\n" + "Usage:\n`"
                 + gm.prefix()
-                + "ytd -<audio|video|zip|best> <link>` where `-<music|video|zip>` means `-music` or `-video` and `-zip` and `-best` " 
+                + "ytd -<audio|video|zip|best> <link>` where `-<music|video|zip>` means `-music` or `-video` and `-zip` and `-best` "
                 + "is an additional option that compresses all files into a zip (default for more then 5 files)"
                 + "\nAn example would be: `" + gm.prefix() + "ytd -audio https://www.youtube.com/watch?v=5MRH-yfgxB0`",
                 gm.prefix(), this);
     }
+
+
 
 }

@@ -1,6 +1,7 @@
 package nirusu.nirubot.listener;
 
 import java.util.Arrays;
+import java.util.List;
 
 import javax.annotation.Nonnull;
 import javax.security.auth.login.LoginException;
@@ -18,6 +19,8 @@ import nirusu.nirubot.Nirubot;
 import nirusu.nirubot.command.CommandContext;
 import nirusu.nirubot.command.CommandDispatcher;
 import nirusu.nirubot.command.ICommand;
+import nirusu.nirubot.command.IPrivateCommand;
+import nirusu.nirubot.command.PrivateCommandContext;
 import nirusu.nirubot.core.Config;
 import nirusu.nirubot.core.DiscordUtil;
 import nirusu.nirubot.core.GuildManager;
@@ -61,7 +64,7 @@ public class DiscordListener extends ListenerAdapter implements NiruListener {
             if (!rcmd.equals(RequestCMD.INVALID)) {
                 try {
                     // run command
-                    rcmd.run(ctx.getMessage().getMentionedUsers(), ctx.getChannel(), ctx.getAuthor());
+                    rcmd.run(ctx.getMessage().getMentionedUsers(), ctx.getGuildChannel(), ctx.getAuthor());
                     return;
                 } catch (IllegalArgumentException e) {
                     // inform user about error
@@ -102,7 +105,27 @@ public class DiscordListener extends ListenerAdapter implements NiruListener {
 
     @Override
     public void onPrivateMessageReceived(PrivateMessageReceivedEvent event) {
-        // TODO: I have no idea how to implement private command yet with the old command system
+
+        User author = event.getAuthor();
+
+        if (author.isBot()) {
+            return;
+        }
+
+        String raw = event.getMessage().getContentRaw();
+
+        PrivateCommandContext ctx = new PrivateCommandContext(event, List.of(raw.split("\\s+")));
+
+        IPrivateCommand cmd;
+
+        try {
+            cmd = CommandDispatcher.getIPrivateCommand(ctx.getArgs().get(0));
+        } catch (IllegalArgumentException e) {
+            ctx.reply("Unknown command!");
+            return;
+        }
+
+        cmd.execute(ctx);
     }
     
 }

@@ -1,9 +1,15 @@
 package nirusu.nirubot.command;
 
-import me.duncte123.botcommons.commands.ICommandContext;
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.SelfUser;
+import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.sharding.ShardManager;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -15,17 +21,15 @@ public class CommandContext implements ICommandContext {
     private final GuildMessageReceivedEvent event;
     private final List<String> args;
 
-    public CommandContext(@Nonnull final GuildMessageReceivedEvent event, @Nonnull  final List<String> args) {
+    public CommandContext(@Nonnull final GuildMessageReceivedEvent event, @Nonnull final List<String> args) {
         this.event = event;
         this.args = args;
     }
 
-    @Override
     public Guild getGuild() {
         return this.getEvent().getGuild();
     }
 
-    @Override
     public GuildMessageReceivedEvent getEvent() {
         return this.event;
     }
@@ -34,15 +38,40 @@ public class CommandContext implements ICommandContext {
         return args;
     }
 
-    // ez shortcut to send an message async
-    public synchronized void reply(final String message) {
-        getChannel().sendTyping().queue(rep ->
-            getChannel().sendMessage(message).queue());
+    @Override
+    public MessageChannel getChannel() {
+        return event.getChannel();
     }
 
-    // ez shortcut to send an embed async
-    public synchronized void reply(final MessageEmbed emb) {
-        getChannel().sendTyping().queue(rep ->
-            getChannel().sendMessage(emb).queue());
-    }
+	public Member getMember() {
+		return event.getMember();
+	}
+
+	public Member getSelfMember() {
+		return event.getGuild().getMember(event.getJDA().getSelfUser());
+	}
+
+	public User getAuthor() {
+		return event.getAuthor();
+	}
+
+	public ShardManager getShardManager() {
+		return event.getJDA().getShardManager();
+	}
+
+	public JDA getJDA() {
+		return event.getJDA();
+	}
+
+	public SelfUser getSelfUser() {
+		return event.getJDA().getSelfUser();
+	}
+
+	public TextChannel getGuildChannel() {
+		return event.getChannel();
+	}
+
+	public Message getMessage() {
+		return event.getMessage();
+	}
 }

@@ -30,6 +30,20 @@ public class CommandDispatcher {
 
     }
 
+    public static IPrivateCommand getIPrivateCommand(final String group) throws IllegalArgumentException {
+        Iterable<IPrivateCommand> groups = ServiceLoader.load(IPrivateCommand.class);
+
+        for (IPrivateCommand g : groups) {
+            if (g.getKey().equals(group) || g.alias().stream().anyMatch(pre -> pre.equals(group))) {
+                return g;
+            }
+        }
+
+        throw new IllegalArgumentException();
+
+
+    }
+
     public static void checkForDuplicateAlias() {
         Iterable<ICommand> groups = ServiceLoader.load(ICommand.class);
 

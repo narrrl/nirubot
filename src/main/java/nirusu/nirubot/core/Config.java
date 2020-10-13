@@ -77,6 +77,11 @@ public class Config {
         write();
     }
 
+    public synchronized void setPrefix(final String newPrefix) {
+        data.prefix = newPrefix;
+        write();
+    }
+
     public String getToken() {
         return data.token;
     }

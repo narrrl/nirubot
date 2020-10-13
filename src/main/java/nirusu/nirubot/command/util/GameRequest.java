@@ -31,7 +31,7 @@ public class GameRequest implements ICommand {
         GameRequestManager rq;
 
         try {
-             rq = new GameRequestManager(users, args.get(2), args.get(1), ctx.getChannel(), ctx.getAuthor());
+             rq = new GameRequestManager(users, args.get(2), args.get(1), ctx.getGuildChannel(), ctx.getAuthor());
         } catch (IllegalArgumentException e) {
             ctx.reply(e.getMessage());
             return;

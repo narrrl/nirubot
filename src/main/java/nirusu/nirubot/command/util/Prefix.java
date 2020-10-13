@@ -5,11 +5,14 @@ import java.util.List;
 
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import nirusu.nirubot.Nirubot;
 import nirusu.nirubot.command.CommandContext;
 import nirusu.nirubot.command.ICommand;
+import nirusu.nirubot.command.IPrivateCommand;
+import nirusu.nirubot.command.PrivateCommandContext;
 import nirusu.nirubot.core.GuildManager;
 
-public class Prefix implements ICommand {
+public class Prefix implements IPrivateCommand {
 
     @Override
     public void execute(CommandContext ctx) {
@@ -28,8 +31,6 @@ public class Prefix implements ICommand {
 
     }
 
-
-
     @Override
     public MessageEmbed helpMessage(GuildManager gm) {
         return ICommand.createHelp("Sets a new prefix for this guild", gm.prefix(), this);
@@ -38,6 +39,21 @@ public class Prefix implements ICommand {
     @Override
     public List<String> alias() {
         return Arrays.asList("pref");
+    }
+
+    @Override
+    public void execute(PrivateCommandContext ctx) {
+        if (!Nirubot.isOwner(ctx.getAuthor().getIdLong())) {
+            return;
+        }
+
+        if (ctx.getArgs().size() != 2) {
+            return;
+        }
+
+        Nirubot.getConfig().setPrefix(ctx.getArgs().get(1));
+
+        ctx.reply("Change prefix to " + ctx.getArgs().get(1));
     }
 
     
