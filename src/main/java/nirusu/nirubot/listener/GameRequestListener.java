@@ -123,6 +123,7 @@ public class GameRequestListener implements NiruListener {
 
         public void shutdown() {
             this.isRunning = false;
+            this.interrupt();
         }
 
     }
@@ -148,8 +149,6 @@ public class GameRequestListener implements NiruListener {
         managers = new ArrayList<>();
 
         // create thread to check every minute if a request timelimit is reached
-
-
         t = new EventThread();
 
         t.start();
