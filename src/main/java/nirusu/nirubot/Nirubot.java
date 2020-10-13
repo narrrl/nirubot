@@ -175,7 +175,7 @@ public class Nirubot extends AbstractIdleService {
 	public synchronized void shutdown() {
         try {
             stopAsync();
-        } catch (Exception e) {
+        } catch (Exception | Error e) {
             Nirubot.error("Couldn't shutdown bot!", e);
             System.exit(EXIT_CODE_ERROR);
         }
