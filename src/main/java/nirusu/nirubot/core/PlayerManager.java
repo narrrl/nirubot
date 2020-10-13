@@ -145,7 +145,7 @@ public class PlayerManager {
 	public String[] getCurrentSongs(Guild guild) {
         GuildMusicManager mg = getGuildMusicManager(guild);
         ArrayList<AudioTrackInfo> tracks = mg.getScheduler().getAllTrackInfos();
-        String[] uris = new String[tracks.size() - 1];
+        String[] uris = new String[tracks.size()];
 
         for (int i = 0; i < tracks.size(); i++ ) {
             uris[i] = tracks.get(i).uri;
