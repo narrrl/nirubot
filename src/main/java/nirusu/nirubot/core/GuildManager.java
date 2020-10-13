@@ -197,6 +197,9 @@ public class GuildManager {
     }
 
     public synchronized void addPlaylist(final String name, final String[] playlist) {
+        if (this.guild.playlists == null) {
+            this.guild.playlists = new HashMap<>();
+        }
         Playlist pl = this.guild.playlists.get(name);
 
         if (pl != null) {
