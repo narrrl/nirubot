@@ -10,6 +10,7 @@ import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.priv.PrivateMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder;
 import net.dv8tion.jda.api.sharding.ShardManager;
@@ -31,15 +32,11 @@ public class DiscordListener extends ListenerAdapter implements NiruListener {
     public DiscordListener() throws LoginException, IllegalArgumentException {
         Config conf = Nirubot.getConfig();
         // starts bot
-        shardManager = DefaultShardManagerBuilder.createDefault(conf.getToken())
-            .setAutoReconnect(true)
-            .setStatus(OnlineStatus.ONLINE)
-            .addEventListeners(this)
-            .setActivity(DiscordUtil.getActivity(conf.getActivityType(), conf.getActivity()))
-            .build();
+        shardManager = DefaultShardManagerBuilder.createDefault(conf.getToken()).setAutoReconnect(true)
+                .setStatus(OnlineStatus.ONLINE).addEventListeners(this)
+                .setActivity(DiscordUtil.getActivity(conf.getActivityType(), conf.getActivity())).build();
         CommandDispatcher.checkForDuplicateAlias();
     }
-
 
     @Override
     public void onGuildMessageReceived(@Nonnull GuildMessageReceivedEvent event) {
@@ -92,7 +89,7 @@ public class DiscordListener extends ListenerAdapter implements NiruListener {
     }
 
     @Override
-	public void shutdown() {
+    public void shutdown() {
         for (GuildMusicManager m : PlayerManager.getInstance().getAllManager()) {
             m.getPlayer().destroy();
         }
@@ -101,6 +98,11 @@ public class DiscordListener extends ListenerAdapter implements NiruListener {
         }
         shardManager.shutdown();
         Nirubot.info("Discord listener is shutting down");
-	}
+    }
+
+    @Override
+    public void onPrivateMessageReceived(PrivateMessageReceivedEvent event) {
+        // TODO: I have no idea how to implement private command yet with the old command system
+    }
     
 }

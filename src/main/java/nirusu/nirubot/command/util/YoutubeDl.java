@@ -135,7 +135,7 @@ public class YoutubeDl implements ICommand {
             }
         }
 
-        ctx.reply("Started, can take some times if the playlist is big or if you download videos in general");
+        ctx.reply("Started, can take some time if the playlist is big or if you download videos in general");
 
         // dumb work to a new thread that the bot wont get blocked
         new Thread() {

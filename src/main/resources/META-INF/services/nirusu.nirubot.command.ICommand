@@ -24,3 +24,4 @@ nirusu.nirubot.command.fun.music.Playlist
 nirusu.nirubot.command.util.GameRequest
 nirusu.nirubot.command.util.EmoteDownloader
 nirusu.nirubot.command.util.YoutubeDl
+nirusu.nirubot.command.util.Invite
