@@ -39,7 +39,7 @@ public class Playlist implements ICommand {
         } else if (args.get(1).equals("save")) {
             String[] songs = PlayerManager.getInstance().getCurrentSongs(ctx.getGuild());
             gm.addPlaylist(args.get(2), songs);
-            ctx.reply("Playlist " + args.get(2) + "saved!");
+            ctx.reply("Playlist " + args.get(2) + " saved!");
         } else if (args.get(1).equals("remove")) {
             gm.removePlaylist(args.get(2));
             ctx.reply("Removed playlist " + args.get(2) + " if it was present");
