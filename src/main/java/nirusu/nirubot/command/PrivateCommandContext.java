@@ -1,6 +1,5 @@
 package nirusu.nirubot.command;
 
-import java.io.File;
 import java.util.List;
 
 import net.dv8tion.jda.api.entities.PrivateChannel;
