@@ -28,7 +28,10 @@ public class Help implements ICommand {
             emb.setTitle("All commands:").setColor(Nirubot.getColor()).setDescription(commandNames.substring(0, commandNames.length() - 2));
             ctx.reply(emb.build());
         } else if (args.size() == 2) {
-            ICommand cmd = StreamSupport.stream(commands.spliterator(), false).filter(f -> f.getKey().equals(args.get((1)))).findFirst().orElse(new Help());
+            ICommand cmd = StreamSupport.stream(commands.spliterator(), false)
+            .filter(f -> 
+                (f.getKey().equals(args.get(1)) || f.alias().stream().anyMatch(p -> p.equals(args.get(1))))
+                ).findFirst().orElse(new Help());
             ctx.reply(cmd.helpMessage(GuildManager.getManager(ctx.getGuild().getIdLong())));
         }
     }
