@@ -25,23 +25,24 @@ public class YoutubeDl implements ICommand {
 
     private boolean asZip = false;
     private YoutubeDLRequest req;
+    private boolean formatIsSet = false;
 
     enum Option {
         AUDIO("-audio") {
             @Override
             public void exec(YoutubeDl cmd) {
-                if (this.formatIsSet) throw new IllegalArgumentException("You can't use -audio and -video in one request");
+                if (cmd.formatIsSet) throw new IllegalArgumentException("You can't use -audio and -video in one request");
                 cmd.req.setOption("extract-audio");
                 cmd.req.setOption("audio-format", "mp3");
-                this.formatIsSet = true;
+                cmd.formatIsSet = true;
             }
         },
         VIDEO("-video") {
             @Override
             public void exec(YoutubeDl cmd) {
-                if (this.formatIsSet) throw new IllegalArgumentException("You can't use -audio and -video in one request");
+                if (cmd.formatIsSet) throw new IllegalArgumentException("You can't use -audio and -video in one request");
                 cmd.req.setOption("recode-video", "mp4");
-                this.formatIsSet = true;
+                cmd.formatIsSet = true;
             }
         },
         ZIP("-zip") {
@@ -49,12 +50,17 @@ public class YoutubeDl implements ICommand {
             public void exec(YoutubeDl cmd) {
                 cmd.asZip = true;
             }
+        },
+        BEST("-best") {
+            @Override
+            public void exec(YoutubeDl cmd) {
+                cmd.req.setOption("format", "best");
+            }
         };
 
         public abstract void exec(final YoutubeDl cmd);
 
         private final String option;
-        protected boolean formatIsSet = false;
 
         Option(final String op) {
             this.option = op;
@@ -207,7 +213,7 @@ public class YoutubeDl implements ICommand {
     public MessageEmbed helpMessage(GuildManager gm) {
         return ICommand.createHelp("This command dowloads videos and playlists from youtube\n" + "Usage:\n`"
                 + gm.prefix()
-                + "ytd -<audio|video|zip> <link>` where `-<music|video|zip>` means `-music` or `-video` and `-zip` " 
+                + "ytd -<audio|video|zip|best> <link>` where `-<music|video|zip>` means `-music` or `-video` and `-zip` and `-best` " 
                 + "is an additional option that compresses all files into a zip (default for more then 5 files)"
                 + "\nAn example would be: `" + gm.prefix() + "ytd -audio https://www.youtube.com/watch?v=5MRH-yfgxB0`",
                 gm.prefix(), this);
