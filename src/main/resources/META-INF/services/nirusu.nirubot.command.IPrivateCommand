@@ -1,3 +1,4 @@
 nirusu.nirubot.command.util.YoutubeDl
 nirusu.nirubot.command.util.Prefix
 nirusu.nirubot.command.util.Help
+nirusu.nirubot.command.util.Shutdown
