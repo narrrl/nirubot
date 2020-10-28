@@ -40,8 +40,6 @@ public class CommandDispatcher {
         }
 
         throw new IllegalArgumentException();
-
-
     }
 
     public static void checkForDuplicateAlias() {

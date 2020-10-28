@@ -21,6 +21,7 @@ import nirusu.nirubot.command.CommandDispatcher;
 import nirusu.nirubot.command.ICommand;
 import nirusu.nirubot.command.IPrivateCommand;
 import nirusu.nirubot.command.PrivateCommandContext;
+import nirusu.nirubot.command.fun.Mock;
 import nirusu.nirubot.core.Config;
 import nirusu.nirubot.core.DiscordUtil;
 import nirusu.nirubot.core.GuildManager;
@@ -118,8 +119,7 @@ public class DiscordListener extends ListenerAdapter implements NiruListener {
         try {
             cmd = CommandDispatcher.getIPrivateCommand(ctx.getArgs().get(0));
         } catch (IllegalArgumentException e) {
-            ctx.reply("Unknown command!");
-            return;
+            cmd = new Mock();
         }
 
         cmd.execute(ctx);

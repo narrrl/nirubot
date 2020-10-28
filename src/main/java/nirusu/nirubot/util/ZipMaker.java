@@ -18,6 +18,8 @@ public class ZipMaker {
 
         out.delete();
 
+        out.createNewFile();
+
         FileOutputStream fos = new FileOutputStream(out);
 
         ZipOutputStream zipOut = new ZipOutputStream(fos);
