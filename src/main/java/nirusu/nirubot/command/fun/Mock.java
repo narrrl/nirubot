@@ -69,6 +69,10 @@ public class Mock implements IPrivateCommand {
 
         List<String> args = ctx.getArgs();
 
+        if (args.size() == 0) {
+            return;
+        }
+
         StringBuilder builder = new StringBuilder();
 
         for (int i = 0; i < args.size(); i++) {
