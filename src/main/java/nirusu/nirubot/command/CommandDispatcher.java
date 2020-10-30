@@ -66,5 +66,9 @@ public class CommandDispatcher {
             offset = 0;
         }
 
+        if (!duplicates.isEmpty()) {
+            throw new IllegalArgumentException("Bot contains ambigious aliases");
+        }
+
     }
 }
