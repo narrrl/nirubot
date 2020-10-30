@@ -36,7 +36,6 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.8.6'
     implementation 'com.google.apis:google-api-services-youtube:v3-rev20200618-1.30.9'
     implementation 'com.github.sapher:youtubedl-java:1.+'
-    implementation 'com.google.cloud:google-cloud-translate:1.95.2'
 }
 sourceSets {
     main {
