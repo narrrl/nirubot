@@ -1,5 +1,6 @@
 package nirusu.nirubot.listener;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -112,7 +113,19 @@ public class DiscordListener extends ListenerAdapter implements NiruListener {
 
         String raw = event.getMessage().getContentRaw();
 
-        PrivateCommandContext ctx = new PrivateCommandContext(event, List.of(raw.split("\\s+")));
+        List<String> args = new ArrayList<>();
+
+        for (String str : List.of(raw.split("\\s+"))) {
+            if (!str.matches("\\s*")) {
+                args.add(str);
+            }
+        }
+
+        if (args.isEmpty()) {
+            return;
+        }
+
+        PrivateCommandContext ctx = new PrivateCommandContext(event, args);
 
         IPrivateCommand cmd;
 
