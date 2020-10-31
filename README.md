@@ -1,6 +1,6 @@
 # Nirubot Discord-Bot
 
-This Bot just is a fun project for my own Discord Server,
+This Bot is just a fun project for my own Discord Server,
 don't expect high quality code or unique features.
 You can download and edit the bot however you want.
 
