@@ -39,7 +39,11 @@ public class YTSearch implements ICommand {
         if (results == null) {
             ctx.reply("No videos found!");
         }
-
+        
+        if (results.size() < 1) {
+            ctx.reply("Nothing found");
+            return;
+        }
 
         YouTubeVideo video = Nirubot.getGson().fromJson(results.get(0).toString(), YouTubeVideo.class);
         EmbedBuilder emb = new EmbedBuilder();
