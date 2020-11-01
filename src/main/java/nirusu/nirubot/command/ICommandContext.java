@@ -4,8 +4,10 @@ import java.io.File;
 import java.util.List;
 
 import net.dv8tion.jda.api.entities.IMentionable;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.RichPresence.Image;
 
 public interface ICommandContext {
 
@@ -25,10 +27,16 @@ public interface ICommandContext {
 
     public MessageChannel getChannel();
 
-	public IMentionable getAuthor();
+    public IMentionable getAuthor();
+    
+    public Message getMessage();
 
 	public long getMaxFileSize();
 
-	public List<String> getArgs();
+    public List<String> getArgs();
+    
+    public default List<Message.Attachment> getAttachments() {
+        return getMessage().getAttachments();
+    };
     
 }
