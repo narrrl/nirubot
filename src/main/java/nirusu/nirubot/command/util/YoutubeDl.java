@@ -2,7 +2,7 @@ package nirusu.nirubot.command.util;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -94,7 +94,7 @@ public class YoutubeDl implements IPrivateCommand {
 
     @Override
     public List<String> alias() {
-        return Arrays.asList("ytd");
+        return Collections.singletonList("ytd");
     }
 
     @Override
@@ -181,66 +181,63 @@ public class YoutubeDl implements IPrivateCommand {
         ctx.reply("Started, can take some time if the playlist is big or if you download videos in general");
 
         // dumb work to a new thread that the bot wont get blocked
-        new Thread() {
-            @Override
-            public void run() {
+        new Thread(() -> {
 
-                // download files
-                try {
-                    YoutubeDL.execute(req);
-                } catch (YoutubeDLException e) {
-                    ctx.reply(e.getMessage());
-                }
+            // download files
+            try {
+                YoutubeDL.execute(req);
+            } catch (YoutubeDLException e) {
+                ctx.reply(e.getMessage());
+            }
 
-                // always zip with more then 5 files
-                if (tmpDir.listFiles().length > 5)
-                    asZip = true;
+            // always zip with more then 5 files
+            if (tmpDir.listFiles().length > 5)
+                asZip = true;
 
-                // hashmap for zip
-                HashMap<String, File> files = new HashMap<>();
+            // hashmap for zip
+            HashMap<String, File> files = new HashMap<>();
 
-                // iterate through all the downloaded files
-                for (File f : tmpDir.listFiles()) {
-                    if (!asZip && f.length() <= ctx.getMaxFileSize()) {
-                        // send files directly
-                        ctx.sendFile(f, f.getName());
-                    } else {
-                        // hash map to zip later
-                        files.put(f.getName(), f);
-                    }
-                }
-
-                if (!files.isEmpty()) {
-                    File zip;
-                    try {
-
-                        // make zip
-                        zip = ZipMaker.compressFiles(files, ctx.getAuthor().getId() + ".zip", Nirubot.getWebDir());
-
-                        // if zip is not too big send directly
-                        if (zip.length() <= ctx.getMaxFileSize()) {
-                            ctx.getChannel().sendFile(zip).queue();
-                        } else if (!asZip) {
-                            // if user didnt want a zip but got one
-                            ctx.reply(String.format(
-                                    "Some files were to big for discord, you can download them here: %s%s %s",
-                                    Nirubot.getHost() + Nirubot.getTmpDirPath(), zip.getName(),
-                                    ctx.getAuthor().getAsMention()));
-                        } else {
-                            ctx.reply(String.format("Here is your zip: %s%s %s",
-                                    Nirubot.getHost() + Nirubot.getTmpDirPath(), zip.getName(),
-                                    ctx.getAuthor().getAsMention()));
-                        }
-
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-                for (File f : tmpDir.listFiles()) {
-                    f.delete();
+            // iterate through all the downloaded files
+            for (File f : tmpDir.listFiles()) {
+                if (!asZip && f.length() <= ctx.getMaxFileSize()) {
+                    // send files directly
+                    ctx.sendFile(f, f.getName());
+                } else {
+                    // hash map to zip later
+                    files.put(f.getName(), f);
                 }
             }
-        }.start(); // there he goes
+
+            if (!files.isEmpty()) {
+                File zip;
+                try {
+
+                    // make zip
+                    zip = ZipMaker.compressFiles(files, ctx.getAuthor().getId() + ".zip", Nirubot.getWebDir());
+
+                    // if zip is not too big send directly
+                    if (zip.length() <= ctx.getMaxFileSize()) {
+                        ctx.getChannel().sendFile(zip).queue();
+                    } else if (!asZip) {
+                        // if user didnt want a zip but got one
+                        ctx.reply(String.format(
+                                "Some files were to big for discord, you can download them here: %s%s %s",
+                                Nirubot.getHost() + Nirubot.getTmpDirPath(), zip.getName(),
+                                ctx.getAuthor().getAsMention()));
+                    } else {
+                        ctx.reply(String.format("Here is your zip: %s%s %s",
+                                Nirubot.getHost() + Nirubot.getTmpDirPath(), zip.getName(),
+                                ctx.getAuthor().getAsMention()));
+                    }
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            for (File f : tmpDir.listFiles()) {
+                f.delete();
+            }
+        }).start(); // there he goes
     }
 
 

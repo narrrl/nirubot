@@ -1,6 +1,7 @@
 package nirusu.nirubot.command.util;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import net.dv8tion.jda.api.Permission;
@@ -38,7 +39,7 @@ public class Prefix implements IPrivateCommand {
 
     @Override
     public List<String> alias() {
-        return Arrays.asList("pref");
+        return Collections.singletonList("pref");
     }
 
     @Override

@@ -14,19 +14,8 @@ public class ChangeName implements ICommand {
     @Override
     public void execute(CommandContext ctx) {
         if (Nirubot.isOwner(ctx.getAuthor().getIdLong())) {
-            List<String> args = ctx.getArgs();
 
-            if (args.size() < 2) {
-                return;
-            }
-
-            StringBuilder builder = new StringBuilder();
-
-            for (int i = 1; i < args.size(); i++) {
-                builder.append(args.get(i)).append(" ");
-            }
-
-            String newName = builder.substring(0, builder.length() - 1);
+            String newName = ctx.getMessageRaw();
 
             if (newName.length() > 32 || newName.length() < 2) {
                 ctx.reply("Nicknames can't be less than 2 and more than 32");
