@@ -10,6 +10,7 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.priv.PrivateMessageReceivedEvent;
 
 public class PrivateCommandContext implements ICommandContext {
+    private static final int FILE_SIZE_MAX = 8388119;
 
     private final PrivateMessageReceivedEvent event;
     private final List<String> args;
@@ -42,7 +43,7 @@ public class PrivateCommandContext implements ICommandContext {
 
     @Override
     public long getMaxFileSize() {
-        return 8388119;
+        return FILE_SIZE_MAX;
     }
 
     @Override
