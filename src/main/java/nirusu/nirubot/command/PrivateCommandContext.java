@@ -2,7 +2,9 @@ package nirusu.nirubot.command;
 
 import java.util.List;
 
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.PrivateChannel;
+import net.dv8tion.jda.api.entities.RichPresence.Image;
 import net.dv8tion.jda.api.entities.SelfUser;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.priv.PrivateMessageReceivedEvent;
@@ -41,5 +43,10 @@ public class PrivateCommandContext implements ICommandContext {
     @Override
     public long getMaxFileSize() {
         return 8388119;
+    }
+
+    @Override
+    public Message getMessage() {
+        return event.getMessage();
     }
 }
