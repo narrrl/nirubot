@@ -22,12 +22,12 @@ public class Mosaic implements IPrivateCommand {
     }
 
     @Override
-    public List<String> alias() {
-        return Collections.singletonList("tichy");
+    public void execute(CommandContext ctx) {
+        ctx.reply("Softwaretechnik ist die Lehre von der Softwarekonstruktion\\: der systematischen Entwicklung und Pflege von Softwaresystemen");
     }
 
     @Override
-    public void execute(CommandContext ctx) {
-
+    public List<String> alias() {
+        return Collections.singletonList("tichy");
     }
 }
