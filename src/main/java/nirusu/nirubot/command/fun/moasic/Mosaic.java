@@ -1,11 +1,11 @@
 package nirusu.nirubot.command.fun.moasic;
 
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import nirusu.nirubot.Nirubot;
 import nirusu.nirubot.command.CommandContext;
 import nirusu.nirubot.command.ICommand;
-import nirusu.nirubot.command.IPrivateCommand;
 import nirusu.nirubot.command.PrivateCommandContext;
+import nirusu.nirubot.command.ICommandContext;
+import nirusu.nirubot.command.IPrivateCommand;
 import nirusu.nirubot.command.fun.moasic.base.BufferedArtImage;
 import nirusu.nirubot.command.fun.moasic.utility.ParallelMosaiqueEasel;
 import nirusu.nirubot.command.fun.moasic.utility.ParallelRectangleArtist;
@@ -14,16 +14,19 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+
+import java.util.Objects;
+import java.util.Comparator;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 public class Mosaic implements IPrivateCommand {
-    private static final int TILE_WIDTH = 20;
-    private static final int TILE_HEIGHT = 15;
 
-    @Override
-    public void execute(PrivateCommandContext ctx) {
+    private void makeMosaic(int tileWidth, int tileHeight, ICommandContext ctx) {
         if (ctx.getAttachments().size() != 1) {
             ctx.reply("Softwaretechnik ist die Lehre von der Softwarekonstruktion\\:" +
                     " der systematischen Entwicklung und Pflege von Softwaresystemen");
@@ -44,7 +47,7 @@ public class Mosaic implements IPrivateCommand {
             }
 
             List<BufferedImage> tilesAsI = tiles.stream().map(BufferedArtImage::toBufferedImage).collect(Collectors.toList());
-            ParallelRectangleArtist artist = new ParallelRectangleArtist(tilesAsI,TILE_WIDTH, TILE_HEIGHT);
+            ParallelRectangleArtist artist = new ParallelRectangleArtist(tilesAsI,tileWidth, tileHeight);
             ParallelMosaiqueEasel easel = new ParallelMosaiqueEasel();
             BufferedImage resultImage = easel.createMosaique(input, artist);
 
@@ -52,11 +55,24 @@ public class Mosaic implements IPrivateCommand {
             ImageIO.write(resultImage, "png", result);
             ctx.getChannel().sendFile(result).queue();
 
-
+            while (result.exists()) {
+                result.delete();
+            }
+            if (!inFile.delete()) {
+                ctx.reply("input.png couldnt be deleted");
+            }
 
         } catch (InterruptedException | ExecutionException | IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void execute(PrivateCommandContext ctx) {
+        //TODO implement a user input tileWidth/tilHeight
+        int tileWidth = 20;
+        int tileHeight = 15;
+        makeMosaic(tileWidth, tileHeight, ctx);
     }
 
     @Override
@@ -66,8 +82,10 @@ public class Mosaic implements IPrivateCommand {
 
     @Override
     public void execute(CommandContext ctx) {
-        ctx.reply("Softwaretechnik ist die Lehre von der Softwarekonstruktion\\:" +
-                " der systematischen Entwicklung und Pflege von Softwaresystemen");
+        //TODO implement a user input tileWidth/tilHeight
+        int tileWidth = 20;
+        int tileHeight = 15;
+        makeMosaic(tileWidth, tileHeight, ctx);
     }
 
     @Override
