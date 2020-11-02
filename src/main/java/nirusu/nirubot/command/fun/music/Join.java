@@ -1,6 +1,7 @@
 package nirusu.nirubot.command.fun.music;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -31,7 +32,7 @@ public class Join implements ICommand {
 
     @Override
     public List<String> alias() {
-        return Arrays.asList("j");
+        return Collections.singletonList("j");
     }
     
 }

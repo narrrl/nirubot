@@ -1,6 +1,7 @@
 package nirusu.nirubot.command.util;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -26,7 +27,7 @@ public class Shutdown implements IPrivateCommand {
 
     @Override
     public List<String> alias() {
-        return Arrays.asList("shutd");
+        return Collections.singletonList("shutd");
     }
 
     @Override

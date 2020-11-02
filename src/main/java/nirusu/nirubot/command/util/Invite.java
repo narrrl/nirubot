@@ -1,6 +1,7 @@
 package nirusu.nirubot.command.util;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -29,7 +30,7 @@ public class Invite implements ICommand {
 
     @Override
     public List<String> alias() {
-        return Arrays.asList("inv");
+        return Collections.singletonList("inv");
     }
 
     @Override

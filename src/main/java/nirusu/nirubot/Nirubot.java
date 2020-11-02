@@ -5,8 +5,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import com.google.api.client.http.HttpRequest;
-import com.google.api.client.http.HttpRequestInitializer;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.youtube.YouTube;
@@ -21,6 +19,8 @@ import nirusu.nirubot.listener.DiscordListener;
 import nirusu.nirubot.listener.GameRequestListener;
 import nirusu.nirubot.listener.NiruListener;
 
+import javax.annotation.Nonnull;
+
 public class Nirubot extends AbstractIdleService {
     private static final Logger LOGGER = LoggerFactory.getLogger(Nirubot.class);
     public static int EXIT_CODE_ERROR = -1;
@@ -31,7 +31,7 @@ public class Nirubot extends AbstractIdleService {
     private static YouTube yt;
     private static File tmpDir;
     private static File tmpWebDir;
-    private ArrayList<NiruListener> listeners;
+    private final ArrayList<NiruListener> listeners;
 
     public static Nirubot getNirubot() {
         if (bot == null) {
@@ -98,19 +98,19 @@ public class Nirubot extends AbstractIdleService {
             }
 
             @Override
-            public void stopping(State from) {
+            public void stopping(@Nonnull State from) {
                 info("Nirubot is stopping from {}", from);
             }
 
             @Override
-            public void terminated(State from) {
+            public void terminated(@Nonnull State from) {
                 info("Nirubot has terminated (was {})", from);
                 System.exit(EXIT_CODE_SUCCESS);
 
             }
 
             @Override
-            public void failed(State from, Throwable failure) {
+            public void failed(@Nonnull State from,@Nonnull Throwable failure) {
                 error("Nirubot couldn't start due to a critical error during {} from and will now terminate", from, failure);
                 System.exit(EXIT_CODE_ERROR);
             }
@@ -155,7 +155,7 @@ public class Nirubot extends AbstractIdleService {
     }
 
     @Override
-    protected void shutDown() throws Exception {
+    protected void shutDown() {
         // shutdown everything
         listeners.forEach(NiruListener::shutdown);
     }
@@ -192,10 +192,7 @@ public class Nirubot extends AbstractIdleService {
 
     public static synchronized YouTube getYouTube() {
         if (yt == null) {
-            yt = new YouTube.Builder(new NetHttpTransport(), new JacksonFactory(), new HttpRequestInitializer(){
-				@Override
-				public void initialize(HttpRequest request) throws IOException {
-				}
+            yt = new YouTube.Builder(new NetHttpTransport(), new JacksonFactory(), request -> {
             }).setApplicationName("Nirubot").build();
         }
         return yt;

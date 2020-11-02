@@ -60,12 +60,9 @@ public class Recruitment implements ICommand {
                 }
 
                 // creates a new stringbuilder tmp to get one big string
-                Iterator<String> i = cb.toStringAsList().iterator();
 
                 // append string from the list
-                while (i.hasNext()) {
-                    String n = i.next();
-
+                for (String n : cb.toStringAsList()) {
                     // when the string is longer than the discord limit
                     // send it and continue building the string
                     if (builder.length() + n.length() > 2000) {
@@ -112,7 +109,7 @@ public class Recruitment implements ICommand {
 
     @Override
     public List<String> alias() {
-        return Arrays.asList("rec");
+        return Collections.singletonList("rec");
     }
 
     @Override

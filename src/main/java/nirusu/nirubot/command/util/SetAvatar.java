@@ -3,7 +3,7 @@ package nirusu.nirubot.command.util;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import net.dv8tion.jda.api.entities.Icon;
@@ -24,8 +24,15 @@ public class SetAvatar implements ICommand {
                 ctx.reply("You must attach an image");
                 return;
             }
+
+            Message.Attachment image = attachment.get(0);
+
+            if(!image.isImage()) {
+                return;
+            }
+
             try {
-                InputStream s = new URL(attachment.get(0).getUrl()).openStream();
+                InputStream s = new URL(image.getUrl()).openStream();
                 ctx.getJDA().getSelfUser().getManager().setAvatar(Icon.from(s)).queue();
             } catch (IOException e) {
                 throw new IllegalArgumentException(e.getMessage());
@@ -43,7 +50,7 @@ public class SetAvatar implements ICommand {
 
     @Override
     public List<String> alias() {
-        return Arrays.asList("setav");
+        return Collections.singletonList("setav");
     }
     
 }

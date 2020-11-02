@@ -1,7 +1,5 @@
 package nirusu.nirubot.command.util;
 
-import java.util.Arrays;
-import java.util.List;
 
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import nirusu.nirubot.command.CommandContext;
@@ -27,10 +25,4 @@ public class Ping implements ICommand {
                 "Ping command to check if the bot is online and working. Also sends the ping of the bot", gm.prefix(),
                 this);
     }
-
-    @Override
-    public List<String> alias() {
-        return Arrays.asList();
-    }
-    
 }
