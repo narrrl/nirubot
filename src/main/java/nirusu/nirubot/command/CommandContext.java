@@ -1,83 +1,55 @@
 package nirusu.nirubot.command;
 
-import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageChannel;
-import net.dv8tion.jda.api.entities.SelfUser;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import net.dv8tion.jda.api.sharding.ShardManager;
-
-import javax.annotation.Nonnull;
-
+import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Class to make writing discord commands a bit more easy
- */
-public class CommandContext implements ICommandContext {
-	private final GuildMessageReceivedEvent event;
-	private final List<String> args;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import nirusu.nirubot.annotation.Command;
+import nirusu.nirubot.exception.InvalidContextException;
 
-	public CommandContext(@Nonnull final GuildMessageReceivedEvent event, @Nonnull final List<String> args) {
-		this.event = event;
-		this.args = args;
-	}
+public class CommandContext {
+    private List<String> args;
+    private Command.Context context;
+    private final MessageReceivedEvent e;
 
-	public Guild getGuild() {
-		return this.getEvent().getGuild();
-	}
+    public CommandContext(final MessageReceivedEvent e, final Command.Context context) {
+        this.e = e;
+        this.context = context;
+        args = new ArrayList<>();
+    }
 
-	public GuildMessageReceivedEvent getEvent() {
-		return this.event;
-	}
+    public CommandContext setArgs(final List<String> args) {
+        this.args = args;
+        return this;
+    }
 
-	public List<String> getArgs() {
-		return args;
-	}
 
-	@Override
-	public MessageChannel getChannel() {
-		return event.getChannel();
-	}
+    public MessageReceivedEvent getEvent() {
+        return this.e;
+    }
 
-	public Member getMember() {
-		return event.getMember();
-	}
+    public boolean isContext(Command.Context context) {
+        return context.equals(this.context);
+    }
 
-	public Member getSelfMember() {
-		return event.getGuild().getMember(event.getJDA().getSelfUser());
-	}
+	public void reply(String message) {
+        if (isContext(Command.Context.GUILD)) {
 
-	public User getAuthor() {
-		return event.getAuthor();
-	}
+            e.getChannel().sendMessage(message).queue();
 
-	public ShardManager getShardManager() {
-		return event.getJDA().getShardManager();
-	}
+        } else if (isContext(Command.Context.PRIVATE)) {
 
-	public JDA getJDA() {
-		return event.getJDA();
-	}
+            e.getPrivateChannel().sendMessage(message).queue();
 
-	public SelfUser getSelfUser() {
-		return event.getJDA().getSelfUser();
-	}
+        } else {
 
-	public TextChannel getGuildChannel() {
-		return event.getChannel();
-	}
+            throw new InvalidContextException("Context not set!");
 
-	public Message getMessage() {
-		return event.getMessage();
-	}
+        }
+    }
+    
+    public List<String> getArgs() {
+        return this.args;
+    }
 
-	@Override
-	public long getMaxFileSize() {
-		return getGuild().getMaxFileSize();
-	}
 }

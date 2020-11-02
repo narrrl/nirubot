@@ -10,8 +10,8 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 
 import nirusu.nirubot.Nirubot;
-import nirusu.nirubot.command.CommandContext;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 import javax.annotation.Nonnull;
 
@@ -51,7 +51,7 @@ public class PlayerManager {
         return musicManager;
     }
 
-    public synchronized void loadAndPlay(@Nonnull final CommandContext ctx, @Nonnull  String trackUrl) {
+    public synchronized void loadAndPlay(@Nonnull final GuildMessageReceivedEvent ctx, @Nonnull  String trackUrl) {
         GuildMusicManager musicManager = getGuildMusicManager(ctx.getGuild());
 
         GuildManager gm = GuildManager.getManager(ctx.getGuild().getIdLong());
@@ -77,13 +77,13 @@ public class PlayerManager {
 
             @Override
             public void noMatches() {
-                ctx.reply("No matches found!");
+                ctx.getChannel().sendMessage("No matches found!").queue();;
                 throw new IllegalArgumentException();
             }
 
             @Override
             public void loadFailed(@Nonnull FriendlyException exception) {
-                ctx.reply("Couldn't load song");
+                ctx.getChannel().sendMessage("Couldn't load song").queue();
                 Nirubot.warning("Couldn't load song!");
                 throw new IllegalArgumentException();
             }
