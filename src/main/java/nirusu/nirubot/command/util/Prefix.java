@@ -25,7 +25,7 @@ public class Prefix implements IPrivateCommand {
 
         if (ctx.getMember().hasPermission(Permission.ADMINISTRATOR)) {
             GuildManager.getManager(ctx.getGuild().getIdLong()).setPrefix(args.get(1));
-            ctx.reply("changed prefix to " + args.get(1) + "!");
+            ctx.reply("changed prefix to " + args.get(1));
         } else {
             ctx.reply("No permissions!");
         }
@@ -62,5 +62,5 @@ public class Prefix implements IPrivateCommand {
         return ICommand.createHelp("Sets a new prefix for this bot (global)", "", this);
     }
 
-    
+
 }
