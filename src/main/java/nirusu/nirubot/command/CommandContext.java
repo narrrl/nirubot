@@ -3,6 +3,9 @@ package nirusu.nirubot.command;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.Nonnull;
+
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import nirusu.nirubot.annotation.Command;
 import nirusu.nirubot.exception.InvalidContextException;
@@ -12,13 +15,13 @@ public class CommandContext {
     private Command.Context context;
     private final MessageReceivedEvent e;
 
-    public CommandContext(final MessageReceivedEvent e, final Command.Context context) {
+    public CommandContext(@Nonnull MessageReceivedEvent e,@Nonnull final Command.Context context) {
         this.e = e;
         this.context = context;
         args = new ArrayList<>();
     }
 
-    public CommandContext setArgs(final List<String> args) {
+    public CommandContext setArgs(@Nonnull final List<String> args) {
         this.args = args;
         return this;
     }
@@ -28,8 +31,8 @@ public class CommandContext {
         return this.e;
     }
 
-    public boolean isContext(Command.Context context) {
-        return context.equals(this.context);
+    public boolean isContext(Command.Context o) {
+        return this.context.equals(o);
     }
 
 	public void reply(String message) {
@@ -47,9 +50,16 @@ public class CommandContext {
 
         }
     }
-    
+
     public List<String> getArgs() {
         return this.args;
+    }
+
+    public Guild getGuild() {
+        if (isContext(Command.Context.GUILD)) {
+            return e.getGuild();
+        }
+        throw new InvalidContextException("No guild in private available");
     }
 
 }
