@@ -1,6 +1,8 @@
 package nirusu.nirubot.command.fun.moasic;
 
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.Message.Attachment;
+import nirusu.nirubot.Nirubot;
 import nirusu.nirubot.command.CommandContext;
 import nirusu.nirubot.command.ICommand;
 import nirusu.nirubot.command.PrivateCommandContext;
@@ -32,39 +34,64 @@ public class Mosaic implements IPrivateCommand {
                     " der systematischen Entwicklung und Pflege von Softwaresystemen");
             return;
         }
+        // tmp folder to store data
+        // tmp/mosaic/{authorId}
+        File tmpDir = new File(Nirubot.getTmpDirectory().getAbsolutePath()
+                .concat(File.separator + "mosaic" + File.separator + ctx.getAuthor().getId()));
+        tmpDir.mkdirs();
+        // tmp/mosaic/{authorId}/result.png
+        File result = new File(tmpDir.getAbsolutePath().concat(File.separator + "result.png"));
 
-        try {
-            final File inFile = ctx.getAttachments().get(0).downloadToFile().get();
-            BufferedImage input = new BufferedArtImage(ImageIO.read(inFile)).toBufferedImage();
+        // if author is already creating a mosaic
+        if (result.exists()) {
+            ctx.reply("You are already making a mosaic!");
+            return;
+        }
 
-            //load tiles
+        Attachment a = ctx.getAttachments().get(0);
+
+        if (!a.isImage()) return;
+
+        String fileName = a.getFileName();
+
+        final File inFile = new File(tmpDir.getAbsolutePath().concat(File.separator + fileName));
+        a.downloadToFile(inFile).thenAccept( file -> {
+            BufferedImage input;
+            try {
+                input = new BufferedArtImage(ImageIO.read(file))
+                    .toBufferedImage();
+            } catch (IOException e) {
+                return;
+            }
             var tileFolder = new File("src/main/resources/images");
             List<BufferedArtImage> tiles = new ArrayList<>();
             var files = new ArrayList<>(Arrays.asList(Objects.requireNonNull(tileFolder.listFiles())));
             files.sort(Comparator.comparing(File::getName));
             for (var tile : files) {
-                tiles.add(new BufferedArtImage(ImageIO.read(tile)));
+                try {
+                    tiles.add(new BufferedArtImage(ImageIO.read(tile)));
+                } catch (IOException e) {
+                    ctx.reply("Mosaic failed!");
+                    return;
+                }
             }
 
-            List<BufferedImage> tilesAsI = tiles.stream().map(BufferedArtImage::toBufferedImage).collect(Collectors.toList());
+            List<BufferedImage> tilesAsI = tiles.stream().map(BufferedArtImage::toBufferedImage)
+                .collect(Collectors.toList());
             ParallelRectangleArtist artist = new ParallelRectangleArtist(tilesAsI,tileWidth, tileHeight);
             ParallelMosaiqueEasel easel = new ParallelMosaiqueEasel();
             BufferedImage resultImage = easel.createMosaique(input, artist);
-
-            File result = new File("result.png");
-            ImageIO.write(resultImage, "png", result);
-            ctx.getChannel().sendFile(result).queue();
-
-            while (result.exists()) {
-                result.delete();
+            try {
+                ImageIO.write(resultImage, "png", result);
+            } catch (IOException e) {
+                ctx.reply("Mosaic failed!");
+                return;
             }
-            if (!inFile.delete()) {
-                ctx.reply("input.png couldnt be deleted");
-            }
-
-        } catch (InterruptedException | ExecutionException | IOException e) {
-            e.printStackTrace();
-        }
+            ctx.getChannel().sendFile(result).complete();
+        }).thenAccept(end -> {
+            tryDelete(result);
+            tryDelete(inFile);
+        });
     }
 
     @Override
@@ -91,5 +118,37 @@ public class Mosaic implements IPrivateCommand {
     @Override
     public List<String> alias() {
         return Collections.singletonList("tichy");
+    }
+
+    private void tryDelete(final File f) {
+        if (!f.delete()) {
+            // inform that a file couldn't be deleted
+            Nirubot.warning(String.format("Couldn't delete file %s, dumping work to another thread",
+                f.getAbsolutePath()));
+            // dump into thread
+            new Thread() {
+                @Override
+                public void run() {
+                    boolean isRunning = true;
+                    while(isRunning && f.exists()) {
+                        if (!f.exists() && f.delete()) {
+                            Nirubot.warning(String.format("Deleted file %s successfully",
+                                f.getAbsolutePath()));
+                        }
+                        if (f.exists()) {
+                            try {
+                                sleep(5000L);
+                            } catch (InterruptedException e) {
+                                Nirubot.warning(String.format("Couldn't delete file %s",
+                                            f.getAbsolutePath()));
+                                isRunning = false;
+                            }
+
+                        }
+                    }
+                }
+            }.start();
+        }
+
     }
 }
