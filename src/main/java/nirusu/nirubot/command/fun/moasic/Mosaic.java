@@ -71,6 +71,7 @@ public class Mosaic implements IPrivateCommand {
 
             if (files.isEmpty()) {
                 Nirubot.warning("No tiles found for Mosaic");
+                tryDelete(inFile);
                 return;
             }
 
@@ -80,6 +81,7 @@ public class Mosaic implements IPrivateCommand {
                     tiles.add(new BufferedArtImage(ImageIO.read(tile)));
                 } catch (IOException e) {
                     ctx.reply("Mosaic failed!");
+                    tryDelete(inFile);
                     return;
                 }
             }
@@ -92,6 +94,8 @@ public class Mosaic implements IPrivateCommand {
             try {
                 ImageIO.write(resultImage, "png", result);
             } catch (IOException e) {
+                tryDelete(result);
+                tryDelete(inFile);
                 ctx.reply("Mosaic failed!");
                 return;
             }
@@ -129,7 +133,7 @@ public class Mosaic implements IPrivateCommand {
     }
 
     private void tryDelete(final File f) {
-        if (!f.delete()) {
+        if (f.exists() && !f.delete()) {
             // inform that a file couldn't be deleted
             Nirubot.warning(String.format("Couldn't delete file %s, dumping work to another thread",
                 f.getAbsolutePath()));
