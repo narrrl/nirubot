@@ -63,9 +63,15 @@ public class Mosaic implements IPrivateCommand {
             } catch (IOException e) {
                 return;
             }
-            //TODO: so geht das aber nicht :(
-            // wenn der bot zu einer jar verpackt wird, dann findet er die tiles nicht mehr
-            var tileFolder = new File("src/main/resources/images");
+            var tileFolder = new File(System.getProperty("user.dir")
+                    .concat(File.separator).concat("images"));
+            //TODO: implement way to download the tiles if they dont exist
+            if (!tileFolder.exists()) {
+                ctx.reply("Mosaic failed!");
+                Nirubot.warning("Create \"images\" directory in the directory with the bot jar and"
+                        + " put some images in it");
+                return;
+            }
             List<BufferedArtImage> tiles = new ArrayList<>();
             var files = new ArrayList<>(Arrays.asList(Objects.requireNonNull(tileFolder.listFiles())));
 

@@ -110,6 +110,9 @@ guilds/
 #tmp dir
 /tmp/
 
+#images
+/images/
+
 # personal files
 TODO.md
 
