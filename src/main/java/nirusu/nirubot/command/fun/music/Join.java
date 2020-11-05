@@ -1,6 +1,5 @@
 package nirusu.nirubot.command.fun.music;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 

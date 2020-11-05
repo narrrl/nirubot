@@ -1,7 +1,6 @@
 package nirusu.nirubot.command.fun.moasic.utility;
 
 import nirusu.nirubot.command.fun.moasic.base.BufferedArtImage;
-import nirusu.nirubot.command.fun.moasic.base.IMosaiqueArtist;
 import nirusu.nirubot.command.fun.moasic.base.IMosaiqueShape;
 
 import java.awt.image.BufferedImage;
@@ -14,7 +13,7 @@ import java.util.stream.Collectors;
  * it works the same way as RectangleShape just faster.
  * this class uses {@link BufferedImage} instead of {@link BufferedArtImage} for a faster process.
  */
-public class ParallelRectangleArtist extends AbstractArtist implements IMosaiqueArtist<BufferedArtImage> {
+public class ParallelRectangleArtist extends AbstractArtist {
     private final List<BufferedImage> images;
     private final int tileWidth;
     private final int tileHeight;
