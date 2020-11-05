@@ -11,6 +11,8 @@ import nirusu.nirubot.command.IPrivateCommand;
 import nirusu.nirubot.command.fun.moasic.base.BufferedArtImage;
 import nirusu.nirubot.command.fun.moasic.utility.ParallelMosaiqueEasel;
 import nirusu.nirubot.command.fun.moasic.utility.ParallelRectangleArtist;
+import nirusu.nirubot.listener.DeleteListener;
+import nirusu.nirubot.util.DeleteThread;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -144,28 +146,7 @@ public class Mosaic implements IPrivateCommand {
             Nirubot.warning(String.format("Couldn't delete file %s, dumping work to another thread",
                 f.getAbsolutePath()));
             // dump into thread
-            new Thread() {
-                @Override
-                public void run() {
-                    boolean isRunning = true;
-                    while(isRunning && f.exists()) {
-                        if (!f.exists() && f.delete()) {
-                            Nirubot.warning(String.format("Deleted file %s successfully",
-                                f.getAbsolutePath()));
-                        }
-                        if (f.exists()) {
-                            try {
-                                sleep(5000L);
-                            } catch (InterruptedException e) {
-                                Nirubot.warning(String.format("Couldn't delete file %s",
-                                            f.getAbsolutePath()));
-                                isRunning = false;
-                            }
-
-                        }
-                    }
-                }
-            }.start();
+            DeleteListener.getInstance().add(new DeleteThread(f).startAndReturn());
         }
 
     }
