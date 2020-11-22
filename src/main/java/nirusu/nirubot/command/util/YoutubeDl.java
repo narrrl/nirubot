@@ -84,8 +84,8 @@ public class YoutubeDl implements IPrivateCommand {
     @Override
     public void execute(CommandContext ctx) {
         start(ctx);
-    }    
-    
+    }
+
     @Override
     public void execute(PrivateCommandContext ctx) {
         start(ctx);
@@ -102,7 +102,7 @@ public class YoutubeDl implements IPrivateCommand {
         return ICommand.createHelp("This command dowloads videos and playlists from youtube\n" + "Usage:\n`"
                 + gm.prefix()
                 + "ytd -<audio|video|zip|best> <link>` where `-<audio|video|zip>` means `-audio` or `-video` and `-zip` and `-best` "
-                + "are an additional option that compresses all files into a zip (default for more then 5 files)"
+                + "are additional options. `-zip` will compress all files into a zip (default for more then 5 files)"
                 + "\nAn example would be: `" + gm.prefix() + "ytd -audio https://www.youtube.com/watch?v=5MRH-yfgxB0`",
                 gm.prefix(), this);
     }
@@ -111,7 +111,7 @@ public class YoutubeDl implements IPrivateCommand {
     public MessageEmbed helpMessage() {
         return ICommand.createHelp("This command dowloads videos and playlists from youtube\n" + "Usage:\n`"
                 + "ytd -<audio|video|zip|best> <link>` where `-<audio|video|zip>` means `-audio` or `-video` and `-zip` and `-best` "
-                + "are an additional option that compresses all files into a zip (default for more then 5 files)"
+                + "are additional options. `-zip` will compress all files into a zip (default for more then 5 files)"
                 + "\nAn example would be: `" + "ytd -audio https://www.youtube.com/watch?v=5MRH-yfgxB0`",
                 "", this);
     }
