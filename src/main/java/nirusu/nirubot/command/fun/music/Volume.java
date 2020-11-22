@@ -73,6 +73,6 @@ public final class Volume implements ICommand {
 
     @Override
     public List<String> alias() {
-        return Arrays.asList("vl");
+        return Arrays.asList("vl", "vol");
     }
 }
