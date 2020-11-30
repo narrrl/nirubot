@@ -2893,14 +2893,17 @@ public class RandomString {
     }
 
     private static String buildRandomString(int size) {
+        int i = size;
         StringBuilder str = new StringBuilder();
         Random rand = new Random();
         while (size > 0) {
             str.append(RANDOM_STRINGS[rand.nextInt(RANDOM_STRINGS.length)]);
 
-            if (size > 0) {
+            if (i > 0) {
                 str.append("-");
             }
+
+            i--;
         }
         return str.toString();
     }
