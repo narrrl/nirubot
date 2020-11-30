@@ -58,10 +58,12 @@ public class FunModule extends BaseModule {
                 try {
                     out = new YoutubeDl().start(args);
                 } catch (InvalidYoutubeDlException e) {
-                    ctx.reply(e.getMessage());
+                    if (e.getMessage() == null) {
+                        ctx.reply(e.getMessage());
+                    }
                     return;
                 }
-                if (out.length() > CommandContext.getMaxFileSize()) {
+                if (out.length() > CommandContext.getMaxFileSize()|| out.isDirectory()) {
                     ctx.reply(String.format("You can download %s here: %s%s %s",
                         out.getName(), 
                         Nirubot.getHost() + Nirubot.getTmpDirPath(), 

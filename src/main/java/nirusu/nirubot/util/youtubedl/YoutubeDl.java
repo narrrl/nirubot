@@ -2,6 +2,8 @@ package nirusu.nirubot.util.youtubedl;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -91,6 +93,19 @@ public class YoutubeDl {
             return tmpDir.listFiles()[0];
         }
 
+        File dir = new File(Nirubot.getWebDir().getAbsolutePath() + File.separator + randomString);
+
+        dir.mkdirs();
+
+        for (File f : tmpDir.listFiles()) {
+            File t = new File(dir.getAbsolutePath() + File.separator + f.getName());
+            try {
+                Files.move(f.toPath(), t.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
         // hashmap for zip
         HashMap<String, File> files = new HashMap<>();
 
@@ -106,12 +121,12 @@ public class YoutubeDl {
         }
         try {
             // make zip
-            zip = ZipMaker.compressFiles(files, randomString + ".zip", Nirubot.getWebDir());
+            zip = ZipMaker.compressFiles(files, randomString + ".zip", dir);
         } catch (IOException e) {
             throw new InvalidYoutubeDlException(e.getMessage());
         }
 
-        return zip;
+        return dir;
     }
     
 }
