@@ -2899,7 +2899,7 @@ public class RandomString {
         while (i > 0) {
             str.append(RANDOM_STRINGS[rand.nextInt(RANDOM_STRINGS.length)]);
 
-            if (i > 0) {
+            if (i > 1) {
                 str.append("-");
             }
 
