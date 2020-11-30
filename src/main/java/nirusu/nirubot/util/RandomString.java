@@ -2896,7 +2896,7 @@ public class RandomString {
         int i = size;
         StringBuilder str = new StringBuilder();
         Random rand = new Random();
-        while (size > 0) {
+        while (i > 0) {
             str.append(RANDOM_STRINGS[rand.nextInt(RANDOM_STRINGS.length)]);
 
             if (i > 0) {
