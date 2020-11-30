@@ -140,7 +140,7 @@ public class CommandContext {
         }).block();
 	}
 
-	public long getMaxFileSize() {
+	public static long getMaxFileSize() {
         return FILE_SIZE_MAX;
     }
     

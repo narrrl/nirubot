@@ -10,8 +10,8 @@ import com.sapher.youtubedl.YoutubeDL;
 import com.sapher.youtubedl.YoutubeDLException;
 import com.sapher.youtubedl.YoutubeDLRequest;
 
-import discord4j.core.object.entity.User;
 import nirusu.nirubot.Nirubot;
+import nirusu.nirubot.util.RandomString;
 import nirusu.nirubot.util.ZipMaker;
 import nirusu.nirucmd.CommandContext;
 
@@ -24,12 +24,7 @@ public class YoutubeDl {
      YoutubeDLRequest req;
     boolean formatIsSet = false; 
 
-    public void start(final CommandContext ctx) throws InvalidYoutubeDlException {
-        List<String> args = ctx.getArgs().orElseThrow(InvalidYoutubeDlException::new);
-
-        if (args.size() < 2) {
-            return;
-        }
+    public File start(final List<String> args) throws InvalidYoutubeDlException {
 
         String videoURL = null;
 
@@ -39,28 +34,24 @@ public class YoutubeDl {
                 videoURL = arg;
                 offset++;
                 if (offset > 1) {
-                    ctx.reply("You can download only from one source at a time (Remove one of the links)");
-                    return;
+                    throw new InvalidYoutubeDlException("You can download only from one source at a time (Remove one of the links)");
                 }
             }
         }
 
         if (videoURL == null) {
-            ctx.reply("Provide a link to download!");
-            return;
+            throw new InvalidYoutubeDlException("Provide a link to download");
         }
 
+        String randomString = RandomString.getRandomString(4);
         // stores in /tmp/youtube-dl/{userid}
         File tmpDir = new File(Nirubot.getTmpDirectory().getAbsolutePath().concat(File.separator) + "youtube-dl"
-                + File.separator + ctx.getAuthor().orElseThrow().getId().asLong());
+                + File.separator + randomString);
 
         tmpDir.mkdirs();
 
-        // if there are files already -> user is already converting something
-        if (tmpDir.listFiles().length != 0) {
-            ctx.reply("You can only request one download at a time");
-            return;
-        }
+
+        Nirubot.cleanDir(tmpDir);
 
         this.req = new YoutubeDLRequest(videoURL, tmpDir.getAbsolutePath());
 
@@ -80,75 +71,47 @@ public class YoutubeDl {
                     Option.getOption(arg).exec(this);
                 } catch (IllegalArgumentException e) {
                     // if option doesnt exist, inform user
-                    ctx.reply(e.getMessage());
-                    return;
+                    throw new InvalidYoutubeDlException(e.getMessage());
                 }
             }
         }
 
-        ctx.reply("Started, can take some time if the playlist is big or if you download videos in general");
-
         // dumb work to a new thread that the bot wont get blocked
+        // download files
+        try {
+            YoutubeDL.execute(req);
+        } catch (YoutubeDLException e) {
+            throw new InvalidYoutubeDlException(e.getMessage());
+        }
 
-        User author = ctx.getAuthor().orElseThrow(InvalidYoutubeDlException::new);
-        new Thread(() -> {
 
-            // download files
-            try {
-                YoutubeDL.execute(req);
-            } catch (YoutubeDLException e) {
-                ctx.reply(e.getMessage());
-            }
+        // zip if more then
+        if (tmpDir.listFiles().length == 1 
+            && tmpDir.listFiles()[0].length() < CommandContext.getMaxFileSize()) {                    
+            return tmpDir.listFiles()[0];
+        }
 
-            // always zip with more then 5 files
-            if (tmpDir.listFiles().length > 5)
-                asZip = true;
+        // hashmap for zip
+        HashMap<String, File> files = new HashMap<>();
 
-            // hashmap for zip
-            HashMap<String, File> files = new HashMap<>();
+        // iterate through all the downloaded files
+        for (File f : tmpDir.listFiles()) {
+            // hash map to zip later
+            files.put(f.getName(), f);
+        }
 
-            // iterate through all the downloaded files
-            for (File f : tmpDir.listFiles()) {
-                if (!asZip && f.length() <= ctx.getMaxFileSize()) {
-                    // send files directly
-                    ctx.sendFile(f);
-                } else {
-                    // hash map to zip later
-                    files.put(f.getName(), f);
-                }
-            }
+        File zip;
+        if (files.isEmpty()) {
+            throw new InvalidYoutubeDlException("Nothing downloaded!");
+        }
+        try {
+            // make zip
+            zip = ZipMaker.compressFiles(files, randomString + ".zip", Nirubot.getWebDir());
+        } catch (IOException e) {
+            throw new InvalidYoutubeDlException(e.getMessage());
+        }
 
-            if (!files.isEmpty()) {
-                File zip;
-                try {
-
-                    // make zip
-                    zip = ZipMaker.compressFiles(files, author
-                        .getId() + ".zip", Nirubot.getWebDir());
-
-                    // if zip is not too big send directly
-                    if (zip.length() <= ctx.getMaxFileSize()) {
-                        ctx.sendFile(zip);
-                    } else if (!asZip) {
-                        // if user didnt want a zip but got one
-                        ctx.reply(String.format(
-                                "Some files were to big for discord, you can download them here: %s%s %s",
-                                Nirubot.getHost() + Nirubot.getTmpDirPath(), zip.getName(),
-                                author.getMention()));
-                    } else {
-                        ctx.reply(String.format("Here is your zip: %s%s %s",
-                                Nirubot.getHost() + Nirubot.getTmpDirPath(), zip.getName(),
-                                author.getMention()));
-                    }
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            for (File f : tmpDir.listFiles()) {
-                f.delete();
-            }
-        }).start(); // there he goes
+        return zip;
     }
     
 }
