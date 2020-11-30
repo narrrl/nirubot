@@ -3,11 +3,8 @@ package nirusu.nirubot.core;
 import javax.annotation.Nonnull;
 
 import discord4j.core.object.VoiceState;
-import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.Member;
-import discord4j.core.object.entity.User;
 import discord4j.core.object.entity.channel.VoiceChannel;
-import discord4j.rest.util.Permission;
 
 public class DiscordUtil {
 

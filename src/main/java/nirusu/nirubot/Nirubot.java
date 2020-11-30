@@ -9,7 +9,6 @@ import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.youtube.YouTube;
 import com.google.common.util.concurrent.AbstractIdleService;
-import com.google.common.util.concurrent.Service;
 import com.google.gson.Gson;
 
 import org.slf4j.Logger;
