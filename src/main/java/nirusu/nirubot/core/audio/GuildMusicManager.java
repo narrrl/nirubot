@@ -1,4 +1,4 @@
-package nirusu.nirubot.core;
+package nirusu.nirubot.core.audio;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
@@ -16,6 +16,8 @@ public class GuildMusicManager {
      */
     private final TrackScheduler scheduler;
 
+    private final D4jAudioProvider provider;
+
     /**
      * Creates a player and a track scheduler.
      * @param manager Audio player manager to use for creating the player.
@@ -24,6 +26,7 @@ public class GuildMusicManager {
         player = manager.createPlayer();
         scheduler = new TrackScheduler(player);
         player.addListener(scheduler);
+        provider = new D4jAudioProvider(player);
     }
 
     public AudioPlayer getPlayer() {
@@ -34,8 +37,15 @@ public class GuildMusicManager {
         return scheduler;
     }
 
+    public D4jAudioProvider getProvider() {
+        return this.provider;
+    }
+
     public void setVolume(final int volume) {
-        int real = volume > 100 ? 100 : volume;
+        if (volume > 100) {
+            throw new NumberFormatException();
+        }
+        int real = volume;
         real = volume < 5 ? 1 : real / 5;
         player.setVolume(real);
     }

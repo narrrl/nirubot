@@ -17,6 +17,8 @@ import discord4j.core.shard.ShardingStrategy;
 import nirusu.nirubot.Nirubot;
 import nirusu.nirubot.core.Config;
 import nirusu.nirubot.core.GuildManager;
+import nirusu.nirubot.core.audio.GuildMusicManager;
+import nirusu.nirubot.core.audio.PlayerManager;
 import nirusu.nirucmd.CommandContext;
 import nirusu.nirucmd.CommandDispatcher;
 import nirusu.nirucmd.annotation.Command.Context;
@@ -96,6 +98,9 @@ public class DiscordListener implements NiruListener {
 
     @Override
     public void shutdown() {
+        for (long id  : PlayerManager.getInstance().getAllIds()) {
+            PlayerManager.getInstance().destroy(id);
+        }
         client.logout().block();
         Nirubot.info("Discord listener is shutting down");
     }

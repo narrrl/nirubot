@@ -115,13 +115,12 @@ public class YoutubeDl {
             files.put(f.getName(), f);
         }
 
-        File zip;
         if (files.isEmpty()) {
             throw new InvalidYoutubeDlException("Nothing downloaded!");
         }
         try {
             // make zip
-            zip = ZipMaker.compressFiles(files, randomString + ".zip", dir);
+            ZipMaker.compressFiles(files, randomString + ".zip", dir);
         } catch (IOException e) {
             throw new InvalidYoutubeDlException(e.getMessage());
         }

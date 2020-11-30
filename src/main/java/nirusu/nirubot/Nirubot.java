@@ -172,6 +172,7 @@ public class Nirubot extends AbstractIdleService {
     }
 
 	public void shutdown() {
+        shutDown();
         // fuck you bot
         System.exit(0);
     }
