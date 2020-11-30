@@ -25,3 +25,4 @@ nirusu.nirubot.command.util.GameRequest
 nirusu.nirubot.command.util.EmoteDownloader
 nirusu.nirubot.command.util.YoutubeDl
 nirusu.nirubot.command.util.Invite
+nirusu.nirubot.command.fun.moasic.Mosaic

@@ -9,6 +9,7 @@ import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.youtube.YouTube;
 import com.google.common.util.concurrent.AbstractIdleService;
+import com.google.common.util.concurrent.Service;
 import com.google.gson.Gson;
 
 import org.slf4j.Logger;
@@ -16,7 +17,6 @@ import org.slf4j.LoggerFactory;
 
 import nirusu.nirubot.core.Config;
 import nirusu.nirubot.listener.DiscordListener;
-import nirusu.nirubot.listener.GameRequestListener;
 import nirusu.nirubot.listener.NiruListener;
 
 import javax.annotation.Nonnull;
@@ -83,7 +83,6 @@ public class Nirubot extends AbstractIdleService {
 
     }
 
-
     public static void main(String[] args) {
         var bot = getNirubot();
         bot.addListener(new Listener() {
@@ -110,8 +109,9 @@ public class Nirubot extends AbstractIdleService {
             }
 
             @Override
-            public void failed(@Nonnull State from,@Nonnull Throwable failure) {
-                error("Nirubot couldn't start due to a critical error during {} from and will now terminate", from, failure);
+            public void failed(@Nonnull State from, @Nonnull Throwable failure) {
+                error("Nirubot couldn't start due to a critical error during {} from and will now terminate", from,
+                        failure);
                 System.exit(EXIT_CODE_ERROR);
             }
 
@@ -125,7 +125,6 @@ public class Nirubot extends AbstractIdleService {
         return LOGGER;
     }
 
-
     // some print methods for the log
     public static void info(final String message) {
         LOGGER.info(message);
@@ -137,8 +136,8 @@ public class Nirubot extends AbstractIdleService {
 
     public static void warning(final String message) {
         LOGGER.warn(message);
-    }    
-    
+    }
+
     public static void error(final String message, Object from) {
         LOGGER.error(message, from);
     }
@@ -151,7 +150,6 @@ public class Nirubot extends AbstractIdleService {
     protected void startUp() throws Exception {
         // command handling etc for discord
         listeners.add(new DiscordListener());
-        listeners.add(GameRequestListener.getInstance());
     }
 
     @Override
@@ -161,24 +159,22 @@ public class Nirubot extends AbstractIdleService {
     }
 
     /**
-     * {@link nirusu.nirubot.core.Config#getPrefix()} gets the prefix from the config.json
+     * {@link nirusu.nirubot.core.Config#getPrefix()} gets the prefix from the
+     * config.json
+     * 
      * @return prefix that was set in config.json
      */
     public static String getDefaultPrefix() {
         return getConfig().getPrefix();
     }
 
-	public static Color getColor() {
-		return new Color(0, 153, 255);
-	}
+    public static Color getColor() {
+        return new Color(0, 153, 255);
+    }
 
-	public synchronized void shutdown() {
-        try {
-            stopAsync();
-        } catch (Exception | Error e) {
-            Nirubot.error("Couldn't shutdown bot!", e);
-            System.exit(EXIT_CODE_ERROR);
-        }
+	public void shutdown() {
+        // fuck you bot
+        System.exit(0);
     }
 
     public static boolean isOwner(long id) {

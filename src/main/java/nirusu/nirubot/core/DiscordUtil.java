@@ -2,29 +2,20 @@ package nirusu.nirubot.core;
 
 import javax.annotation.Nonnull;
 
-import net.dv8tion.jda.api.entities.Activity;
-import net.dv8tion.jda.api.entities.GuildVoiceState;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.VoiceChannel;
+import discord4j.core.object.VoiceState;
+import discord4j.core.object.entity.Guild;
+import discord4j.core.object.entity.Member;
+import discord4j.core.object.entity.User;
+import discord4j.core.object.entity.channel.VoiceChannel;
+import discord4j.rest.util.Permission;
 
 public class DiscordUtil {
 
     private DiscordUtil() { throw new IllegalAccessError(); }
 
-    public static Activity getActivity(final String type, final String msg) {
-        Activity act;
-        switch (type) {
-            case "playing" -> act = net.dv8tion.jda.api.entities.Activity.playing(msg);
-            case "watching" -> act = net.dv8tion.jda.api.entities.Activity.watching(msg);
-            case "listening" -> act = net.dv8tion.jda.api.entities.Activity.listening(msg);
-            default -> throw new IllegalArgumentException("invalid activity type");
-        }
-        return act;
-    }
-
     public static VoiceChannel findVoiceChannel(@Nonnull Member member) {
-        GuildVoiceState state = member.getVoiceState();
-        return state != null ? state.getChannel() : null;
+        VoiceState state = member.getVoiceState().block();
+        return state != null ? state.getChannel().block() : null;
     }
 
     /**
@@ -44,5 +35,6 @@ public class DiscordUtil {
 
         return true;
     }
+
     
 }

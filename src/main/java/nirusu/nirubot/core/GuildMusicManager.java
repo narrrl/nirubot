@@ -26,13 +26,6 @@ public class GuildMusicManager {
         player.addListener(scheduler);
     }
 
-    /**
-     * @return Wrapper around AudioPlayer to use it as an AudioSendHandler.
-     */
-    public AudioPlayerSendHandler getSendHandler() {
-        return new AudioPlayerSendHandler(player);
-    }
-
     public AudioPlayer getPlayer() {
         return player;
     }

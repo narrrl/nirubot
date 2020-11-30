@@ -1,85 +1,102 @@
 package nirusu.nirubot.listener;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-import javax.annotation.Nonnull;
 import javax.security.auth.login.LoginException;
 
-import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.OnlineStatus;
-import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.events.ReadyEvent;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import net.dv8tion.jda.api.events.message.priv.PrivateMessageReceivedEvent;
-import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder;
-import net.dv8tion.jda.api.sharding.ShardManager;
+import discord4j.core.DiscordClient;
+import discord4j.core.GatewayDiscordClient;
+import discord4j.core.event.domain.lifecycle.ReadyEvent;
+import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.object.entity.Guild;
+import discord4j.core.object.entity.Message;
+import discord4j.core.object.entity.User;
+import discord4j.core.shard.ShardingStrategy;
 import nirusu.nirubot.Nirubot;
-import nirusu.nirubot.annotation.Command;
-import nirusu.nirubot.command.CommandContext;
-import nirusu.nirubot.command.CommandHandler;
 import nirusu.nirubot.core.Config;
-import nirusu.nirubot.core.DiscordUtil;
 import nirusu.nirubot.core.GuildManager;
-import nirusu.nirubot.core.PlayerManager;
+import nirusu.nirucmd.CommandContext;
+import nirusu.nirucmd.CommandDispatcher;
+import nirusu.nirucmd.annotation.Command.Context;
+import nirusu.nirucmd.exception.NoSuchCommandException;
 
-public class DiscordListener extends ListenerAdapter implements NiruListener {
-
-    ShardManager shardManager;
+public class DiscordListener implements NiruListener {
+    private final CommandDispatcher dispatcher;
+    private final GatewayDiscordClient client;
 
     public DiscordListener() throws LoginException, IllegalArgumentException {
         Config conf = Nirubot.getConfig();
-        // starts bot
-        shardManager = DefaultShardManagerBuilder.createDefault(conf.getToken()).setAutoReconnect(true)
-                .setStatus(OnlineStatus.ONLINE).addEventListeners(this)
-                .setActivity(DiscordUtil.getActivity(conf.getActivityType(), conf.getActivity())).build();
-    }
+        dispatcher = new CommandDispatcher.Builder()
+            .addPackage("nirusu.nirubot.command").build();
+        
+        client = DiscordClient.create(conf.getToken())
+            .gateway()
+            .setSharding(ShardingStrategy.recommended())
+            .login().block();
+        
+        client.getEventDispatcher().on(ReadyEvent.class).subscribe(event -> 
+            Nirubot.info("Logged in as {}", event.getSelf().getUsername()));
 
-    @Override
-    public void onGuildMessageReceived(@Nonnull GuildMessageReceivedEvent event) {
-        User user = event.getAuthor();
+        client.getEventDispatcher().on(MessageCreateEvent.class).subscribe(event -> {
+            
+            Message mes = event.getMessage();
 
-        if (user.isBot()) {
-            return;
-        }
+            User auth = mes.getAuthor().orElse(null);
 
-        // gets GuildManager for this guild (to get guild specific prefix etc...)
-        GuildManager gm = GuildManager.getManager(event.getGuild().getIdLong());
+            if (auth == null || auth.isBot()) {
+                return;
+            }
+            // get message content
+            String raw = mes.getContent();
 
-        String raw = event.getMessage().getContentRaw();
+            if (raw == null) {
+                return;
+            }
 
-        if (raw.startsWith(gm.prefix()) && raw.length() > gm.prefix().length()) {
-            String content = raw.substring(gm.prefix().length());
-            // key for the command
-            String key = content.split("\\s+")[0];
-            // args seperated by whitespaces
-            List<String> args = List.of(content.substring(key.length()).split("\\s+"));
-            // created new CommandContext with arguments as list (seperated by whitespaces)
-            CommandContext ctx = new CommandContext(new MessageReceivedEvent(event.getJDA(), event.getResponseNumber(), event.getMessage()), Command.Context.GUILD);
-            ctx.setArgs(args);
-            CommandHandler.invoke(ctx, key);
-        }
-    }
+            CommandContext ctx = new CommandContext(event);
 
-    @Override
-    public void onReady(@Nonnull ReadyEvent event) {
-        Nirubot.info("{} ready", event.getJDA().getSelfUser().getAsTag());
+            String prefix;
+
+            if (ctx.isContext(Context.GUILD)) {
+                Guild g = event.getGuild().block();
+                GuildManager mg = GuildManager.getManager(g.getId().asLong());
+                prefix = mg.prefix();
+            } else {
+                prefix = Nirubot.getDefaultPrefix();
+            }
+
+            // check if message starts with prefix !
+            if (raw.startsWith(prefix) && raw.length() > prefix.length()) {
+                // create the CommandContext
+                List<String> args = new ArrayList<>();
+                Collections.addAll(args, raw.substring(prefix.length()).split("\\s+"));
+                if (args.size() > 0) {
+                    // get key to trigger command
+                    String key = args.get(0);
+                    // remove the key from the arguments
+                    args.remove(key);
+                    // set arguments for the command context
+                    ctx.setArgs(args);
+                    // run dispatcher
+                    try {
+                        dispatcher.run(ctx, key);
+                    } catch (NoSuchCommandException e) {
+                        ctx.reply("Unknown command!");
+                    }
+                }
+            }
+
+
+        });
+        client.onDisconnect().block();
+
     }
 
     @Override
     public void shutdown() {
-        PlayerManager.getInstance().shutdown();
-        for (JDA j : shardManager.getShards()) {
-            j.shutdown();
-        }
-        shardManager.shutdown();
+        client.logout().block();
         Nirubot.info("Discord listener is shutting down");
     }
-
-    @Override
-    public void onPrivateMessageReceived(PrivateMessageReceivedEvent event) {
-    }
-    
 }
