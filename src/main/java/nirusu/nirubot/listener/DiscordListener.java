@@ -17,7 +17,6 @@ import discord4j.core.shard.ShardingStrategy;
 import nirusu.nirubot.Nirubot;
 import nirusu.nirubot.core.Config;
 import nirusu.nirubot.core.GuildManager;
-import nirusu.nirubot.core.audio.GuildMusicManager;
 import nirusu.nirubot.core.audio.PlayerManager;
 import nirusu.nirucmd.CommandContext;
 import nirusu.nirucmd.CommandDispatcher;
