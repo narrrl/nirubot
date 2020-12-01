@@ -40,63 +40,62 @@ public class DiscordListener implements NiruListener {
         client.getEventDispatcher().on(ReadyEvent.class).subscribe(event -> 
             Nirubot.info("Logged in as {}", event.getSelf().getUsername()));
 
-        client.getEventDispatcher().on(MessageCreateEvent.class).subscribe(event -> {
-            
-            Message mes = event.getMessage();
-
-            if (mes.getAttachments().isEmpty()) {
-                return;
-            }
-
-            User auth = mes.getAuthor().get();
-
-            if (auth.isBot()) {
-                return;
-            }
-            // get message content
-            String raw = mes.getContent();
-
-            if (raw == null) {
-                return;
-            }
-
-            CommandContext ctx = new CommandContext(event);
-
-            String prefix;
-
-            if (ctx.isContext(Context.GUILD)) {
-                Guild g = event.getGuild().block();
-                GuildManager mg = GuildManager.getManager(g.getId().asLong());
-                prefix = mg.prefix();
-            } else {
-                prefix = Nirubot.getDefaultPrefix();
-            }
-
-            // check if message starts with prefix !
-            if (raw.startsWith(prefix) && raw.length() > prefix.length()) {
-                // create the CommandContext
-                List<String> args = new ArrayList<>();
-                Collections.addAll(args, raw.substring(prefix.length()).split("\\s+"));
-                if (args.size() > 0) {
-                    // get key to trigger command
-                    String key = args.get(0);
-                    // remove the key from the arguments
-                    args.remove(key);
-                    // set arguments for the command context
-                    ctx.setArgs(args);
-                    // run dispatcher
-                    try {
-                        dispatcher.run(ctx, key);
-                    } catch (NoSuchCommandException e) {
-                        ctx.reply("Unknown command!");
-                    }
-                }
-            }
-
-
-        });
+        client.getEventDispatcher().on(MessageCreateEvent.class).subscribe(event -> onMessageRecievedEvent(event));
         client.onDisconnect().block();
 
+    }
+
+    public void onMessageRecievedEvent(MessageCreateEvent event) {
+        Message mes = event.getMessage();
+
+        if (mes.getAuthor().isEmpty()) {
+            return;
+        }
+
+        User auth = mes.getAuthor().get();
+
+        if (auth.isBot()) {
+            return;
+        }
+        // get message content
+        String raw = mes.getContent();
+
+        if (raw == null) {
+            return;
+        }
+
+        CommandContext ctx = new CommandContext(event);
+
+        String prefix;
+
+        if (ctx.isContext(Context.GUILD)) {
+            Guild g = event.getGuild().block();
+            GuildManager mg = GuildManager.getManager(g.getId().asLong());
+            prefix = mg.prefix();
+        } else {
+            prefix = Nirubot.getDefaultPrefix();
+        }
+
+        // check if message starts with prefix !
+        if (raw.startsWith(prefix) && raw.length() > prefix.length()) {
+            // create the CommandContext
+            List<String> args = new ArrayList<>();
+            Collections.addAll(args, raw.substring(prefix.length()).split("\\s+"));
+            if (args.size() > 0) {
+                // get key to trigger command
+                String key = args.get(0);
+                // remove the key from the arguments
+                args.remove(key);
+                // set arguments for the command context
+                ctx.setArgs(args);
+                // run dispatcher
+                try {
+                    dispatcher.run(ctx, key);
+                } catch (NoSuchCommandException e) {
+                    ctx.reply("Unknown command!");
+                }
+            }
+        }
     }
 
     @Override
