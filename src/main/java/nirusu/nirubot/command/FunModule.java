@@ -45,8 +45,8 @@ public class FunModule extends BaseModule {
 
     @Command(key = { "ytd", "youtubedl", "youtubedownload", "ytdownload" }, description = "Downloads youtube videos with youtubedl")
     public void youtubedl() {
-        List<String> args = ctx.getArgs().orElse(null);
-        User author = ctx.getAuthor().orElse(null);
+        List<String> args = ctx.getArgs().orElseThrow();
+        User author = ctx.getAuthor().orElseThrow();
 
         if (author == null || args == null) {
             return;
@@ -58,8 +58,10 @@ public class FunModule extends BaseModule {
                 try {
                     out = new YoutubeDl().start(args);
                 } catch (InvalidYoutubeDlException e) {
-                    if (e.getMessage() == null) {
+                    if (e.getMessage() != null) {
                         ctx.reply(e.getMessage());
+                    } else {
+                        e.printStackTrace();
                     }
                     return;
                 }
