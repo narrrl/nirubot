@@ -8,6 +8,7 @@ enum Option {
                     throw new IllegalArgumentException("You can't use -audio and -video in one request");
                 cmd.req.setOption("extract-audio");
                 cmd.req.setOption("audio-format", "mp3");
+                cmd.req.setOption("embed-thumbnail");
                 cmd.formatIsSet = true;
             }
         },
@@ -18,12 +19,6 @@ enum Option {
                     throw new IllegalArgumentException("You can't use -audio and -video in one request");
                 cmd.req.setOption("recode-video", "mp4");
                 cmd.formatIsSet = true;
-            }
-        },
-        ZIP("-zip") {
-            @Override
-            public void exec(YoutubeDl cmd) {
-                cmd.asZip = true;
             }
         },
         BEST("-best") {
