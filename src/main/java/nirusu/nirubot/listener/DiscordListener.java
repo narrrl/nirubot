@@ -44,9 +44,13 @@ public class DiscordListener implements NiruListener {
             
             Message mes = event.getMessage();
 
-            User auth = mes.getAuthor().orElse(null);
+            if (mes.getAttachments().isEmpty()) {
+                return;
+            }
 
-            if (auth == null || auth.isBot()) {
+            User auth = mes.getAuthor().get();
+
+            if (auth.isBot()) {
                 return;
             }
             // get message content

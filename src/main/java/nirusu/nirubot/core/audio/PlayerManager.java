@@ -10,9 +10,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 
 import discord4j.core.object.entity.Guild;
-import discord4j.core.object.entity.channel.VoiceChannel;
 import nirusu.nirubot.Nirubot;
-import nirusu.nirubot.core.GuildManager;
 import nirusu.nirucmd.CommandContext;
 
 import javax.annotation.Nonnull;
@@ -54,11 +52,6 @@ public class PlayerManager {
     public synchronized void loadAndPlay(@Nonnull final CommandContext ctx, @Nonnull  String trackUrl) {
         GuildMusicManager musicManager = getGuildMusicManager(ctx.getGuild().get());
 
-        GuildManager gm = GuildManager.getManager(ctx.getGuild().get().getId().asLong());
-
-        musicManager.setVolume(gm.volume());
-
-
         playerManager.loadItemOrdered(musicManager, trackUrl, new AudioLoadResultHandler() {
             @Override
             public void trackLoaded(@Nonnull AudioTrack track) {
@@ -90,12 +83,12 @@ public class PlayerManager {
         });
     }
 
-    private synchronized void play(@Nonnull final GuildMusicManager musicManager, @Nonnull final AudioTrack track) {
-        musicManager.getScheduler().queue(track);
+    private synchronized void play(@Nonnull final GuildMusicManager guildMusicManager, @Nonnull final AudioTrack track) {
+        guildMusicManager.getScheduler().queue(track);
     }
 
-    public synchronized void pause(@Nonnull final GuildMusicManager musicManager, final boolean pause) {
-        musicManager.getPlayer().setPaused(pause);
+    public synchronized void pause(@Nonnull final Guild guild, final boolean pause) {
+        getGuildMusicManager(guild).getPlayer().setPaused(pause);
     }
 
     public synchronized void destroy(@Nonnull final long guild) {
@@ -107,29 +100,29 @@ public class PlayerManager {
         musicManagers.remove(guild);
     }
 
-    public synchronized void next(@Nonnull final GuildMusicManager musicManager) {
-        musicManager.getScheduler().nextTrack();
+    public synchronized void next(@Nonnull final Guild guild) {
+        getGuildMusicManager(guild).getScheduler().nextTrack();
     }
 
-    public synchronized void shuffle(@Nonnull final GuildMusicManager musicManager) {
-        musicManager.getScheduler().shuffle();
+    public synchronized void shuffle(@Nonnull final Guild guild) {
+        getGuildMusicManager(guild).getScheduler().shuffle();
 
     }
 
-    public synchronized AudioTrack remove(@Nonnull final GuildMusicManager musicManager, final int num) {
-        return musicManager.getScheduler().remove(num);
+    public synchronized AudioTrack remove(@Nonnull final Guild guild, final int num) {
+        return getGuildMusicManager(guild).getScheduler().remove(num);
     }
 
-    public synchronized AudioTrack remove(@Nonnull final GuildMusicManager musicManager, final String keyWord) {
-        return musicManager.getScheduler().remove(keyWord);
+    public synchronized AudioTrack remove(@Nonnull final Guild guild, final String keyWord) {
+        return getGuildMusicManager(guild).getScheduler().remove(keyWord);
     }
 
-    public synchronized boolean repeat(@Nonnull final GuildMusicManager musicManager) {
-        return musicManager.getScheduler().setRepeat();
+    public synchronized boolean repeat(@Nonnull final Guild guild) {
+        return getGuildMusicManager(guild).getScheduler().setRepeat();
     }
 
-    public AudioTrack getPlaying(@Nonnull final GuildMusicManager musicManager) {
-        return musicManager.getPlayer().getPlayingTrack();
+    public AudioTrack getPlaying(@Nonnull final Guild guild) {
+        return getGuildMusicManager(guild).getPlayer().getPlayingTrack();
     }
 
     public static synchronized PlayerManager getInstance() {
@@ -164,17 +157,5 @@ public class PlayerManager {
     public Collection<Long> getAllIds() {
         return musicManagers.keySet();
     }
-    
-    public static void attachToFirstVoiceChannel(Guild guild, D4jAudioProvider provider) {
-        VoiceChannel voiceChannel = guild.getChannels().ofType(VoiceChannel.class).blockFirst();
-        boolean inVoiceChannel = guild.getVoiceStates() // Check if any VoiceState for this guild relates to bot
-            .any(voiceState -> guild.getClient().getSelfId().asString().equals(voiceState.getUserId().asString()))
-            .block();
-
-        if (!inVoiceChannel) {
-          voiceChannel.join(spec -> spec.setProvider(provider)).block();
-        }
-  }
-
 }
 

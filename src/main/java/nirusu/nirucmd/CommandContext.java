@@ -10,6 +10,7 @@ import java.util.Optional;
 import javax.annotation.Nonnull;
 
 import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.object.VoiceState;
 import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.Message;
@@ -110,8 +111,8 @@ public class CommandContext {
             return false;
         }
 
-        Guild g = getGuild().orElse(null);
-        User u = getAuthor().orElse(null);
+        Guild g = getGuild().orElseThrow();
+        User u = getAuthor().orElseThrow();
 
         if (u == null || g == null) {
             return false;
@@ -130,8 +131,8 @@ public class CommandContext {
         return g.getMemberById(u.getId()).blockOptional();
     }
 
-    public void sendFile(File f) {
-        getChannel().createMessage(mes -> {
+    public Message sendFile(File f) {
+        return getChannel().createMessage(mes -> {
             try {
                 mes.addFile(f.getName(), new FileInputStream(f));
             } catch (FileNotFoundException e) {
@@ -146,5 +147,34 @@ public class CommandContext {
     
     public MessageChannel getChannel() {
         return event.getMessage().getChannel().block();
+    }
+
+
+    public Optional<User> getSelf() {
+        return event.getClient().getSelf().blockOptional();
+    }
+
+    public Optional<VoiceState> getSelfVoiceState() {
+        if (getSelf().isPresent() && getGuild().isPresent()) {
+            Optional<Member> member = getSelf().get().asMember(getGuild().get().getId()).blockOptional();
+            if (member.isPresent()) {
+                return member.get().getVoiceState().blockOptional();
+            }
+        }
+        return Optional.empty();
+    }
+
+    public Optional<VoiceState> getAuthorVoiceState() {
+        if (getMember().isPresent()) {
+            return getMember().get().getVoiceState().blockOptional();
+        }
+        return Optional.empty();
+    }
+
+    public boolean argsHasLength(int length) {
+        if (getArgs().isEmpty()) {
+            return false;
+        }
+        return getArgs().get().size() == length;
     }
 }
