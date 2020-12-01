@@ -42,10 +42,8 @@ public class GuildMusicManager {
     }
 
     public void setVolume(final int volume) {
-        if (volume > 100) {
-            throw new NumberFormatException();
-        }
-        int real = volume;
+        int real = volume > 100 ? 100 : volume;
+        real = real < 0 ? 0 : real;
         real = volume < 5 ? 1 : real / 5;
         player.setVolume(real);
     }
