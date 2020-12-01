@@ -1,8 +1,19 @@
 package nirusu.nirubot.command;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import com.google.api.services.youtube.YouTube;
+import com.google.api.services.youtube.model.SearchListResponse;
+import com.google.api.services.youtube.model.SearchResult;
+import com.sapher.youtubedl.YoutubeDL;
+import com.sapher.youtubedl.YoutubeDLException;
+import com.sapher.youtubedl.YoutubeDLRequest;
+import com.sapher.youtubedl.YoutubeDLResponse;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 
 import discord4j.core.object.VoiceState;
 import discord4j.core.object.entity.Guild;
@@ -11,9 +22,11 @@ import discord4j.core.object.entity.User;
 import discord4j.core.object.entity.channel.VoiceChannel;
 import discord4j.rest.util.Color;
 import nirusu.nirubot.Nirubot;
+import nirusu.nirubot.core.DiscordUtil;
 import nirusu.nirubot.core.GuildManager;
 import nirusu.nirubot.core.audio.GuildMusicManager;
 import nirusu.nirubot.core.audio.PlayerManager;
+import nirusu.nirubot.util.YouTubeVideo;
 import nirusu.nirucmd.BaseModule;
 import nirusu.nirucmd.annotation.Command;
 
@@ -191,6 +204,196 @@ public class MusicModule extends BaseModule {
         
     }
 
+    @Command(key = {"pause", "resume"}, description = "Pause/Resume music", context = {Command.Context.GUILD})
+    public void pause() {
+        Guild guild = ctx.getGuild().orElseThrow();
+        if (!ctx.argsHasLength(0)) {
+            return;
+        }
+
+        if (!isInSameChannel()) {
+            ctx.reply("You must be in the same voice channel!");
+            return;
+        }
+
+        PlayerManager manager = PlayerManager.getInstance();
+        GuildMusicManager musicManager = manager.getGuildMusicManager(guild);
+
+        if (musicManager.getPlayer().getPlayingTrack() == null) {
+            ctx.reply("No music is playing!");
+            return;
+        }
+        manager.pause(guild, !musicManager.getPlayer().isPaused());
+    }
+
+    @Command(key = {"playing", "nowplaying", "np"}, description = "Shows what song currently is playing", context = {Command.Context.GUILD})
+    public void playing() {
+        Guild guild = ctx.getGuild().orElseThrow();
+        if (!ctx.argsHasLength(0)) {
+            return;
+        }
+
+         PlayerManager manager = PlayerManager.getInstance();
+        final AudioTrack track = manager.getPlaying(guild);
+
+        if (track == null) {
+            ctx.reply("No music is playing!");
+            return;
+        }
+
+        AudioTrackInfo info = track.getInfo();
+        String uri = info.uri.startsWith("https://www.youtube.com/watch?v=") 
+            ? "https://youtu.be/" + info.identifier +  "?t=" + (track.getPosition() / 1000) : info.uri;
+        StringBuilder progress = new StringBuilder();
+        float percent = track.getPosition() / (float) info.length;
+        int totalTiles = 10;
+        int tilesPlayed = (int) (totalTiles * percent);
+        tilesPlayed = tilesPlayed == 0 ? 1 : tilesPlayed;
+        long minutes = track.getPosition() / 1000 / 60;
+        long seconds = track.getPosition() / 1000 % 60;
+        progress.append("◄");
+        for (int i = 0; i < totalTiles; i++) {
+            if (i == tilesPlayed - 1) {
+                progress.append("🔘");
+            } else {
+                progress.append("▬");
+            }
+        }
+        progress.append("►\n " + DiscordUtil.formatTime(minutes, seconds)+ " / ");
+        minutes = track.getDuration() / 1000 / 60;
+        seconds = track.getDuration() / 1000 % 60;
+        progress.append(DiscordUtil.formatTime(minutes, seconds));
+        try {
+            YoutubeDLRequest req = new YoutubeDLRequest(uri, Nirubot.getTmpDirectory().getAbsolutePath());
+            req.setOption("get-thumbnail");
+            YoutubeDLResponse res = YoutubeDL.execute(req);
+            ctx.getChannel().createEmbed(spec ->
+                spec.setTitle("Now playing:")
+                    .setDescription("[" + info.title + "]" + "(" + uri + ")\n" + progress.toString())
+                    .setThumbnail(res.getOut())
+                    .setColor(Color.of(Nirubot.getColor().getRGB()))
+            ).block();
+        } catch (YoutubeDLException e) {
+            ctx.getChannel().createEmbed(spec ->
+                spec.setTitle("Now playing:")
+                    .setDescription("[" + info.title + "]" + "(" + uri + ")\n" + progress.toString())
+                    .setColor(Color.of(Nirubot.getColor().getRGB()))
+            ).block();
+            Nirubot.warning(e.getMessage());
+        }
+    }
+
+    @Command(key = {"yt", "youtube", "yp"}, 
+        description = "Searches and plays youtube videos by given keywords", 
+        context = {Command.Context.GUILD})
+    public void youtube() {
+
+        List<String> args = ctx.getArgs().orElseThrow();
+        Guild guild = ctx.getGuild().orElseThrow();
+
+        if (args.size() < 1) {
+            return;
+        }
+
+        if (ctx.getAuthorVoiceState().isEmpty()) {
+            ctx.reply("You are not in a voice channel!");
+            return;
+        }
+
+        VoiceChannel ch = ctx.getAuthorVoiceState().get().getChannel().block();
+
+
+        SearchListResponse response = getVideos(args);
+
+        List<SearchResult> results = response.getItems();
+
+        if (results == null) {
+            ctx.reply("No videos found!");
+        }
+        
+        if (results.size() < 1) {
+            ctx.reply("Nothing found");
+            return;
+        }
+
+        YouTubeVideo video = Nirubot.getGson().fromJson(results.get(0).toString(), YouTubeVideo.class);
+        try {
+            PlayerManager.getInstance().loadAndPlay(ctx, video.getVideoId());
+        } catch (IllegalArgumentException e) {
+            return;
+        }
+
+        ch.join(spec -> spec.setProvider(PlayerManager.getInstance().getGuildMusicManager(guild).getProvider())).block();
+
+        ctx.getChannel().createEmbed(spec -> 
+            spec.setColor(Color.of(Nirubot.getColor().getRGB()))
+                .setTitle(video.getTitle())
+                .setUrl("https://www.youtube.com/watch?v=" + video.getVideoId())
+                .setThumbnail(video.getThumbnailUrl())
+        ).block();
+    }
+
+
+    @Command(key = {"ls", "list"}, description = "Lists all queued songs", context = {Command.Context.GUILD})
+    public void list() {
+
+        Guild guild = ctx.getGuild().orElseThrow();
+
+        if (!ctx.argsHasLength(0)) {
+            return;
+        }
+
+        PlayerManager manager = PlayerManager.getInstance();
+        GuildMusicManager musicManager = manager.getGuildMusicManager(guild);
+
+        final AudioTrack track = manager.getPlaying(guild);
+
+        if (track == null) {
+            ctx.reply("No music is playing!");
+            return;
+        }
+
+        ArrayList<AudioTrackInfo> tracks = musicManager.getScheduler().getAllTrackInfos();
+
+        StringBuilder out = new StringBuilder();
+
+        out.append("Current: [" + track.getInfo().title + "](" + track.getInfo().uri + ")\n");
+
+        int it = 1;
+
+        int totalEmbs = 0;
+
+        for (AudioTrackInfo i : tracks) {
+
+            if (totalEmbs == 2)
+                break;
+
+            out.append(it + ": [" + i.title + "](" + i.uri + ")\n");
+
+            if (out.length() > 1800) {
+                final String description = out.toString().substring(0, out.length());
+                ctx.getChannel().createEmbed(spec ->
+                    spec.setColor(Color.of(Nirubot.getColor().getRGB()))
+                        .setDescription(description)
+                ).block();
+                out = new StringBuilder();
+
+                totalEmbs++;
+
+            }
+
+            it++;
+        }
+
+        if (out.length() != 0) {
+            final String description = out.toString().substring(0, out.length());
+            ctx.getChannel().createEmbed(spec ->
+                spec.setColor(Color.of(Nirubot.getColor().getRGB()))
+                    .setDescription(description)
+            ).block();
+        }
+    }
+
 
     private boolean isInSameChannel() {
         if (ctx.getAuthorVoiceState().isEmpty()) {
@@ -206,6 +409,42 @@ public class MusicModule extends BaseModule {
 
     private boolean isBotConnected() {
         return ctx.getSelfVoiceState().isPresent();
+    }
+
+    public SearchListResponse getVideos(List<String> args) {
+        YouTube yt = Nirubot.getYouTube();
+        YouTube.Search.List search;
+        try {
+             search = yt.search().list(Arrays.asList(new String[] { "id", "snippet" }));
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new IllegalArgumentException(e.getMessage());
+        }
+
+        search.setKey(Nirubot.getConfig().getYouTubeKey());
+
+        StringBuilder build = new StringBuilder();
+
+        for (int i = 0; i < args.size(); i++) {
+            build.append(args.get(i)).append(" ");
+        }
+
+        String searchQuerry = build.substring(0, build.length() - 1);
+
+        search.setQ(searchQuerry);
+
+        search.setType(Arrays.asList(new String[]{ "video" }));
+
+        search.setFields("items(id/kind,id/videoId,snippet/title,snippet/thumbnails/default/url)");
+
+        search.setMaxResults(1L);
+
+        try {
+            return search.execute();
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new IllegalArgumentException(e.getMessage());
+        }
     }
 
     
