@@ -11,6 +11,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 
 import discord4j.core.object.entity.Guild;
 import nirusu.nirubot.Nirubot;
+import nirusu.nirubot.core.GuildManager;
 import nirusu.nirucmd.CommandContext;
 
 import javax.annotation.Nonnull;
@@ -44,6 +45,7 @@ public class PlayerManager {
         if (musicManager == null) {
             musicManager = new GuildMusicManager(playerManager);
             musicManagers.put(guildId, musicManager);
+            musicManager.setVolume(GuildManager.getManager(guild.getId().asLong()).volume());
         }
 
         return musicManager;
