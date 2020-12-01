@@ -117,6 +117,7 @@ public class Nirubot extends AbstractIdleService {
         }, executor -> new Thread(executor, "Watchdog").start());
         Nirubot.info("Cleaning tmp directory");
         cleanDir(getTmpDirectory());
+        cleanDir(getWebDir());
         bot.startAsync();
     }
 
