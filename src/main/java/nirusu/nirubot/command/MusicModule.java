@@ -2,11 +2,15 @@ package nirusu.nirubot.command;
 
 import java.util.List;
 
+import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+
 import discord4j.core.object.VoiceState;
 import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.User;
 import discord4j.core.object.entity.channel.VoiceChannel;
+import discord4j.rest.util.Color;
+import nirusu.nirubot.Nirubot;
 import nirusu.nirubot.core.GuildManager;
 import nirusu.nirubot.core.audio.GuildMusicManager;
 import nirusu.nirubot.core.audio.PlayerManager;
@@ -19,7 +23,6 @@ public class MusicModule extends BaseModule {
     public void play() {
         Guild guild = ctx.getGuild().orElseThrow();
         List<String> args = ctx.getArgs().orElseThrow();
-        User user = ctx.getAuthor().orElseThrow();
 
         if (!ctx.argsHasLength(1)) {
             return;
@@ -27,8 +30,7 @@ public class MusicModule extends BaseModule {
 
         String link = args.get(0);
         GuildMusicManager musicManager = PlayerManager.getInstance().getGuildMusicManager(guild);
-        Member member = guild.getMemberById(user.getId()).block();
-        VoiceState state = member.getVoiceState().block();
+        VoiceState state = ctx.getAuthorVoiceState().orElse(null);
 
         if (state == null) {
             ctx.reply("Join a voice channel first!");
@@ -37,8 +39,13 @@ public class MusicModule extends BaseModule {
 
         VoiceChannel ch = state.getChannel().block();
         ch.join(con -> con.setProvider(musicManager.getProvider())).block();
-        PlayerManager.getInstance().loadAndPlay(ctx, link);
-        musicManager.setVolume(GuildManager.getManager(guild.getId().asLong()).volume());
+        try {
+            PlayerManager.getInstance().loadAndPlay(ctx, link);
+        } catch (IllegalArgumentException e) {
+            ctx.reply(e.getMessage());
+            return;
+        }
+        ctx.reply("Loaded song!");
     }
 
     @Command( key = { "skip", "next", "s", "sk"}, description = "Skips the current song", context = {Command.Context.GUILD})
@@ -54,7 +61,26 @@ public class MusicModule extends BaseModule {
             return;
         }
 
+        GuildMusicManager musicManager = PlayerManager.getInstance().getGuildMusicManager(guild);
+
+        AudioTrack prev = musicManager.getPlayer().getPlayingTrack();
+
+        if (prev == null) {
+            ctx.reply("No music is playing!");
+            return;
+        }
+
         PlayerManager.getInstance().next(guild);
+
+        AudioTrack next = musicManager.getPlayer().getPlayingTrack();
+        String prevText = "[" + prev.getInfo().title + "](" + prev.getInfo().uri + ")";
+        String nextText = next != null ? "[" + next.getInfo().title + "](" + next.getInfo().uri + ")" : "End of queue!";
+        ctx.getChannel().createEmbed(spec ->
+            spec.setColor(Color.of(Nirubot.getColor().getRGB()))
+            .setTitle("Skipped Song!")
+            .addField("Skipped:", prevText, true)
+            .addField("Next:", nextText, true)
+            ).block();
     }
 
     @Command(key = {"vol", "vl", "volume"}, description = "Sets the volume for the bot")
@@ -67,11 +93,37 @@ public class MusicModule extends BaseModule {
         }
 
         GuildMusicManager musicManager = PlayerManager.getInstance().getGuildMusicManager(guild);
+        int volume;
         try {
-            musicManager.setVolume(Integer.parseInt(args.get(0)));
+            volume = Integer.parseInt(args.get(0));
         } catch ( NumberFormatException e) {
             ctx.reply(String.format("%s is not a valid volume", args.get(0)));
+            return;
         }
+
+        if (volume < 0) return;
+
+        volume = volume > 100 ? 100 : volume;
+
+        GuildManager.getManager(guild.getId().asLong()).setVolume(volume);
+        musicManager.setVolume(volume);
+
+        int volBars = volume / 10;
+        StringBuilder out = new StringBuilder();
+        out.append("Volume:\n►");
+        for (int i = 0; i < 10; i++) {
+            if (i < volBars) {
+                out.append("█");
+            } else {
+                out.append("░");
+            }
+        }
+        out.append("◄\n" + GuildManager.getManager(ctx.getGuild().orElseThrow().getId().asLong()).volume() + "%");
+
+        ctx.getChannel().createEmbed(spec ->
+            spec.setColor(Color.of(Nirubot.getColor().getRGB()))
+            .setDescription(out.toString())
+        ).block();
     }
 
     @Command(key = {"join", "j"}, description = "Joins into the channel of the author", context = {Command.Context.GUILD})
