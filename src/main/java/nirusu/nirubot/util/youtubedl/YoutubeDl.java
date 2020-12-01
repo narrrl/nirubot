@@ -13,6 +13,7 @@ import com.sapher.youtubedl.YoutubeDLException;
 import com.sapher.youtubedl.YoutubeDLRequest;
 
 import nirusu.nirubot.Nirubot;
+import nirusu.nirubot.util.IndexCreator;
 import nirusu.nirubot.util.RandomString;
 import nirusu.nirubot.util.ZipMaker;
 import nirusu.nirucmd.CommandContext;
@@ -22,8 +23,7 @@ public class YoutubeDl {
             .compile("^(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]");
     private static final Pattern OPTION_REGEX = Pattern.compile("-.+");
 
-    boolean asZip = false;
-     YoutubeDLRequest req;
+    YoutubeDLRequest req;
     boolean formatIsSet = false; 
 
     public File start(final List<String> args) throws InvalidYoutubeDlException {
@@ -97,6 +97,29 @@ public class YoutubeDl {
 
         dir.mkdirs();
 
+
+        if (tmpDir.listFiles().length > 1) {
+            // hashmap for zip
+            HashMap<String, File> files = new HashMap<>();
+
+            // iterate through all the downloaded files
+            for (File f : tmpDir.listFiles()) {
+                // hash map to zip later
+                files.put(f.getName(), f);
+            }
+
+            if (files.isEmpty()) {
+                throw new InvalidYoutubeDlException("Nothing downloaded!");
+            }
+            try {
+                // make zip
+                ZipMaker.compressFiles(files, randomString + ".zip", dir);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        // now move all other files to the web dir
         for (File f : tmpDir.listFiles()) {
             File t = new File(dir.getAbsolutePath() + File.separator + f.getName());
             try {
@@ -106,23 +129,10 @@ public class YoutubeDl {
             }
         }
 
-        // hashmap for zip
-        HashMap<String, File> files = new HashMap<>();
-
-        // iterate through all the downloaded files
-        for (File f : tmpDir.listFiles()) {
-            // hash map to zip later
-            files.put(f.getName(), f);
-        }
-
-        if (files.isEmpty()) {
-            throw new InvalidYoutubeDlException("Nothing downloaded!");
-        }
         try {
-            // make zip
-            ZipMaker.compressFiles(files, randomString + ".zip", dir);
+            IndexCreator.createIndex(dir);
         } catch (IOException e) {
-            throw new InvalidYoutubeDlException(e.getMessage());
+            e.printStackTrace();
         }
 
         return dir;
