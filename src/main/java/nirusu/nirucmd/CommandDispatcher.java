@@ -2,8 +2,11 @@ package nirusu.nirucmd;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
 
@@ -16,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import nirusu.nirucmd.annotation.Command;
+import nirusu.nirucmd.exception.DuplicateKeysException;
 import nirusu.nirucmd.exception.NoSuchCommandException;
 
 /**
@@ -67,6 +71,7 @@ public class CommandDispatcher {
                 );
             this.modules.addAll(ref.getSubTypesOf(nirusu.nirucmd.BaseModule.class));
         }
+        checkForDuplicatedKeys();
     }
 
 
@@ -184,5 +189,38 @@ public class CommandDispatcher {
         }
 
         return false;
+    }
+
+    /**
+     * Checks if any methods have the same key {@link nirusu.nirucmd.annotation.Command#key}
+     */
+    private void checkForDuplicatedKeys() {
+        List<Method> methods = getMethods();
+        for (Method m : methods) {
+            if (methods.stream().filter(o -> !o.equals(m)).anyMatch(o -> {
+                for (String key : m.getAnnotation(Command.class).key()) {
+                    if (Arrays.asList(o.getAnnotation(Command.class).key())
+                        .stream().anyMatch(key::equals)) {
+                        LOGGER.error(String.format("You have duplicated key in: %s and %s",m.getName(), o.getName()));
+                        return true;
+                    }
+                }
+                return false;
+            })) {
+                throw new DuplicateKeysException();
+            }
+        }
+
+    }
+
+    /**
+     * Returns a list of all commands (Methods which annote {@link nirusu.nirucmd.annotation.Command})
+     * 
+     * @return
+     */
+    public List<Method> getMethods() {
+        return modules.stream().flatMap(module 
+            -> Arrays.asList(module.getDeclaredMethods()).stream().filter(m 
+            -> m.isAnnotationPresent(Command.class))).collect(Collectors.toList());
     }
 }
