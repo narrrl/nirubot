@@ -44,7 +44,6 @@ public class PlayerManager {
         return musicManagers.computeIfAbsent(guildId, id -> {
             GuildMusicManager musicManager;
             musicManager = new GuildMusicManager(audioPlayerManager);
-            musicManagers.put(guildId, musicManager);
             musicManager.setVolume(GuildManager.getManager(guild.getId().asLong()).volume());
             return musicManager;
         });
