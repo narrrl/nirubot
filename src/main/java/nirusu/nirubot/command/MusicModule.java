@@ -30,6 +30,8 @@ import nirusu.nirubot.util.YouTubeVideo;
 import nirusu.nirucmd.BaseModule;
 import nirusu.nirucmd.annotation.Command;
 
+
+// TODO: needs some rework - UtilClasses and Documentation
 public class MusicModule extends BaseModule {
 
     @Command( key = { "p", "play", "pl"}, description = "Plays a song", context = {Command.Context.GUILD})
