@@ -19,7 +19,7 @@ public class AdminModule extends BaseModule {
         }
 
         ctx.reply("Bai bai!");
-        Nirubot.getNirubot().shutdown();
+        Nirubot.getNirubot().exit();
     }
 
     @Command( key = {"pref", "prefix"}, description = "Sets the perfix of the bot for a guild or global")

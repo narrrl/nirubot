@@ -171,7 +171,7 @@ public class Nirubot extends AbstractIdleService {
         return new Color(0, 153, 255);
     }
 
-	public void shutdown() {
+	public void exit() {
         shutDown();
         // fuck you bot
         System.exit(0);
