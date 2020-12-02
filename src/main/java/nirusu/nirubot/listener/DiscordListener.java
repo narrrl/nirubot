@@ -3,6 +3,7 @@ package nirusu.nirubot.listener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import javax.security.auth.login.LoginException;
 
@@ -49,15 +50,12 @@ public class DiscordListener implements NiruListener {
     public void onMessageRecievedEvent(MessageCreateEvent event) {
         Message mes = event.getMessage();
 
-        if (mes.getAuthor().isEmpty()) {
+        Optional<User> auth = mes.getAuthor();
+
+        if (auth.isEmpty() || auth.get().isBot()) {
             return;
         }
 
-        User auth = mes.getAuthor().get();
-
-        if (auth.isBot()) {
-            return;
-        }
         // get message content
         String raw = mes.getContent();
 
