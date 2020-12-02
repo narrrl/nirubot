@@ -2880,6 +2880,7 @@ public class RandomString {
         "wrap",
         "yesterday"
     };
+    private static Random rand;
 
     private RandomString() {}
 
@@ -2891,13 +2892,19 @@ public class RandomString {
         USED_STRINGS.add(rand);
         return rand;
     }
+    
+    private static Random getRandom() {
+        if (rand == null) {
+            rand = new Random();
+        }
+        return rand;
+    }
 
     private static String buildRandomString(int size) {
         int i = size;
         StringBuilder str = new StringBuilder();
-        Random rand = new Random();
         while (i > 0) {
-            str.append(RANDOM_STRINGS[rand.nextInt(RANDOM_STRINGS.length)]);
+            str.append(RANDOM_STRINGS[getRandom().nextInt(RANDOM_STRINGS.length)]);
 
             if (i > 1) {
                 str.append("-");

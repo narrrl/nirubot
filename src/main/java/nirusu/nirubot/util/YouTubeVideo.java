@@ -21,7 +21,7 @@ public class YouTubeVideo {
         private Thumbnails thumbnails;
         public class Thumbnails {
             @SerializedName("default")
-            public Default default_;
+            public Default defaultThumbnail;
             public class Default {
                 private String url;
             }
@@ -30,7 +30,7 @@ public class YouTubeVideo {
 
 
     public String getThumbnailUrl() {
-        return this.snippet.thumbnails.default_.url;
+        return this.snippet.thumbnails.defaultThumbnail.url;
     }
 
     public String getVideoId() {
