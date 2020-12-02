@@ -1,34 +1,30 @@
 package nirusu.nirubot.util.youtubedl;
 
+import com.sapher.youtubedl.YoutubeDLRequest;
+
 enum Option {
         AUDIO("-audio") {
             @Override
-            public void exec(YoutubeDl cmd) {
-                if (cmd.formatIsSet)
-                    throw new IllegalArgumentException("You can't use -audio and -video in one request");
-                cmd.req.setOption("extract-audio");
-                cmd.req.setOption("audio-format", "mp3");
-                cmd.req.setOption("embed-thumbnail");
-                cmd.formatIsSet = true;
+            public void exec(YoutubeDLRequest request) {
+                request.setOption("extract-audio");
+                request.setOption("audio-format", "mp3");
+                request.setOption("embed-thumbnail");
             }
         },
         VIDEO("-video") {
             @Override
-            public void exec(YoutubeDl cmd) {
-                if (cmd.formatIsSet)
-                    throw new IllegalArgumentException("You can't use -audio and -video in one request");
-                cmd.req.setOption("recode-video", "mp4");
-                cmd.formatIsSet = true;
+            public void exec(YoutubeDLRequest request) {
+                request.setOption("recode-video", "mp4");
             }
         },
         BEST("-best") {
             @Override
-            public void exec(YoutubeDl cmd) {
-                cmd.req.setOption("format", "best");
+            public void exec(YoutubeDLRequest request) {
+                request.setOption("format", "best");
             }
         };
 
-        public abstract void exec(final YoutubeDl cmd);
+        public abstract void exec(final YoutubeDLRequest request);
 
         private final String option;
 

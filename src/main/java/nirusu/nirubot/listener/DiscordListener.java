@@ -18,6 +18,7 @@ import nirusu.nirubot.Nirubot;
 import nirusu.nirubot.core.Config;
 import nirusu.nirubot.core.GuildManager;
 import nirusu.nirubot.core.audio.PlayerManager;
+import nirusu.nirubot.exception.InvalidContextException;
 import nirusu.nirucmd.CommandContext;
 import nirusu.nirucmd.CommandDispatcher;
 import nirusu.nirucmd.annotation.Command.Context;
@@ -81,7 +82,7 @@ public class DiscordListener implements NiruListener {
             // create the CommandContext
             List<String> args = new ArrayList<>();
             Collections.addAll(args, raw.substring(prefix.length()).split("\\s+"));
-            if (args.size() > 0) {
+            if (!args.isEmpty()) {
                 // get key to trigger command
                 String key = args.get(0);
                 // remove the key from the arguments
@@ -93,6 +94,8 @@ public class DiscordListener implements NiruListener {
                     dispatcher.run(ctx, key);
                 } catch (NoSuchCommandException e) {
                     ctx.reply("Unknown command!");
+                } catch (InvalidContextException e) {
+                    ctx.reply(e.getMessage());
                 }
             }
         }

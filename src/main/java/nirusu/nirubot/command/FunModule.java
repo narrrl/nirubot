@@ -56,7 +56,7 @@ public class FunModule extends BaseModule {
         EventQueue.invokeLater(() -> {
                 File out;
                 try {
-                    out = new YoutubeDl().start(args);
+                    out = new YoutubeDl(args).start();
                 } catch (InvalidYoutubeDlException e) {
                     if (e.getMessage() != null) {
                         ctx.reply(e.getMessage());
