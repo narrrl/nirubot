@@ -3,6 +3,7 @@ package nirusu.nirubot;
 import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 
 import com.google.api.client.http.javanet.NetHttpTransport;
@@ -22,8 +23,8 @@ import javax.annotation.Nonnull;
 
 public class Nirubot extends AbstractIdleService {
     private static final Logger LOGGER = LoggerFactory.getLogger(Nirubot.class);
-    public static int EXIT_CODE_ERROR = -1;
-    public static int EXIT_CODE_SUCCESS = 0;
+    private static final int EXIT_CODE_ERROR = -1;
+    private static final int EXIT_CODE_SUCCESS = 0;
     private static Nirubot bot;
     private static Gson gson;
     private static Config conf;
@@ -208,7 +209,11 @@ public class Nirubot extends AbstractIdleService {
             if (f.isDirectory()) {
                 cleanDir(f);
             }
-            f.delete();
+            try {
+                Files.delete(f.toPath());
+            } catch (IOException e) {
+                Nirubot.error(e.getMessage(), e);
+            }
         }
     }
 }
