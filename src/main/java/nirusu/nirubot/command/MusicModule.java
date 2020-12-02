@@ -13,6 +13,7 @@ import com.sapher.youtubedl.YoutubeDL;
 import com.sapher.youtubedl.YoutubeDLException;
 import com.sapher.youtubedl.YoutubeDLRequest;
 import com.sapher.youtubedl.YoutubeDLResponse;
+import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 
@@ -50,14 +51,8 @@ public class MusicModule extends BaseModule {
         }
 
         VoiceChannel ch = state.getChannel().block();
+        PlayerManager.getInstance().loadAndPlay(ctx, link);
         ch.join(con -> con.setProvider(musicManager.getProvider())).block();
-        try {
-            PlayerManager.getInstance().loadAndPlay(ctx, link);
-        } catch (IllegalArgumentException e) {
-            ctx.reply(e.getMessage());
-            return;
-        }
-        ctx.reply("Loaded song!");
     }
 
     @Command( key = { "skip", "next", "s", "sk"}, description = "Skips the current song", context = {Command.Context.GUILD})
@@ -327,11 +322,7 @@ public class MusicModule extends BaseModule {
         }
 
         YouTubeVideo video = Nirubot.getGson().fromJson(results.get(0).toString(), YouTubeVideo.class);
-        try {
-            PlayerManager.getInstance().loadAndPlay(ctx, video.getVideoId());
-        } catch (IllegalArgumentException e) {
-            return;
-        }
+        PlayerManager.getInstance().loadAndPlay(ctx, video.getVideoId());
 
         ch.join(spec -> spec.setProvider(PlayerManager.getInstance().getGuildMusicManager(guild).getProvider())).block();
 

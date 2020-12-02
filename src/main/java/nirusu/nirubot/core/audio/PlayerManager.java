@@ -10,6 +10,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 
 import discord4j.core.object.entity.Guild;
+import discord4j.rest.util.Color;
 import nirusu.nirubot.Nirubot;
 import nirusu.nirubot.core.GuildManager;
 import nirusu.nirucmd.CommandContext;
@@ -52,35 +53,41 @@ public class PlayerManager {
     }
 
     public synchronized void loadAndPlay(@Nonnull final CommandContext ctx, @Nonnull  String trackUrl) {
-        GuildMusicManager musicManager = getGuildMusicManager(ctx.getGuild().get());
+        GuildMusicManager musicManager = getGuildMusicManager(ctx.getGuild().orElseThrow(IllegalArgumentException::new));
 
         playerManager.loadItemOrdered(musicManager, trackUrl, new AudioLoadResultHandler() {
             @Override
             public void trackLoaded(@Nonnull AudioTrack track) {
                 play(musicManager, track);
+                ctx.getChannel().ifPresent(ch -> ch.createEmbed(spec -> 
+                    spec.setTitle("Song loaded: " + track.getInfo().title)
+                        .setUrl(track.getInfo().uri)
+                        .setColor(Color.of(Nirubot.getColor().getRGB())
+                )).block());
             }
 
             @Override
             public void playlistLoaded(@Nonnull final AudioPlaylist playlist) {
 
-                if (playlist.getTracks().size() == 0) return;
+                if (playlist.getTracks().isEmpty()) return;
 
                 for (AudioTrack t : playlist.getTracks()) {
                     play(musicManager, t);
                 }
+                ctx.getChannel().ifPresent(ch -> ch.createEmbed(spec -> 
+                    spec.setTitle("Playlist loaded: " + playlist.getName())
+                        .setColor(Color.of(Nirubot.getColor().getRGB())
+                )).block());
             }
 
             @Override
             public void noMatches() {
-                ctx.reply("No matches found!");
-                throw new IllegalArgumentException();
+                ctx.reply("Nothing found by " + trackUrl);
             }
 
             @Override
-            public void loadFailed(@Nonnull FriendlyException exception) {
-                ctx.reply("Couldn't load song");
-                Nirubot.warning("Couldn't load song!");
-                throw new IllegalArgumentException();
+            public void loadFailed(FriendlyException exception) {
+                ctx.reply("Couldn't load song!");
             }
         });
     }
