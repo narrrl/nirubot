@@ -147,7 +147,7 @@ public class YoutubeDl {
             }
         }
 
-        if (videoURL == null) {
+        if (url == null) {
             throw new InvalidYoutubeDlException("Provide a link to download");
         }
 

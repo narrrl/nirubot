@@ -59,7 +59,7 @@ public class FunModule extends BaseModule {
                     out = new YoutubeDl(args).start();
                 } catch (InvalidYoutubeDlException e) {
                     if (e.getMessage() != null) {
-                        ctx.reply(e.getMessage());
+                        ctx.reply(String.format("Error: %s", e.getMessage()));
                     } else {
                         e.printStackTrace();
                     }
