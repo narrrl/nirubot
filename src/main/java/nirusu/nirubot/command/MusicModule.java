@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.SearchListResponse;
@@ -39,10 +40,6 @@ public class MusicModule extends BaseModule {
         Guild guild = ctx.getGuild().orElseThrow();
         List<String> args = ctx.getArgs().orElseThrow();
 
-        if (!ctx.argsHasLength(1)) {
-            return;
-        }
-
         String link = args.get(0);
         GuildMusicManager musicManager = PlayerManager.getInstance().getGuildMusicManager(guild);
         VoiceState state = ctx.getAuthorVoiceState().orElse(null);
@@ -67,9 +64,7 @@ public class MusicModule extends BaseModule {
     public void skip() {
         Guild guild = ctx.getGuild().orElseThrow();
 
-        if (!ctx.argsHasLength(0)) {
-            return;
-        }
+
 
         if (!isInSameChannel()) {
             ctx.reply("You must be in the same channel!");
@@ -90,12 +85,12 @@ public class MusicModule extends BaseModule {
         AudioTrack next = musicManager.getPlayer().getPlayingTrack();
         String prevText = "[" + prev.getInfo().title + "](" + prev.getInfo().uri + ")";
         String nextText = next != null ? "[" + next.getInfo().title + "](" + next.getInfo().uri + ")" : "End of queue!";
-        ctx.getChannel().createEmbed(spec ->
+        ctx.getChannel().ifPresent(ch -> ch.createEmbed(spec ->
             spec.setColor(Color.of(Nirubot.getColor().getRGB()))
             .setTitle("Skipped Song!")
             .addField("Skipped:", prevText, true)
-            .addField("Next:", nextText, true)
-            ).block();
+            .addField("Next:", nextText, true))
+        );
     }
 
     @Command(key = {"vol", "vl", "volume"}, description = "Sets the volume for the bot")
@@ -103,7 +98,7 @@ public class MusicModule extends BaseModule {
         Guild guild = ctx.getGuild().orElseThrow();
         List<String> args = ctx.getArgs().orElseThrow();
 
-        if (!ctx.argsHasLength(1)) {
+        if (args.size() != 1) {
             return;
         }
 
@@ -135,20 +130,22 @@ public class MusicModule extends BaseModule {
         }
         out.append("◄\n" + GuildManager.getManager(ctx.getGuild().orElseThrow().getId().asLong()).volume() + "%");
 
-        ctx.getChannel().createEmbed(spec ->
+        ctx.getChannel().ifPresent(ch -> ch.createEmbed(spec ->
             spec.setColor(Color.of(Nirubot.getColor().getRGB()))
-            .setDescription(out.toString())
-        ).block();
+            .setDescription(out.toString()))
+        );
     }
 
     @Command(key = {"join", "j"}, description = "Joins into the channel of the author", context = {Command.Context.GUILD})
     public void join() {
         Guild guild = ctx.getGuild().orElseThrow();
         User user = ctx.getAuthor().orElseThrow();
+        List<String> args = ctx.getArgs().orElseThrow();
 
-        if (!ctx.argsHasLength(0)) {
+        if (!args.isEmpty()) {
             return;
         }
+
         
         Member member = guild.getMemberById(user.getId()).block();
 
@@ -168,8 +165,9 @@ public class MusicModule extends BaseModule {
     @Command(key = {"leave", "left", "l"}, description = "Leaves the current voice channel", context = {Command.Context.GUILD})
     public void leave() {
         Guild guild = ctx.getGuild().orElseThrow();
+        List<String> args = ctx.getArgs().orElseThrow();
 
-        if (!ctx.argsHasLength(0)) {
+        if (!args.isEmpty()) {
             return;
         }
 
@@ -189,7 +187,9 @@ public class MusicModule extends BaseModule {
 
     @Command(key = {"repeat","loop","rp"}, description = "Repeats the current playlist", context = {Command.Context.GUILD})
     public void repeat() {
-        if (!ctx.argsHasLength(0)) {
+        List<String> args = ctx.getArgs().orElseThrow();
+
+        if (!args.isEmpty()) {
             return;
         }
 
@@ -209,7 +209,9 @@ public class MusicModule extends BaseModule {
     @Command(key = {"pause", "resume"}, description = "Pause/Resume music", context = {Command.Context.GUILD})
     public void pause() {
         Guild guild = ctx.getGuild().orElseThrow();
-        if (!ctx.argsHasLength(0)) {
+        List<String> args = ctx.getArgs().orElseThrow();
+
+        if (!args.isEmpty()) {
             return;
         }
 
@@ -231,7 +233,9 @@ public class MusicModule extends BaseModule {
     @Command(key = {"playing", "nowplaying", "np"}, description = "Shows what song currently is playing", context = {Command.Context.GUILD})
     public void playing() {
         Guild guild = ctx.getGuild().orElseThrow();
-        if (!ctx.argsHasLength(0)) {
+        List<String> args = ctx.getArgs().orElseThrow();
+
+        if (!args.isEmpty()) {
             return;
         }
 
@@ -269,18 +273,18 @@ public class MusicModule extends BaseModule {
             YoutubeDLRequest req = new YoutubeDLRequest(uri, Nirubot.getTmpDirectory().getAbsolutePath());
             req.setOption("get-thumbnail");
             YoutubeDLResponse res = YoutubeDL.execute(req);
-            ctx.getChannel().createEmbed(spec ->
+            ctx.getChannel().ifPresent(ch -> ch.createEmbed(spec ->
                 spec.setTitle("Now playing:")
                     .setDescription("[" + info.title + "]" + "(" + uri + ")\n" + progress.toString())
                     .setThumbnail(res.getOut())
-                    .setColor(Color.of(Nirubot.getColor().getRGB()))
-            ).block();
+                    .setColor(Color.of(Nirubot.getColor().getRGB())))
+            );
         } catch (YoutubeDLException e) {
-            ctx.getChannel().createEmbed(spec ->
+            ctx.getChannel().ifPresent(ch -> ch.createEmbed(spec ->
                 spec.setTitle("Now playing:")
                     .setDescription("[" + info.title + "]" + "(" + uri + ")\n" + progress.toString())
-                    .setColor(Color.of(Nirubot.getColor().getRGB()))
-            ).block();
+                    .setColor(Color.of(Nirubot.getColor().getRGB())))
+            );
             Nirubot.warning(e.getMessage());
         }
     }
@@ -293,17 +297,20 @@ public class MusicModule extends BaseModule {
         List<String> args = ctx.getArgs().orElseThrow();
         Guild guild = ctx.getGuild().orElseThrow();
 
-        if (args.size() < 1) {
+        if (args.isEmpty()) {
             return;
         }
 
-        if (ctx.getAuthorVoiceState().isEmpty()) {
-            ctx.reply("You are not in a voice channel!");
+        Optional<VoiceChannel> chOptional = ctx.getAuthorVoiceState().orElseThrow().getChannel().blockOptional();
+        VoiceChannel ch;
+
+        if (chOptional.isPresent()) {
+            ch = chOptional.get();
+        } else {
+            ctx.reply("You must be in a voice channel!");
             return;
+
         }
-
-        VoiceChannel ch = ctx.getAuthorVoiceState().get().getChannel().block();
-
 
         SearchListResponse response = getVideos(args);
 
@@ -311,9 +318,10 @@ public class MusicModule extends BaseModule {
 
         if (results == null) {
             ctx.reply("No videos found!");
+            return;
         }
         
-        if (results.size() < 1) {
+        if (results.isEmpty()) {
             ctx.reply("Nothing found");
             return;
         }
@@ -327,12 +335,12 @@ public class MusicModule extends BaseModule {
 
         ch.join(spec -> spec.setProvider(PlayerManager.getInstance().getGuildMusicManager(guild).getProvider())).block();
 
-        ctx.getChannel().createEmbed(spec -> 
+        ctx.getChannel().ifPresent(channel -> channel.createEmbed(spec -> 
             spec.setColor(Color.of(Nirubot.getColor().getRGB()))
                 .setTitle(video.getTitle())
                 .setUrl("https://www.youtube.com/watch?v=" + video.getVideoId())
-                .setThumbnail(video.getThumbnailUrl())
-        ).block();
+                .setThumbnail(video.getThumbnailUrl()))
+        );
     }
 
 
@@ -341,7 +349,7 @@ public class MusicModule extends BaseModule {
 
         Guild guild = ctx.getGuild().orElseThrow();
 
-        if (!ctx.argsHasLength(0)) {
+        if (!ctx.getArgs().orElseThrow().isEmpty()) {
             return;
         }
 
@@ -374,10 +382,10 @@ public class MusicModule extends BaseModule {
 
             if (out.length() > 1800) {
                 final String description = out.toString().substring(0, out.length());
-                ctx.getChannel().createEmbed(spec ->
+                ctx.getChannel().ifPresent(ch -> ch.createEmbed(spec ->
                     spec.setColor(Color.of(Nirubot.getColor().getRGB()))
-                        .setDescription(description)
-                ).block();
+                        .setDescription(description))
+                );
                 out = new StringBuilder();
 
                 totalEmbs++;
@@ -389,24 +397,21 @@ public class MusicModule extends BaseModule {
 
         if (out.length() != 0) {
             final String description = out.toString().substring(0, out.length());
-            ctx.getChannel().createEmbed(spec ->
+            ctx.getChannel().ifPresent(ch -> ch.createEmbed(spec ->
                 spec.setColor(Color.of(Nirubot.getColor().getRGB()))
-                    .setDescription(description)
-            ).block();
+                    .setDescription(description))
+            );
         }
     }
 
 
     private boolean isInSameChannel() {
-        if (ctx.getAuthorVoiceState().isEmpty()) {
-            return false;
+        Optional<VoiceChannel> ch = ctx.getSelfVoiceState().flatMap(state -> state.getChannel().blockOptional());
+        Optional<User> user = ctx.getAuthor();
+        if (user.isPresent() && ch.isPresent()) {
+            return ch.get().isMemberConnected(user.get().getId()).block();
         }
-        VoiceState state = ctx.getAuthorVoiceState().get();
-
-        if (ctx.getSelf().isEmpty()) {
-            return false;
-        }
-        return state.getChannel().block().isMemberConnected(ctx.getSelf().get().getId()).block();
+        return false;
     }
 
     private boolean isBotConnected() {
@@ -417,7 +422,7 @@ public class MusicModule extends BaseModule {
         YouTube yt = Nirubot.getYouTube();
         YouTube.Search.List search;
         try {
-             search = yt.search().list(Arrays.asList(new String[] { "id", "snippet" }));
+             search = yt.search().list(Arrays.asList("id", "snippet"));
         } catch (IOException e) {
             e.printStackTrace();
             throw new IllegalArgumentException(e.getMessage());
@@ -435,7 +440,7 @@ public class MusicModule extends BaseModule {
 
         search.setQ(searchQuerry);
 
-        search.setType(Arrays.asList(new String[]{ "video" }));
+        search.setType(Arrays.asList("video"));
 
         search.setFields("items(id/kind,id/videoId,snippet/title,snippet/thumbnails/default/url)");
 

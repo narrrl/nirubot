@@ -32,6 +32,10 @@ public class CommandDispatcher {
     private static final Logger LOGGER = LoggerFactory.getLogger(CommandDispatcher.class);
     private Set<Class<? extends BaseModule>> modules;
 
+    public static Logger getLogger() {
+        return LOGGER;
+    }
+
     public static class Builder {
         private HashSet<String> packages;
 

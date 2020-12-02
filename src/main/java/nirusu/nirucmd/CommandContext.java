@@ -18,7 +18,9 @@ import discord4j.core.object.entity.User;
 import discord4j.core.object.entity.channel.Channel;
 import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.rest.util.Permission;
+import discord4j.rest.util.PermissionSet;
 import nirusu.nirucmd.annotation.Command;
+import nirusu.nirucmd.exception.InvalidContextException;
 
 /**
  * This class represents the current command context (Context (Guild, Private,
@@ -44,8 +46,7 @@ public class CommandContext {
         } else if (type.equals(Channel.Type.GUILD_TEXT)) {
             context = Command.Context.GUILD;
         } else {
-            // TODO: write own exception
-            throw new IllegalArgumentException("Invalid Context");
+            throw new InvalidContextException("Invalid Context");
         }
     }
 
@@ -80,7 +81,7 @@ public class CommandContext {
      * @return list of all arguments
      */
     public Optional<List<String>> getArgs() {
-        return Optional.of(args);
+        return Optional.ofNullable(args);
     }
 
     public boolean isPrivate() {
@@ -106,47 +107,39 @@ public class CommandContext {
      *         permission
      */
     public boolean hasGuildPermission(Permission p) {
-
-        if (!isContext(Command.Context.GUILD)) {
-            return false;
+        Optional<PermissionSet> perms = getMember().flatMap(member
+            -> member.getBasePermissions().blockOptional());
+        if (perms.isPresent()) {
+            return perms.get().contains(p);
         }
-
-        Guild g = getGuild().orElseThrow();
-        User u = getAuthor().orElseThrow();
-
-        if (u == null || g == null) {
-            return false;
-        }
-        return g.getMemberById(u.getId()).block().getBasePermissions().block().contains(p);
+        return false;
     }
 
     public Optional<Member> getMember() {
-        Guild g = getGuild().get();
-        User u = getAuthor().get();
-
-        if (g == null || u == null) {
-            return Optional.empty();
-        }
-
-        return g.getMemberById(u.getId()).blockOptional();
+        return getGuild().flatMap( guild 
+            -> getAuthor().flatMap(user 
+            -> guild.getMemberById(user.getId()).blockOptional())
+        );
     }
 
-    public Message sendFile(File f) {
-        return getChannel().createMessage(mes -> {
+    public Optional<Message> sendFile(File f) {
+        return getChannel().flatMap(ch -> ch.createMessage(mes -> 
+            {
             try {
                 mes.addFile(f.getName(), new FileInputStream(f));
             } catch (FileNotFoundException e) {
-                return;
+                CommandDispatcher.getLogger().error(e.getMessage(), e);
             }
-        }).block();
+        }
+        ).blockOptional());
 	}
 
 	public static long getMaxFileSize() {
         return FILE_SIZE_MAX;
     }
     
-    public MessageChannel getChannel() {
-        return event.getMessage().getChannel().block();
+    public Optional<MessageChannel> getChannel() {
+        return event.getMessage().getChannel().blockOptional();
     }
 
 
@@ -155,26 +148,19 @@ public class CommandContext {
     }
 
     public Optional<VoiceState> getSelfVoiceState() {
-        if (getSelf().isPresent() && getGuild().isPresent()) {
-            Optional<Member> member = getSelf().get().asMember(getGuild().get().getId()).blockOptional();
-            if (member.isPresent()) {
-                return member.get().getVoiceState().blockOptional();
-            }
-        }
-        return Optional.empty();
+        return getSelfMember().flatMap(self 
+            -> self.getVoiceState().blockOptional());
+    }
+
+    public Optional<Member> getSelfMember() {
+        return getSelf().flatMap(self 
+            -> getGuild().flatMap(guild 
+            -> guild.getMemberById(self.getId()).blockOptional())
+        );
     }
 
     public Optional<VoiceState> getAuthorVoiceState() {
-        if (getMember().isPresent()) {
-            return getMember().get().getVoiceState().blockOptional();
-        }
-        return Optional.empty();
-    }
-
-    public boolean argsHasLength(int length) {
-        if (getArgs().isEmpty()) {
-            return false;
-        }
-        return getArgs().get().size() == length;
+        return getMember().flatMap(member 
+            -> member.getVoiceState().blockOptional());
     }
 }
