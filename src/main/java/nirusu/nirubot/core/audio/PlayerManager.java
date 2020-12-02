@@ -28,34 +28,32 @@ import java.util.Map;
  */
 public class PlayerManager {
     private static PlayerManager instance;
-    private final AudioPlayerManager playerManager;
+    private final AudioPlayerManager audioPlayerManager;
     private final Map<Long, GuildMusicManager> musicManagers;
 
     public PlayerManager() {
         this.musicManagers = new HashMap<>();
 
-        this.playerManager = new DefaultAudioPlayerManager();
-        AudioSourceManagers.registerRemoteSources(playerManager);
-        AudioSourceManagers.registerLocalSource(playerManager);
+        this.audioPlayerManager = new DefaultAudioPlayerManager();
+        AudioSourceManagers.registerRemoteSources(audioPlayerManager);
+        AudioSourceManagers.registerLocalSource(audioPlayerManager);
     }
 
     public synchronized GuildMusicManager getGuildMusicManager(@Nonnull final Guild guild) {
         long guildId = guild.getId().asLong();
-        GuildMusicManager musicManager = musicManagers.get(guildId);
-
-        if (musicManager == null) {
-            musicManager = new GuildMusicManager(playerManager);
+        return musicManagers.computeIfAbsent(guildId, id -> {
+            GuildMusicManager musicManager;
+            musicManager = new GuildMusicManager(audioPlayerManager);
             musicManagers.put(guildId, musicManager);
             musicManager.setVolume(GuildManager.getManager(guild.getId().asLong()).volume());
-        }
-
-        return musicManager;
+            return musicManager;
+        });
     }
 
     public synchronized void loadAndPlay(@Nonnull final CommandContext ctx, @Nonnull  String trackUrl) {
         GuildMusicManager musicManager = getGuildMusicManager(ctx.getGuild().orElseThrow(IllegalArgumentException::new));
 
-        playerManager.loadItemOrdered(musicManager, trackUrl, new AudioLoadResultHandler() {
+        audioPlayerManager.loadItemOrdered(musicManager, trackUrl, new AudioLoadResultHandler() {
             @Override
             public void trackLoaded(@Nonnull AudioTrack track) {
                 play(musicManager, track);
