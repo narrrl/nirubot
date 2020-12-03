@@ -10,10 +10,14 @@ public class HelpModule extends BaseModule {
         key = "ping", 
         description = "This command pings the bot")
     public void ping() {
-        long curr = System.currentTimeMillis();
-        Message mes = ctx.reply("Pong!");
-        long ping = mes.getTimestamp().toEpochMilli() - curr;
-        // not very accurate ¯\_(ツ)_/¯
-        mes.edit(edit -> edit.setContent(String.format("Pong: %d ms", ping))).block();
+        ctx.getArgs().ifPresent(args -> {
+            if (!args.isEmpty()) return;
+
+            long curr = System.currentTimeMillis();
+            Message mes = ctx.reply("Pong!");
+            long ping = mes.getTimestamp().toEpochMilli() - curr;
+            // not very accurate ¯\_(ツ)_/¯
+            mes.edit(edit -> edit.setContent(String.format("Pong: %d ms", ping))).block();
+        });
     }
 }
