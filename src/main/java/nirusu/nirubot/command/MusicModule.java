@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.SearchListResponse;
@@ -13,7 +12,6 @@ import com.sapher.youtubedl.YoutubeDL;
 import com.sapher.youtubedl.YoutubeDLException;
 import com.sapher.youtubedl.YoutubeDLRequest;
 import com.sapher.youtubedl.YoutubeDLResponse;
-import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 
@@ -28,12 +26,12 @@ import nirusu.nirubot.core.DiscordUtil;
 import nirusu.nirubot.core.GuildManager;
 import nirusu.nirubot.core.audio.GuildMusicManager;
 import nirusu.nirubot.core.audio.PlayerManager;
+import nirusu.nirubot.util.MusicCondition;
 import nirusu.nirubot.util.YouTubeVideo;
 import nirusu.nirucmd.BaseModule;
 import nirusu.nirucmd.annotation.Command;
 
 
-// TODO: needs some rework - UtilClasses and Documentation
 public class MusicModule extends BaseModule {
 
     @Command( key = { "p", "play", "pl"}, description = "Plays a song", context = {Command.Context.GUILD})
@@ -41,39 +39,31 @@ public class MusicModule extends BaseModule {
         Guild guild = ctx.getGuild().orElseThrow();
         List<String> args = ctx.getArgs().orElseThrow();
 
-        String link = args.get(0);
-        GuildMusicManager musicManager = PlayerManager.getInstance().getGuildMusicManager(guild);
-        VoiceState state = ctx.getAuthorVoiceState().orElse(null);
-
-        if (state == null) {
-            ctx.reply("Join a voice channel first!");
+        if (!MusicCondition.checkConditions(ctx, MusicCondition.USER_CONNECTED)) {
             return;
         }
 
-        VoiceChannel ch = state.getChannel().block();
-        PlayerManager.getInstance().loadAndPlay(ctx, link);
-        ch.join(con -> con.setProvider(musicManager.getProvider())).block();
+        String link = args.get(0);
+        GuildMusicManager musicManager = PlayerManager.getInstance().getGuildMusicManager(guild);
+        ctx.getAuthorVoiceState().ifPresent(state -> {
+            VoiceChannel ch = state.getChannel().block();
+            PlayerManager.getInstance().loadAndPlay(ctx, link);
+            ch.join(con -> con.setProvider(musicManager.getProvider())).block();
+        });
+
     }
 
     @Command( key = { "skip", "next", "s", "sk"}, description = "Skips the current song", context = {Command.Context.GUILD})
     public void skip() {
         Guild guild = ctx.getGuild().orElseThrow();
 
-
-
-        if (!isInSameChannel()) {
-            ctx.reply("You must be in the same channel!");
+        if (!MusicCondition.checkConditions(ctx, MusicCondition.SAME_VOICE_CHANNEL, MusicCondition.MUSIC_PLAYING)) {
             return;
         }
 
         GuildMusicManager musicManager = PlayerManager.getInstance().getGuildMusicManager(guild);
 
         AudioTrack prev = musicManager.getPlayer().getPlayingTrack();
-
-        if (prev == null) {
-            ctx.reply("No music is playing!");
-            return;
-        }
 
         PlayerManager.getInstance().next(guild);
 
@@ -94,6 +84,10 @@ public class MusicModule extends BaseModule {
         List<String> args = ctx.getArgs().orElseThrow();
 
         if (args.size() != 1) {
+            return;
+        }
+
+        if (!MusicCondition.checkConditions(ctx, MusicCondition.SAME_VOICE_CHANNEL)) {
             return;
         }
 
@@ -141,15 +135,13 @@ public class MusicModule extends BaseModule {
             return;
         }
 
+        if (!MusicCondition.checkConditions(ctx, MusicCondition.USER_CONNECTED)) {
+            return;
+        }
         
         Member member = guild.getMemberById(user.getId()).block();
 
         VoiceState state = member.getVoiceState().block();
-
-        if (state == null) {
-            ctx.reply("Join a voice channel first!");
-            return;
-        }
 
         GuildMusicManager musicManager = PlayerManager.getInstance().getGuildMusicManager(guild);
         VoiceChannel ch = state.getChannel().block();
@@ -165,14 +157,8 @@ public class MusicModule extends BaseModule {
         if (!args.isEmpty()) {
             return;
         }
-
-        if (!isBotConnected()) {
-            ctx.reply("Bot is not connected to any voice channel!");
-            return;
-        }
         
-        if (!isInSameChannel()) {
-            ctx.reply("You must be in the same voice channel!");
+        if (!MusicCondition.checkConditions(ctx, MusicCondition.USER_CONNECTED, MusicCondition.BOT_CONNECTED, MusicCondition.SAME_VOICE_CHANNEL)) {
             return;
         }
         
@@ -188,8 +174,7 @@ public class MusicModule extends BaseModule {
             return;
         }
 
-        if (!isInSameChannel()) {
-            ctx.reply("You must be in the same voice channel!");
+        if (!MusicCondition.checkConditions(ctx, MusicCondition.BOT_CONNECTED, MusicCondition.SAME_VOICE_CHANNEL)) {
             return;
         }
 
@@ -210,18 +195,13 @@ public class MusicModule extends BaseModule {
             return;
         }
 
-        if (!isInSameChannel()) {
-            ctx.reply("You must be in the same voice channel!");
+        if (!MusicCondition.checkConditions(ctx, MusicCondition.SAME_VOICE_CHANNEL, MusicCondition.MUSIC_PLAYING)) {
             return;
         }
 
         PlayerManager manager = PlayerManager.getInstance();
         GuildMusicManager musicManager = manager.getGuildMusicManager(guild);
 
-        if (musicManager.getPlayer().getPlayingTrack() == null) {
-            ctx.reply("No music is playing!");
-            return;
-        }
         manager.pause(guild, !musicManager.getPlayer().isPaused());
     }
 
@@ -296,16 +276,11 @@ public class MusicModule extends BaseModule {
             return;
         }
 
-        Optional<VoiceChannel> chOptional = ctx.getAuthorVoiceState().orElseThrow().getChannel().blockOptional();
-        VoiceChannel ch;
-
-        if (chOptional.isPresent()) {
-            ch = chOptional.get();
-        } else {
-            ctx.reply("You must be in a voice channel!");
+        if (!MusicCondition.checkConditions(ctx, MusicCondition.USER_CONNECTED)) {
             return;
-
         }
+
+        VoiceChannel ch = ctx.getAuthorVoiceState().orElseThrow().getChannel().block();
 
         SearchListResponse response = getVideos(args);
 
@@ -341,6 +316,10 @@ public class MusicModule extends BaseModule {
         Guild guild = ctx.getGuild().orElseThrow();
 
         if (!ctx.getArgs().orElseThrow().isEmpty()) {
+            return;
+        }
+
+        if (!MusicCondition.checkConditions(ctx, MusicCondition.MUSIC_PLAYING)) {
             return;
         }
 
@@ -393,20 +372,6 @@ public class MusicModule extends BaseModule {
                     .setDescription(description))
             );
         }
-    }
-
-
-    private boolean isInSameChannel() {
-        Optional<VoiceChannel> ch = ctx.getSelfVoiceState().flatMap(state -> state.getChannel().blockOptional());
-        Optional<User> user = ctx.getAuthor();
-        if (user.isPresent() && ch.isPresent()) {
-            return ch.get().isMemberConnected(user.get().getId()).block();
-        }
-        return false;
-    }
-
-    private boolean isBotConnected() {
-        return ctx.getSelfVoiceState().isPresent();
     }
 
     public SearchListResponse getVideos(List<String> args) {

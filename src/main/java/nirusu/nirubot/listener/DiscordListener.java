@@ -19,7 +19,6 @@ import nirusu.nirubot.Nirubot;
 import nirusu.nirubot.core.Config;
 import nirusu.nirubot.core.GuildManager;
 import nirusu.nirubot.core.audio.PlayerManager;
-import nirusu.nirubot.exception.InvalidContextException;
 import nirusu.nirucmd.CommandContext;
 import nirusu.nirucmd.CommandDispatcher;
 import nirusu.nirucmd.annotation.Command.Context;
@@ -29,7 +28,7 @@ public class DiscordListener implements NiruListener {
     private final CommandDispatcher dispatcher;
     private final GatewayDiscordClient client;
 
-    public DiscordListener() throws LoginException, IllegalArgumentException {
+    public DiscordListener() throws LoginException {
         Config conf = Nirubot.getConfig();
         dispatcher = new CommandDispatcher.Builder()
             .addPackage("nirusu.nirubot.command").build();
@@ -92,8 +91,6 @@ public class DiscordListener implements NiruListener {
                     dispatcher.run(ctx, key);
                 } catch (NoSuchCommandException e) {
                     ctx.reply("Unknown command!");
-                } catch (InvalidContextException e) {
-                    ctx.reply(e.getMessage());
                 }
             }
         }
