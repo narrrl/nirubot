@@ -70,6 +70,8 @@ public class DiscordListener implements NiruListener {
             Guild g = event.getGuild().block();
             GuildManager mg = GuildManager.getManager(g.getId().asLong());
             prefix = mg.prefix();
+        } else if (ctx.isContext(Context.PRIVATE)) {
+            prefix = "";
         } else {
             prefix = Nirubot.getDefaultPrefix();
         }
