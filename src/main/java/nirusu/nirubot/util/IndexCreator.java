@@ -3,6 +3,7 @@ package nirusu.nirubot.util;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.URI;
 
 import nirusu.nirubot.Nirubot;
 
@@ -34,7 +35,8 @@ public final class IndexCreator {
             if (f.getName().endsWith(".zip")) {
                 zip = f;
             } else if (!f.getName().endsWith(".html")) {
-                content.append("<li><a href=\"./" + f.getName() + "\">" + f.getName() + "</a></li>");
+                String[] arr = f.toURI().toString().split(dir.toString());
+                content.append("<li><a href=\"." + arr[1] + "\">" + f.getName() + "</a></li>");
             }
         }
 
