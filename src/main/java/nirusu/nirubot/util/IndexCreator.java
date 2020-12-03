@@ -3,7 +3,6 @@ package nirusu.nirubot.util;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.net.URI;
 
 import nirusu.nirubot.Nirubot;
 
