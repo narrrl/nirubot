@@ -20,4 +20,9 @@ public class HelpModule extends BaseModule {
             mes.edit(edit -> edit.setContent(String.format("Pong: %d ms", ping))).block();
         });
     }
+
+    @Command( key = {"help", "h"}, description = "Help command")
+    public void help() {
+        ctx.reply("Help wasn't implemented yet");
+    }
 }
