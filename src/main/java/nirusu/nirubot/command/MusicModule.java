@@ -74,7 +74,7 @@ public class MusicModule extends BaseModule {
             spec.setColor(Color.of(Nirubot.getColor().getRGB()))
             .setTitle("Skipped Song!")
             .addField("Skipped:", prevText, true)
-            .addField("Next:", nextText, true))
+            .addField("Next:", nextText, true)).block()
         );
     }
 
@@ -121,7 +121,7 @@ public class MusicModule extends BaseModule {
 
         ctx.getChannel().ifPresent(ch -> ch.createEmbed(spec ->
             spec.setColor(Color.of(Nirubot.getColor().getRGB()))
-            .setDescription(out.toString()))
+            .setDescription(out.toString())).block()
         );
     }
 
@@ -252,13 +252,13 @@ public class MusicModule extends BaseModule {
                 spec.setTitle("Now playing:")
                     .setDescription("[" + info.title + "]" + "(" + uri + ")\n" + progress.toString())
                     .setThumbnail(res.getOut())
-                    .setColor(Color.of(Nirubot.getColor().getRGB())))
+                    .setColor(Color.of(Nirubot.getColor().getRGB()))).block()
             );
         } catch (YoutubeDLException e) {
             ctx.getChannel().ifPresent(ch -> ch.createEmbed(spec ->
                 spec.setTitle("Now playing:")
                     .setDescription("[" + info.title + "]" + "(" + uri + ")\n" + progress.toString())
-                    .setColor(Color.of(Nirubot.getColor().getRGB())))
+                    .setColor(Color.of(Nirubot.getColor().getRGB()))).block()
             );
             Nirubot.warning(e.getMessage());
         }
@@ -305,7 +305,7 @@ public class MusicModule extends BaseModule {
             spec.setColor(Color.of(Nirubot.getColor().getRGB()))
                 .setTitle(video.getTitle())
                 .setUrl("https://www.youtube.com/watch?v=" + video.getVideoId())
-                .setThumbnail(video.getThumbnailUrl()))
+                .setThumbnail(video.getThumbnailUrl())).block()
         );
     }
 
@@ -354,7 +354,7 @@ public class MusicModule extends BaseModule {
                 final String description = out.toString().substring(0, out.length());
                 ctx.getChannel().ifPresent(ch -> ch.createEmbed(spec ->
                     spec.setColor(Color.of(Nirubot.getColor().getRGB()))
-                        .setDescription(description))
+                        .setDescription(description)).block()
                 );
                 out = new StringBuilder();
 
@@ -369,7 +369,7 @@ public class MusicModule extends BaseModule {
             final String description = out.toString().substring(0, out.length());
             ctx.getChannel().ifPresent(ch -> ch.createEmbed(spec ->
                 spec.setColor(Color.of(Nirubot.getColor().getRGB()))
-                    .setDescription(description))
+                    .setDescription(description)).block()
             );
         }
     }
