@@ -34,7 +34,6 @@ target/
 
 #gradle
 /.gradle
-/gradlew
 /gradlew.bat
 /gradle
 /build/
