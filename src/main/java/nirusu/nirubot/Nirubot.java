@@ -161,7 +161,7 @@ public class Nirubot extends AbstractIdleService {
     /**
      * {@link nirusu.nirubot.core.Config#getPrefix()} gets the prefix from the
      * config.json
-     * 
+     *
      * @return prefix that was set in config.json
      */
     public static String getDefaultPrefix() {
@@ -172,7 +172,7 @@ public class Nirubot extends AbstractIdleService {
         return new Color(0, 153, 255);
     }
 
-	public void exit() {
+    public void exit() {
         shutDown();
         // fuck you bot
         System.exit(0);
@@ -202,7 +202,7 @@ public class Nirubot extends AbstractIdleService {
 	public static String getTmpDirPath() {
 		return getConfig().getTmpDirPath();
     }
-    
+
     public static void cleanDir(final File dir) {
         if (!dir.isDirectory() || !dir.exists()) return;
         for (File f : dir.listFiles()) {
