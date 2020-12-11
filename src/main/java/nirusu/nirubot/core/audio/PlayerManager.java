@@ -84,7 +84,8 @@ public class PlayerManager {
 
             @Override
             public void loadFailed(FriendlyException exception) {
-                ctx.reply("Couldn't load song!");
+                exception.printStackTrace();
+                ctx.reply("Couldn't load song! " + exception.getMessage());
             }
         });
     }
