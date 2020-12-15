@@ -84,6 +84,20 @@ public class CommandContext {
         return Optional.ofNullable(args);
     }
 
+    public String getUserInput() {
+        if (args == null) {
+            return "";
+        }
+        StringBuilder builder = new StringBuilder();
+        for (String str : args) {
+            builder.append(str).append(" ");
+        }
+        if (builder.length() == 0) {
+            return "";
+        }
+        return builder.substring(0, builder.length() - 1);
+    }
+
     public boolean isPrivate() {
         return isContext(Command.Context.PRIVATE);
     }

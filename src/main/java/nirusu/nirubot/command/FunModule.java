@@ -6,10 +6,15 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import discord4j.rest.util.Color;
+
 import java.awt.EventQueue;
 
 import nirusu.nirubot.Nirubot;
 import nirusu.nirubot.util.RandomHttpClient;
+import nirusu.nirubot.util.arknight.RecruitmentCalculator;
+import nirusu.nirubot.util.arknight.TagCombination;
 import nirusu.nirubot.util.youtubedl.InvalidYoutubeDlException;
 import nirusu.nirubot.util.youtubedl.YoutubeDl;
 import nirusu.nirucmd.BaseModule;
@@ -69,6 +74,37 @@ public class FunModule extends BaseModule {
                     ctx.sendFile(out);
             });
         }));
+    }
+
+    @Command(key = "ark", description = "Calculates the best possible tag combinations for given input")
+    public void arknights() {
+        ctx.getArgs().ifPresent(args -> {
+            if (args.size() >  15 || args.size() < 2) {
+                return;
+            }
+            List<TagCombination> all = RecruitmentCalculator.getRecruitment().calculate(args, ctx.getUserInput());
+
+            Collections.reverse(all);
+            ctx.getChannel().ifPresent(ch -> {
+                boolean first = true;
+                for (String str : RecruitmentCalculator.formatForDiscord(all)) {
+                    if (first) {
+                        ch.createEmbed(emb -> 
+                            emb.setDescription(str)
+                               .setColor(Color.of(Nirubot.getColor().getRGB()))
+                               .setTitle("All Combinations:")
+                        ).block();
+                        first = false;
+                    } else {
+                        ch.createEmbed(emb -> 
+                            emb.setDescription(str)
+                               .setColor(Color.of(Nirubot.getColor().getRGB()))
+                        ).block();
+
+                    }
+                }
+            });
+        });
     }
     
 }

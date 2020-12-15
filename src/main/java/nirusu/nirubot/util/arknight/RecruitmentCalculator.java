@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -18,18 +19,18 @@ import com.google.gson.reflect.TypeToken;
 
 import nirusu.nirubot.Nirubot;
 
-public class Recruitment {
+public class RecruitmentCalculator {
     private List<Operator> operators;
-    private static Recruitment calc;
+    private static RecruitmentCalculator calc;
 
-    public static synchronized Recruitment getRecruitment() {
+    public static synchronized RecruitmentCalculator getRecruitment() {
         if (calc == null) {
-            calc = new Recruitment();
+            calc = new RecruitmentCalculator();
         }
         return calc;
     }
 
-    private Recruitment() {
+    private RecruitmentCalculator() {
         // loads all operator data from a json
         operators = loadOperators();
     }
@@ -62,30 +63,8 @@ public class Recruitment {
         List<String> tags = Operator.convertTags(userInput, totalInput);
 
         // create set to prevent duplicates
-        HashSet<TagCombination> tagCombinations = new HashSet<>();
-        for (String tag : tags) {
-            tagCombinations.add(new TagCombination(Arrays.asList(tag)));
-        }
+        HashSet<TagCombination> tagCombinations = getCombinations(tags);
 
-
-        // create all possible tag combinations (with duplicate might need some rework for performance)
-        for (String tag : tags) {
-            for (String tag2 : tags) {
-                if (!tag.equals(tag2)) {
-                    tagCombinations.add(new TagCombination(Arrays.asList(tag, tag2)));
-                }
-            }
-        }
-
-        for (String tag : tags) {
-            for (String tag2 : tags) {
-                for (String tag3 : tags) {
-                    if (!tag.equals(tag2) && !tag.equals(tag3) && !tag2.equals(tag3)) {
-                        tagCombinations.add(new TagCombination(Arrays.asList(tag, tag2, tag3)));
-                    }
-                }
-            }
-        }
 
         // add operator who have the tags
         for (TagCombination cb : tagCombinations) {
@@ -107,6 +86,45 @@ public class Recruitment {
 
         // sort list from worst to best and return
         return tagCombinations.stream().sorted(Comparator.comparingDouble(TagCombination::getAvgRarity)).collect(Collectors.toList());
-
     }
+
+    public static List<String> formatForDiscord(List<TagCombination> tags) {
+        List<String> outList = new ArrayList<>();
+        StringBuilder builder = new StringBuilder();
+        for (TagCombination cb : tags) {
+            for (String str : cb.toStringAsList()) {
+                if (builder.length() + str.length() > 1800) {
+                    outList.add(builder.toString());
+                    builder = new StringBuilder();
+                }
+                builder.append(str);
+            }
+        }
+
+        // send rest of the string
+        if (builder.length() > 0) {
+            outList.add(builder.toString());
+        }
+        return outList;
+    }
+
+    private HashSet<TagCombination> getCombinations(List<String> tags) {
+        HashSet<TagCombination> tagCombinations = new HashSet<>();
+        for (String tag : tags) {
+            for (String tag2 : tags) {
+                for (String tag3 : tags) {
+                    if (!tag.equals(tag2) && !tag.equals(tag3) && !tag2.equals(tag3)) {
+                        tagCombinations.add(new TagCombination(Arrays.asList(tag, tag2, tag3)));
+                    }
+                    if (!tag.equals(tag2)) {
+                        tagCombinations.add(new TagCombination(Arrays.asList(tag, tag2)));
+                    }
+                    tagCombinations.add(new TagCombination(Arrays.asList(tag)));
+                }
+            }
+        }
+        return tagCombinations;
+    }
+
+
 }

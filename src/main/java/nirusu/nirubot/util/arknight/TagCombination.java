@@ -88,7 +88,7 @@ public class TagCombination implements Comparable<TagCombination> {
         out.append("**");
         tags.forEach(str -> out.append(str).append(","));
         out.replace(out.length() - 1, out.length(), "");
-        out.append("** \nOperators: ");
+        out.append("**\n");
         ops.forEach(op -> out.append(op).append(" "));
         return out.substring(0, out.length() - 1);
     }
@@ -98,10 +98,10 @@ public class TagCombination implements Comparable<TagCombination> {
         List<String> strings = new ArrayList<>();
         List<Operator> ops = possibleOperator.stream().sorted(Comparator.comparingInt(Operator::getRarity)).collect(Collectors.toList());
         StringBuilder str = new StringBuilder();
-        str.append("**");
+        str.append("\n**");
         tags.forEach(tagsStr -> str.append(tagsStr).append(","));
         str.replace(str.length() - 1, str.length(), "");
-        str.append("** \nOperators: ");
+        str.append("**\n");
         strings.add(str.toString());
         ops.forEach(op -> strings.add(op.toString()));
         return strings;
@@ -145,19 +145,5 @@ public class TagCombination implements Comparable<TagCombination> {
         return lowest + ((float) highest / 10);
 
     }
-
-	public boolean hasOnlyPositions() {
-
-        if (this.tags.size() == 1) {
-
-            if (this.tags.contains("RANGED")) {
-                return true;
-            } else if (this.tags.contains("MELEE")) {
-                return true;
-            }
-        }
-
-        return false;
-	}
     
 }
