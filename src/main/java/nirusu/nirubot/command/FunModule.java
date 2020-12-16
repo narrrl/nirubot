@@ -76,7 +76,7 @@ public class FunModule extends BaseModule {
         }));
     }
 
-    @Command(key = "ark", description = "Calculates the best possible tag combinations for given input")
+    @Command(key = {"ark", "arknights", "arkcalc"}, description = "Calculates the best possible tag combinations for given input")
     public void arknights() {
         ctx.getArgs().ifPresent(args -> {
             if (args.size() >  15 || args.size() < 2) {
