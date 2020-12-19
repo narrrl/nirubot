@@ -81,7 +81,7 @@ public class RecruitmentCalculator {
                 toRemove.add(cb);
             }
         }
-        toRemove.forEach(cb -> tagCombinations.remove(cb));
+        toRemove.forEach(tagCombinations::remove);
 
         // sort list from worst to best and return
         return tagCombinations.stream().sorted(Comparator.comparingDouble(TagCombination::getAvgRarity)).collect(Collectors.toList());

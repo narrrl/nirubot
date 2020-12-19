@@ -3,6 +3,7 @@ package nirusu.nirubot.listener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import javax.security.auth.login.LoginException;
@@ -33,15 +34,15 @@ public class DiscordListener implements NiruListener {
         dispatcher = new CommandDispatcher.Builder()
             .addPackage("nirusu.nirubot.command").build();
         
-        client = DiscordClient.create(conf.getToken())
+        client = Objects.requireNonNull(DiscordClient.create(conf.getToken())
             .gateway()
             .setSharding(ShardingStrategy.recommended())
-            .login().block();
+            .login().block());
         
         client.getEventDispatcher().on(ReadyEvent.class).subscribe(event -> 
             Nirubot.info("Logged in as {}", event.getSelf().getUsername()));
 
-        client.getEventDispatcher().on(MessageCreateEvent.class).subscribe(event -> onMessageRecievedEvent(event));
+        client.getEventDispatcher().on(MessageCreateEvent.class).subscribe(this::onMessageRecievedEvent);
         client.onDisconnect().block();
 
     }
@@ -67,9 +68,10 @@ public class DiscordListener implements NiruListener {
         String prefix;
 
         if (ctx.isContext(Context.GUILD)) {
-            Guild g = event.getGuild().block();
-            GuildManager mg = GuildManager.getManager(g.getId().asLong());
-            prefix = mg.prefix();
+            prefix = event.getGuild().blockOptional().map(g -> {
+                GuildManager mg = GuildManager.getManager(g.getId().asLong());
+                return mg.prefix();
+            }).orElse(Nirubot.getDefaultPrefix());
         } else if (ctx.isContext(Context.PRIVATE)) {
             prefix = "";
         } else {
@@ -92,7 +94,7 @@ public class DiscordListener implements NiruListener {
                 try {
                     dispatcher.run(ctx, key);
                 } catch (NoSuchCommandException e) {
-                    ctx.reply("Unknown command!");
+                    //TODO:: controlflow with exception, not good
                 }
             }
         }
