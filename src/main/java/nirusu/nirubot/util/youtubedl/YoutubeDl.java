@@ -11,6 +11,7 @@ import java.util.regex.Pattern;
 import com.sapher.youtubedl.YoutubeDL;
 import com.sapher.youtubedl.YoutubeDLException;
 import com.sapher.youtubedl.YoutubeDLRequest;
+import com.sapher.youtubedl.YoutubeDLResponse;
 
 import nirusu.nirubot.Nirubot;
 import nirusu.nirubot.util.IndexCreator;
@@ -113,6 +114,7 @@ public class YoutubeDl {
         request.setOption("quiet");
         request.setOption("no-warnings");
         request.setOption("ignore-errors");
+        request.setOption("o", "%(title).90s.%(ext)s"); // limit output length
 
         // specific options by user
         boolean specificFormat = false;

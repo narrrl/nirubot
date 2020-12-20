@@ -9,8 +9,6 @@ import java.util.stream.Collectors;
 
 import discord4j.rest.util.Color;
 
-import java.awt.EventQueue;
-
 import nirusu.nirubot.Nirubot;
 import nirusu.nirubot.util.RandomHttpClient;
 import nirusu.nirubot.util.arknight.RecruitmentCalculator;
@@ -51,7 +49,7 @@ public class FunModule extends BaseModule {
     public void youtubedl() {
         ctx.getArgs().ifPresent(args -> ctx.getAuthor().ifPresent(author -> {
             ctx.reply("Started downloading and converting! This might take some time");
-            EventQueue.invokeLater(() -> {
+            new Thread( () -> {
                     File out;
                     try {
                         out = new YoutubeDl(args).start();
@@ -72,7 +70,7 @@ public class FunModule extends BaseModule {
                         return;
                     }
                     ctx.sendFile(out);
-            });
+            }).start(); // there he goes
         }));
     }
 
