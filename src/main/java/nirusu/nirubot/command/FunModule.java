@@ -13,6 +13,8 @@ import nirusu.nirubot.Nirubot;
 import nirusu.nirubot.util.RandomHttpClient;
 import nirusu.nirubot.util.arknight.RecruitmentCalculator;
 import nirusu.nirubot.util.arknight.TagCombination;
+import nirusu.nirubot.util.nekolove.NekoLove;
+import nirusu.nirubot.util.nekolove.NekoLove.NekoLoveImage;
 import nirusu.nirubot.util.youtubedl.InvalidYoutubeDlException;
 import nirusu.nirubot.util.youtubedl.YoutubeDl;
 import nirusu.nirucmd.BaseModule;
@@ -101,6 +103,39 @@ public class FunModule extends BaseModule {
 
                     }
                 }
+            });
+        });
+    }
+
+    @Command(key = {"neko", "nya", "image"}, description = "Nyaaa~~", 
+        context = {Command.Context.PRIVATE, Command.Context.GUILD})
+    public void neko() {
+        ctx.getArgs().ifPresent(args -> {
+            NekoLoveImage image;
+            String type;
+            if (args.isEmpty()) {
+                type = "neko";
+            } else if (args.size() == 1) {
+                type = args.get(0);
+            } else {
+                return;
+            }
+            try {
+                image = NekoLove.getNekoLoveImage(type);
+            } catch (IllegalArgumentException e) {
+                ctx.reply(e.getMessage());
+                return;
+            }
+
+            if (image.code() == 404) {
+                ctx.reply(String.format("Invalid Type: %s", type));
+                return;
+            }
+            ctx.getChannel().ifPresent(ch -> {
+                ch.createEmbed(emb ->
+                    emb.setImage(image.url()).setColor(Color.of(Nirubot.getColor().getRGB()))
+                        .setTitle(String.format("Here is your %s", type))
+                ).block();
             });
         });
     }

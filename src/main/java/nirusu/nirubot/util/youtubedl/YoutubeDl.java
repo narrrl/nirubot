@@ -11,7 +11,6 @@ import java.util.regex.Pattern;
 import com.sapher.youtubedl.YoutubeDL;
 import com.sapher.youtubedl.YoutubeDLException;
 import com.sapher.youtubedl.YoutubeDLRequest;
-import com.sapher.youtubedl.YoutubeDLResponse;
 
 import nirusu.nirubot.Nirubot;
 import nirusu.nirubot.util.IndexCreator;
