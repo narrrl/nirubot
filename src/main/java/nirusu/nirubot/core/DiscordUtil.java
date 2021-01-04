@@ -8,6 +8,7 @@ import discord4j.core.object.entity.channel.VoiceChannel;
 
 public class DiscordUtil {
 
+
     private DiscordUtil() { throw new IllegalAccessError(); }
 
     public static VoiceChannel findVoiceChannel(@Nonnull Member member) {
@@ -19,18 +20,16 @@ public class DiscordUtil {
      * Checks if both member are in the same voice channel
      */
 	public static boolean areInSameVoice(Member member, Member selfMember) {
-        VoiceChannel channel = DiscordUtil.findVoiceChannel(member);
+        VoiceChannel channel = findVoiceChannel(member);
 
         if (channel == null) return false;
 
-        VoiceChannel botChannel = DiscordUtil.findVoiceChannel(selfMember);
+        VoiceChannel botChannel = findVoiceChannel(selfMember);
 
         if (botChannel == null) return true;
 
 
-        if (!channel.equals(botChannel)) return false;
-
-        return true;
+        return !channel.equals(botChannel);
     }
 
         public static String formatTime(final long minutes , final long seconds) {
@@ -76,6 +75,4 @@ public class DiscordUtil {
 
         return out.toString();
     }
-
-    
 }

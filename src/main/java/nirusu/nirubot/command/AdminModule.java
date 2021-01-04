@@ -25,7 +25,7 @@ public class AdminModule extends BaseModule {
             if (args.size() != 1) {
                 return;
             }
-            if (ctx.isContext(Command.Context.PRIVATE) && Nirubot.isOwner(user.getId().asLong())) {
+            if (ctx.isPrivate() && Nirubot.isOwner(user.getId().asLong())) {
                 Nirubot.getConfig().setPrefix(args.get(0));
             } else if (ctx.hasGuildPermission(Permission.ADMINISTRATOR)) {
                 GuildManager.getManager(ctx.getGuild().get().getId().asLong()).setPrefix(args.get(0));

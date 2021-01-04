@@ -1,8 +1,5 @@
 package nirusu.nirubot.listener;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -21,7 +18,6 @@ import nirusu.nirubot.core.GuildManager;
 import nirusu.nirubot.core.audio.PlayerManager;
 import nirusu.nirucmd.CommandContext;
 import nirusu.nirucmd.CommandDispatcher;
-import nirusu.nirucmd.annotation.Command.Context;
 import nirusu.nirucmd.exception.NoSuchCommandException;
 
 public class DiscordListener implements NiruListener {
@@ -66,12 +62,12 @@ public class DiscordListener implements NiruListener {
 
         String prefix;
 
-        if (ctx.isContext(Context.GUILD)) {
+        if (ctx.isGuild()) {
             prefix = event.getGuild().blockOptional().map(g -> {
                 GuildManager mg = GuildManager.getManager(g.getId().asLong());
                 return mg.prefix();
             }).orElse(Nirubot.getDefaultPrefix());
-        } else if (ctx.isContext(Context.PRIVATE)) {
+        } else if (ctx.isPrivate()) {
             prefix = "";
         } else {
             prefix = Nirubot.getDefaultPrefix();
@@ -80,21 +76,11 @@ public class DiscordListener implements NiruListener {
         // check if message starts with prefix !
         if (raw.startsWith(prefix) && raw.length() > prefix.length()) {
             // create the CommandContext
-            List<String> args = new ArrayList<>();
-            Collections.addAll(args, raw.substring(prefix.length()).split("\\s+"));
-            if (!args.isEmpty()) {
-                // get key to trigger command
-                String key = args.get(0);
-                // remove the key from the arguments
-                args.remove(key);
-                // set arguments for the command context
-                ctx.setArgs(args);
-                // run dispatcher
-                try {
-                    dispatcher.run(ctx, key);
-                } catch (NoSuchCommandException e) {
-                    //TODO:: controlflow with exception, not good
-                }
+            ctx.setArgsAndKey(raw.substring(prefix.length()).split("\\s+"), raw.substring(prefix.length()).split("\\s+")[0], true);
+            try {
+                dispatcher.run(ctx, ctx.getKey());
+            } catch (NoSuchCommandException e) {
+                //TODO:: controlflow with exception, not good
             }
         }
     }

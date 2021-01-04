@@ -1,6 +1,5 @@
 package nirusu.nirubot.command;
 
-import discord4j.core.object.entity.Message;
 import nirusu.nirucmd.BaseModule;
 import nirusu.nirucmd.annotation.Command;
 
@@ -14,10 +13,11 @@ public class HelpModule extends BaseModule {
             if (!args.isEmpty()) return;
 
             long curr = System.currentTimeMillis();
-            Message mes = ctx.reply("Pong!");
-            long ping = mes.getTimestamp().toEpochMilli() - curr;
-            // not very accurate ¯\_(ツ)_/¯
-            mes.edit(edit -> edit.setContent(String.format("Pong: %d ms", ping))).block();
+            ctx.reply("Pong!").ifPresent(mes -> {
+                long ping = mes.getTimestamp().toEpochMilli() - curr;
+                // not very accurate ¯\_(ツ)_/¯
+                mes.edit(edit -> edit.setContent(String.format("Pong: %d ms", ping))).block();
+            });
         });
     }
 

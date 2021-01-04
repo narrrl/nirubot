@@ -107,8 +107,7 @@ public class FunModule extends BaseModule {
         });
     }
 
-    @Command(key = {"neko", "nya", "image"}, description = "Nyaaa~~", 
-        context = {Command.Context.PRIVATE, Command.Context.GUILD})
+    @Command(key = {"neko", "nya", "image"}, description = "Nyaaa~~")
     public void neko() {
         ctx.getArgs().ifPresent(args -> {
             NekoLoveImage image;

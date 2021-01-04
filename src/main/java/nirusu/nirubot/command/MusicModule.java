@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.SearchListResponse;
@@ -15,11 +16,9 @@ import com.sapher.youtubedl.YoutubeDLResponse;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 
-import discord4j.core.object.VoiceState;
 import discord4j.core.object.entity.Guild;
-import discord4j.core.object.entity.Member;
-import discord4j.core.object.entity.User;
 import discord4j.core.object.entity.channel.VoiceChannel;
+import discord4j.core.object.entity.channel.Channel.Type;
 import discord4j.rest.util.Color;
 import nirusu.nirubot.Nirubot;
 import nirusu.nirubot.core.DiscordUtil;
@@ -33,8 +32,8 @@ import nirusu.nirucmd.annotation.Command;
 
 
 public class MusicModule extends BaseModule {
-
-    @Command( key = { "p", "play", "pl"}, description = "Plays a song", context = {Command.Context.GUILD})
+    @Command( key = { "p", "play", "pl"}, description = "Plays a song", 
+        context = {Type.GUILD_CATEGORY, Type.GUILD_NEWS, Type.GUILD_TEXT})
     public void play() {
         Guild guild = ctx.getGuild().orElseThrow();
         List<String> args = ctx.getArgs().orElseThrow();
@@ -53,7 +52,7 @@ public class MusicModule extends BaseModule {
 
     }
 
-    @Command( key = { "skip", "next", "s", "sk"}, description = "Skips the current song", context = {Command.Context.GUILD})
+    @Command( key = { "skip", "next", "s", "sk"}, description = "Skips the current song", context = {Type.GUILD_CATEGORY, Type.GUILD_NEWS, Type.GUILD_TEXT})
     public void skip() {
         Guild guild = ctx.getGuild().orElseThrow();
 
@@ -125,31 +124,28 @@ public class MusicModule extends BaseModule {
         );
     }
 
-    @Command(key = {"join", "j"}, description = "Joins into the channel of the author", context = {Command.Context.GUILD})
+    @Command(key = {"join", "j"}, description = "Joins into the channel of the author", context = {Type.GUILD_CATEGORY, Type.GUILD_NEWS, Type.GUILD_TEXT})
     public void join() {
         Guild guild = ctx.getGuild().orElseThrow();
-        User user = ctx.getAuthor().orElseThrow();
-        List<String> args = ctx.getArgs().orElseThrow();
+        int argsSize = ctx.getArgs().map(args -> args.size()).orElse(-1);
 
-        if (!args.isEmpty()) {
+        if (argsSize != 0) {
             return;
         }
 
         if (!MusicCondition.checkConditions(ctx, MusicCondition.USER_CONNECTED)) {
             return;
         }
-        
-        Member member = guild.getMemberById(user.getId()).block();
-
-        VoiceState state = member.getVoiceState().block();
-
         GuildMusicManager musicManager = PlayerManager.getInstance().getGuildMusicManager(guild);
-        VoiceChannel ch = state.getChannel().block();
-        ch.join(con -> con.setProvider(musicManager.getProvider())).block();
+        ctx.getAuthorVoiceState().ifPresent(state 
+            -> state.getChannel().blockOptional().ifPresent(ch 
+            -> ch.join(con -> con.setProvider(musicManager.getProvider()))
+                .block()
+        ));
 
     }
 
-    @Command(key = {"leave", "left", "l"}, description = "Leaves the current voice channel", context = {Command.Context.GUILD})
+    @Command(key = {"leave", "left", "l"}, description = "Leaves the current voice channel", context = {Type.GUILD_CATEGORY, Type.GUILD_NEWS, Type.GUILD_TEXT})
     public void leave() {
         Guild guild = ctx.getGuild().orElseThrow();
         List<String> args = ctx.getArgs().orElseThrow();
@@ -162,11 +158,14 @@ public class MusicModule extends BaseModule {
             return;
         }
         
-        ctx.getSelfVoiceState().orElseThrow().getChannel().block().sendDisconnectVoiceState().block();
+        ctx.getSelfVoiceState().ifPresent(state 
+            -> state.getChannel().blockOptional().ifPresent(ch 
+            -> ch.sendDisconnectVoiceState()
+            .block()));
         PlayerManager.getInstance().destroy(guild.getId().asLong());
     }
 
-    @Command(key = {"repeat","loop","rp"}, description = "Repeats the current playlist", context = {Command.Context.GUILD})
+    @Command(key = {"repeat","loop","rp"}, description = "Repeats the current playlist", context = {Type.GUILD_CATEGORY, Type.GUILD_NEWS, Type.GUILD_TEXT})
     public void repeat() {
         List<String> args = ctx.getArgs().orElseThrow();
 
@@ -186,7 +185,7 @@ public class MusicModule extends BaseModule {
         
     }
 
-    @Command(key = {"pause", "resume"}, description = "Pause/Resume music", context = {Command.Context.GUILD})
+    @Command(key = {"pause", "resume"}, description = "Pause/Resume music", context = {Type.GUILD_CATEGORY, Type.GUILD_NEWS, Type.GUILD_TEXT})
     public void pause() {
         Guild guild = ctx.getGuild().orElseThrow();
         List<String> args = ctx.getArgs().orElseThrow();
@@ -205,7 +204,7 @@ public class MusicModule extends BaseModule {
         manager.pause(guild, !musicManager.getPlayer().isPaused());
     }
 
-    @Command(key = {"playing", "nowplaying", "np"}, description = "Shows what song currently is playing", context = {Command.Context.GUILD})
+    @Command(key = {"playing", "nowplaying", "np"}, description = "Shows what song currently is playing", context = {Type.GUILD_CATEGORY, Type.GUILD_NEWS, Type.GUILD_TEXT})
     public void playing() {
         Guild guild = ctx.getGuild().orElseThrow();
         List<String> args = ctx.getArgs().orElseThrow();
@@ -266,7 +265,7 @@ public class MusicModule extends BaseModule {
 
     @Command(key = {"yt", "youtube", "yp"}, 
         description = "Searches and plays youtube videos by given keywords", 
-        context = {Command.Context.GUILD})
+        context = {Type.GUILD_CATEGORY, Type.GUILD_NEWS, Type.GUILD_TEXT})
     public void youtube() {
 
         List<String> args = ctx.getArgs().orElseThrow();
@@ -280,7 +279,7 @@ public class MusicModule extends BaseModule {
             return;
         }
 
-        VoiceChannel ch = ctx.getAuthorVoiceState().orElseThrow().getChannel().block();
+        Optional<VoiceChannel> channel = ctx.getAuthorVoiceState().orElseThrow().getChannel().blockOptional();
 
         SearchListResponse response = getVideos(args);
 
@@ -299,9 +298,9 @@ public class MusicModule extends BaseModule {
         YouTubeVideo video = Nirubot.getGson().fromJson(results.get(0).toString(), YouTubeVideo.class);
         PlayerManager.getInstance().loadAndPlay(ctx, video.getVideoId());
 
-        ch.join(spec -> spec.setProvider(PlayerManager.getInstance().getGuildMusicManager(guild).getProvider())).block();
+        channel.ifPresent(ch -> ch.join(spec -> spec.setProvider(PlayerManager.getInstance().getGuildMusicManager(guild).getProvider())).block());
 
-        ctx.getChannel().ifPresent(channel -> channel.createEmbed(spec -> 
+        ctx.getChannel().ifPresent(ch -> ch.createEmbed(spec -> 
             spec.setColor(Color.of(Nirubot.getColor().getRGB()))
                 .setTitle(video.getTitle())
                 .setUrl("https://www.youtube.com/watch?v=" + video.getVideoId())
@@ -310,7 +309,7 @@ public class MusicModule extends BaseModule {
     }
 
 
-    @Command(key = {"ls", "list"}, description = "Lists all queued songs", context = {Command.Context.GUILD})
+    @Command(key = {"ls", "list"}, description = "Lists all queued songs", context = {Type.GUILD_CATEGORY, Type.GUILD_NEWS, Type.GUILD_TEXT})
     public void list() {
 
         Guild guild = ctx.getGuild().orElseThrow();
