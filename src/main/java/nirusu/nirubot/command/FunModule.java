@@ -7,8 +7,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import discord4j.rest.util.Color;
-
 import nirusu.nirubot.Nirubot;
 import nirusu.nirubot.util.RandomHttpClient;
 import nirusu.nirubot.util.arknight.RecruitmentCalculator;
@@ -91,14 +89,14 @@ public class FunModule extends BaseModule {
                     if (first) {
                         ch.createEmbed(emb -> 
                             emb.setDescription(str)
-                               .setColor(Color.of(Nirubot.getColor().getRGB()))
+                               .setColor(Nirubot.getColor())
                                .setTitle("All Combinations:")
                         ).block();
                         first = false;
                     } else {
                         ch.createEmbed(emb -> 
                             emb.setDescription(str)
-                               .setColor(Color.of(Nirubot.getColor().getRGB()))
+                               .setColor(Nirubot.getColor())
                         ).block();
 
                     }
@@ -132,7 +130,7 @@ public class FunModule extends BaseModule {
             }
             ctx.getChannel().ifPresent(ch -> {
                 ch.createEmbed(emb ->
-                    emb.setImage(image.url()).setColor(Color.of(Nirubot.getColor().getRGB()))
+                    emb.setImage(image.url()).setColor(Nirubot.getColor())
                         .setTitle(String.format("Here is your %s", type))
                 ).block();
             });

@@ -1,6 +1,5 @@
 package nirusu.nirubot;
 
-import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -15,9 +14,11 @@ import com.google.gson.Gson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import discord4j.rest.util.Color;
 import nirusu.nirubot.core.Config;
 import nirusu.nirubot.listener.DiscordListener;
 import nirusu.nirubot.listener.NiruListener;
+import nirusu.nirucmd.CommandDispatcher;
 
 import javax.annotation.Nonnull;
 
@@ -25,6 +26,7 @@ public class Nirubot extends AbstractIdleService {
     private static final Logger LOGGER = LoggerFactory.getLogger(Nirubot.class);
     private static final int EXIT_CODE_ERROR = -1;
     private static final int EXIT_CODE_SUCCESS = 0;
+    private static final String WEB_DIR_URL = "/var/www/html/discord/tmp";
     private static Nirubot bot;
     private static Gson gson;
     private static Config conf;
@@ -32,6 +34,7 @@ public class Nirubot extends AbstractIdleService {
     private static File tmpDir;
     private static File tmpWebDir;
     private final ArrayList<NiruListener> listeners;
+    private final CommandDispatcher dispatcher;
 
     public static Nirubot getNirubot() {
         if (bot == null) {
@@ -71,7 +74,7 @@ public class Nirubot extends AbstractIdleService {
     public static File getWebDir() {
 
         if (tmpWebDir == null) {
-            tmpWebDir = new File("/var/www/html/discord/tmp");
+            tmpWebDir = new File(WEB_DIR_URL);
         }
 
         return tmpWebDir;
@@ -80,7 +83,8 @@ public class Nirubot extends AbstractIdleService {
     public Nirubot() {
         super();
         listeners = new ArrayList<>();
-
+        dispatcher = new CommandDispatcher.Builder()
+            .addPackage("nirusu.nirubot.command").build();
     }
 
     public static void main(String[] args) {
@@ -169,7 +173,7 @@ public class Nirubot extends AbstractIdleService {
     }
 
     public static Color getColor() {
-        return new Color(0, 153, 255);
+        return Color.of(0, 153, 255);
     }
 
     public void exit() {
@@ -197,7 +201,11 @@ public class Nirubot extends AbstractIdleService {
 
 	public static String getHost() {
 		return getConfig().getHost();
-	}
+    }
+    
+    public CommandDispatcher getDispatcher() {
+        return this.dispatcher;
+    }
 
 	public static String getTmpDirPath() {
 		return getConfig().getTmpDirPath();

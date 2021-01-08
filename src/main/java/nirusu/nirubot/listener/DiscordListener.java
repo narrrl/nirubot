@@ -17,24 +17,19 @@ import nirusu.nirubot.core.Config;
 import nirusu.nirubot.core.GuildManager;
 import nirusu.nirubot.core.audio.PlayerManager;
 import nirusu.nirucmd.CommandContext;
-import nirusu.nirucmd.CommandDispatcher;
 import nirusu.nirucmd.exception.NoSuchCommandException;
 
 public class DiscordListener implements NiruListener {
-    private final CommandDispatcher dispatcher;
     private final GatewayDiscordClient client;
 
     public DiscordListener() throws LoginException {
         Config conf = Nirubot.getConfig();
-        dispatcher = new CommandDispatcher.Builder()
-            .addPackage("nirusu.nirubot.command").build();
-        
         client = Objects.requireNonNull(DiscordClient.create(conf.getToken())
             .gateway()
             .setSharding(ShardingStrategy.recommended())
             .login().block());
-        
-        client.getEventDispatcher().on(ReadyEvent.class).subscribe(event -> 
+
+        client.getEventDispatcher().on(ReadyEvent.class).subscribe(event ->
             Nirubot.info("Logged in as {}", event.getSelf().getUsername()));
 
         client.getEventDispatcher().on(MessageCreateEvent.class).subscribe(this::onMessageRecievedEvent);
@@ -78,7 +73,7 @@ public class DiscordListener implements NiruListener {
             // create the CommandContext
             ctx.setArgsAndKey(raw.substring(prefix.length()).split("\\s+"), raw.substring(prefix.length()).split("\\s+")[0], true);
             try {
-                dispatcher.run(ctx, ctx.getKey());
+                Nirubot.getNirubot().getDispatcher().run(ctx, ctx.getKey());
             } catch (NoSuchCommandException e) {
                 //TODO:: controlflow with exception, not good
             }

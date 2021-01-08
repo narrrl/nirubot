@@ -19,7 +19,6 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.channel.VoiceChannel;
 import discord4j.core.object.entity.channel.Channel.Type;
-import discord4j.rest.util.Color;
 import nirusu.nirubot.Nirubot;
 import nirusu.nirubot.core.DiscordUtil;
 import nirusu.nirubot.core.GuildManager;
@@ -70,7 +69,7 @@ public class MusicModule extends BaseModule {
         String prevText = "[" + prev.getInfo().title + "](" + prev.getInfo().uri + ")";
         String nextText = next != null ? "[" + next.getInfo().title + "](" + next.getInfo().uri + ")" : "End of queue!";
         ctx.getChannel().ifPresent(ch -> ch.createEmbed(spec ->
-            spec.setColor(Color.of(Nirubot.getColor().getRGB()))
+            spec.setColor(Nirubot.getColor())
             .setTitle("Skipped Song!")
             .addField("Skipped:", prevText, true)
             .addField("Next:", nextText, true)).block()
@@ -119,7 +118,7 @@ public class MusicModule extends BaseModule {
         out.append("◄\n" + GuildManager.getManager(ctx.getGuild().orElseThrow().getId().asLong()).volume() + "%");
 
         ctx.getChannel().ifPresent(ch -> ch.createEmbed(spec ->
-            spec.setColor(Color.of(Nirubot.getColor().getRGB()))
+            spec.setColor(Nirubot.getColor())
             .setDescription(out.toString())).block()
         );
     }
@@ -251,13 +250,13 @@ public class MusicModule extends BaseModule {
                 spec.setTitle("Now playing:")
                     .setDescription("[" + info.title + "]" + "(" + uri + ")\n" + progress.toString())
                     .setThumbnail(res.getOut())
-                    .setColor(Color.of(Nirubot.getColor().getRGB()))).block()
+                    .setColor(Nirubot.getColor())).block()
             );
         } catch (YoutubeDLException e) {
             ctx.getChannel().ifPresent(ch -> ch.createEmbed(spec ->
                 spec.setTitle("Now playing:")
                     .setDescription("[" + info.title + "]" + "(" + uri + ")\n" + progress.toString())
-                    .setColor(Color.of(Nirubot.getColor().getRGB()))).block()
+                    .setColor(Nirubot.getColor())).block()
             );
             Nirubot.warning(e.getMessage());
         }
@@ -301,7 +300,7 @@ public class MusicModule extends BaseModule {
         channel.ifPresent(ch -> ch.join(spec -> spec.setProvider(PlayerManager.getInstance().getGuildMusicManager(guild).getProvider())).block());
 
         ctx.getChannel().ifPresent(ch -> ch.createEmbed(spec -> 
-            spec.setColor(Color.of(Nirubot.getColor().getRGB()))
+            spec.setColor(Nirubot.getColor())
                 .setTitle(video.getTitle())
                 .setUrl("https://www.youtube.com/watch?v=" + video.getVideoId())
                 .setThumbnail(video.getThumbnailUrl())).block()
@@ -352,7 +351,7 @@ public class MusicModule extends BaseModule {
             if (out.length() > 1800) {
                 final String description = out.toString().substring(0, out.length());
                 ctx.getChannel().ifPresent(ch -> ch.createEmbed(spec ->
-                    spec.setColor(Color.of(Nirubot.getColor().getRGB()))
+                    spec.setColor(Nirubot.getColor())
                         .setDescription(description)).block()
                 );
                 out = new StringBuilder();
@@ -367,7 +366,7 @@ public class MusicModule extends BaseModule {
         if (out.length() != 0) {
             final String description = out.toString().substring(0, out.length());
             ctx.getChannel().ifPresent(ch -> ch.createEmbed(spec ->
-                spec.setColor(Color.of(Nirubot.getColor().getRGB()))
+                spec.setColor(Nirubot.getColor())
                     .setDescription(description)).block()
             );
         }

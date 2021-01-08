@@ -10,7 +10,6 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 
 import discord4j.core.object.entity.Guild;
-import discord4j.rest.util.Color;
 import nirusu.nirubot.Nirubot;
 import nirusu.nirubot.core.GuildManager;
 import nirusu.nirucmd.CommandContext;
@@ -59,7 +58,7 @@ public class PlayerManager {
                 ctx.getChannel().ifPresent(ch -> ch.createEmbed(spec -> 
                     spec.setTitle("Song loaded: " + track.getInfo().title)
                         .setUrl(track.getInfo().uri)
-                        .setColor(Color.of(Nirubot.getColor().getRGB())
+                        .setColor(Nirubot.getColor()
                 )).block());
             }
 
@@ -73,7 +72,7 @@ public class PlayerManager {
                 }
                 ctx.getChannel().ifPresent(ch -> ch.createEmbed(spec -> 
                     spec.setTitle("Playlist loaded: " + playlist.getName())
-                        .setColor(Color.of(Nirubot.getColor().getRGB())
+                        .setColor(Nirubot.getColor()
                 )).block());
             }
 
