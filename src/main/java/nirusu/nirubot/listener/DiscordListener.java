@@ -17,7 +17,7 @@ import nirusu.nirubot.core.Config;
 import nirusu.nirubot.core.GuildManager;
 import nirusu.nirubot.core.audio.PlayerManager;
 import nirusu.nirucmd.CommandContext;
-import nirusu.nirucmd.exception.NoSuchCommandException;
+import nirusu.nirucmd.CommandToRun;
 
 public class DiscordListener implements NiruListener {
     private final GatewayDiscordClient client;
@@ -72,11 +72,8 @@ public class DiscordListener implements NiruListener {
         if (raw.startsWith(prefix) && raw.length() > prefix.length()) {
             // create the CommandContext
             ctx.setArgsAndKey(raw.substring(prefix.length()).split("\\s+"), raw.substring(prefix.length()).split("\\s+")[0], true);
-            try {
-                Nirubot.getNirubot().getDispatcher().run(ctx, ctx.getKey());
-            } catch (NoSuchCommandException e) {
-                //TODO:: controlflow with exception, not good
-            }
+            CommandToRun cmd = Nirubot.getNirubot().getDispatcher().getCommand(ctx, ctx.getKey());
+            cmd.run();
         }
     }
 

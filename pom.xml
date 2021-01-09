@@ -37,7 +37,7 @@
     <dependency>
       <groupId>com.github.Nirusu99</groupId>
       <artifactId>niru-cmdd</artifactId>
-      <version>0.1.4</version>
+      <version>0.1.5</version>
     </dependency>
     <dependency>
       <groupId>org.jdom</groupId>
