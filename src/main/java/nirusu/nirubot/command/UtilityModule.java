@@ -38,7 +38,7 @@ public class UtilityModule extends BaseModule {
             Set<Class<? extends BaseModule>> modules = dispatcher.getModules();
             final String desc;
             final String title;
-            final String prefix = ctx.getGuild().map(g -> GuildManager.getManager(g.getId().asLong()).prefix()).orElse("");
+            final String prefix = ctx.getGuild().map(g -> GuildManager.of(g.getId()).prefix()).orElse("");
             StringBuilder str = new StringBuilder();
             if (args.isEmpty()) {
                 title = "Nirubot Modules:";

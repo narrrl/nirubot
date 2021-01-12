@@ -15,7 +15,6 @@ import discord4j.core.shard.ShardingStrategy;
 import nirusu.nirubot.Nirubot;
 import nirusu.nirubot.core.Config;
 import nirusu.nirubot.core.GuildManager;
-import nirusu.nirubot.core.audio.PlayerManager;
 import nirusu.nirucmd.CommandContext;
 import nirusu.nirucmd.CommandToRun;
 
@@ -59,7 +58,7 @@ public class DiscordListener implements NiruListener {
 
         if (ctx.isGuild()) {
             prefix = event.getGuild().blockOptional().map(g -> {
-                GuildManager mg = GuildManager.getManager(g.getId().asLong());
+                GuildManager mg = GuildManager.of(g.getId());
                 return mg.prefix();
             }).orElse(Nirubot.getDefaultPrefix());
         } else if (ctx.isPrivate()) {
@@ -79,10 +78,7 @@ public class DiscordListener implements NiruListener {
 
     @Override
     public void shutdown() {
-        for (long id  : PlayerManager.getInstance().getAllIds()) {
-            PlayerManager.getInstance().destroy(id);
-        }
-        client.logout().block();
+        client.logout().blockOptional();
         Nirubot.info("Discord listener is shutting down");
     }
 }

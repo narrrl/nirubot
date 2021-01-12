@@ -1,7 +1,6 @@
 package nirusu.nirubot.command;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -16,204 +15,190 @@ import com.sapher.youtubedl.YoutubeDLResponse;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 
-import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.channel.VoiceChannel;
 import discord4j.core.object.entity.channel.Channel.Type;
 import nirusu.nirubot.Nirubot;
 import nirusu.nirubot.core.DiscordUtil;
 import nirusu.nirubot.core.GuildManager;
 import nirusu.nirubot.core.audio.GuildMusicManager;
-import nirusu.nirubot.core.audio.PlayerManager;
 import nirusu.nirubot.util.MusicCondition;
 import nirusu.nirubot.util.YouTubeVideo;
 import nirusu.nirucmd.BaseModule;
 import nirusu.nirucmd.annotation.Command;
 
-
 public class MusicModule extends BaseModule {
-    @Command( key = { "p", "play", "pl"}, description = "Plays a song", 
-        context = {Type.GUILD_CATEGORY, Type.GUILD_NEWS, Type.GUILD_TEXT})
+    @Command(key = { "p", "play", "pl" }, description = "Plays a song", context = { Type.GUILD_CATEGORY,
+            Type.GUILD_NEWS, Type.GUILD_TEXT })
     public void play() {
-        Guild guild = ctx.getGuild().orElseThrow();
-        List<String> args = ctx.getArgs().orElseThrow();
-
         if (!MusicCondition.checkConditions(ctx, MusicCondition.USER_CONNECTED)) {
             return;
         }
+        ctx.getGuild().ifPresent(guild -> ctx.getArgs().ifPresent(args -> {
+            if (args.size() != 1) {
+                return;
+            }
 
-        String link = args.get(0);
-        GuildMusicManager musicManager = PlayerManager.getInstance().getGuildMusicManager(guild);
-        ctx.getAuthorVoiceState().ifPresent(state -> {
-            VoiceChannel ch = state.getChannel().block();
-            PlayerManager.getInstance().loadAndPlay(ctx, link);
-            ch.join(con -> con.setProvider(musicManager.getProvider())).block();
-        });
+            String link = args.get(0);
+            GuildMusicManager musicManager = GuildMusicManager.of(guild.getId());
+            ctx.getAuthorVoiceState().ifPresent(state -> {
+                VoiceChannel ch = state.getChannel().block();
+                musicManager.loadAndPlay(link, ctx);
+                ch.join(con -> con.setProvider(musicManager.getProvider())).block();
+            });
+        }));
 
     }
 
-    @Command( key = { "skip", "next", "s", "sk"}, description = "Skips the current song", context = {Type.GUILD_CATEGORY, Type.GUILD_NEWS, Type.GUILD_TEXT})
+    @Command(key = { "skip", "next", "s", "sk" }, description = "Skips the current song", context = {
+            Type.GUILD_CATEGORY, Type.GUILD_NEWS, Type.GUILD_TEXT })
     public void skip() {
-        Guild guild = ctx.getGuild().orElseThrow();
 
         if (!MusicCondition.checkConditions(ctx, MusicCondition.SAME_VOICE_CHANNEL, MusicCondition.MUSIC_PLAYING)) {
             return;
         }
 
-        GuildMusicManager musicManager = PlayerManager.getInstance().getGuildMusicManager(guild);
-
-        AudioTrack prev = musicManager.getPlayer().getPlayingTrack();
-
-        PlayerManager.getInstance().next(guild);
-
-        AudioTrack next = musicManager.getPlayer().getPlayingTrack();
-        String prevText = "[" + prev.getInfo().title + "](" + prev.getInfo().uri + ")";
-        String nextText = next != null ? "[" + next.getInfo().title + "](" + next.getInfo().uri + ")" : "End of queue!";
-        ctx.getChannel().ifPresent(ch -> ch.createEmbed(spec ->
-            spec.setColor(Nirubot.getColor())
-            .setTitle("Skipped Song!")
-            .addField("Skipped:", prevText, true)
-            .addField("Next:", nextText, true)).block()
-        );
-    }
-
-    @Command(key = {"vol", "vl", "volume"}, description = "Sets the volume for the bot")
-    public void volume() {
-        Guild guild = ctx.getGuild().orElseThrow();
-        List<String> args = ctx.getArgs().orElseThrow();
-
-        if (args.size() != 1) {
-            return;
-        }
-
-        if (!MusicCondition.checkConditions(ctx, MusicCondition.SAME_VOICE_CHANNEL)) {
-            return;
-        }
-
-        GuildMusicManager musicManager = PlayerManager.getInstance().getGuildMusicManager(guild);
-        int volume;
-        try {
-            volume = Integer.parseInt(args.get(0));
-        } catch ( NumberFormatException e) {
-            ctx.reply(String.format("%s is not a valid volume", args.get(0)));
-            return;
-        }
-
-        if (volume < 0) return;
-
-        volume = volume > 100 ? 100 : volume;
-
-        GuildManager.getManager(guild.getId().asLong()).setVolume(volume);
-        musicManager.setVolume(volume);
-
-        int volBars = volume / 10;
-        StringBuilder out = new StringBuilder();
-        out.append("Volume:\n►");
-        for (int i = 0; i < 10; i++) {
-            if (i < volBars) {
-                out.append("█");
-            } else {
-                out.append("░");
+        ctx.getGuild().ifPresent(guild -> ctx.getArgs().ifPresent(args -> {
+            if (!args.isEmpty()) {
+                return;
             }
-        }
-        out.append("◄\n" + GuildManager.getManager(ctx.getGuild().orElseThrow().getId().asLong()).volume() + "%");
+            GuildMusicManager musicManager = GuildMusicManager.of(guild.getId());
 
-        ctx.getChannel().ifPresent(ch -> ch.createEmbed(spec ->
-            spec.setColor(Nirubot.getColor())
-            .setDescription(out.toString())).block()
-        );
+            AudioTrack prev = musicManager.getPlayer().getPlayingTrack();
+
+            musicManager.getScheduler().skip();
+
+            AudioTrack next = musicManager.getPlayer().getPlayingTrack();
+            String prevText = "[" + prev.getInfo().title + "](" + prev.getInfo().uri + ")";
+            String nextText = next != null ? "[" + next.getInfo().title + "](" + next.getInfo().uri + ")"
+                    : "End of queue!";
+            ctx.getChannel()
+                    .ifPresent(ch -> ch.createEmbed(spec -> spec.setColor(Nirubot.getColor()).setTitle("Skipped Song!")
+                            .addField("Skipped:", prevText, true).addField("Next:", nextText, true)).block());
+
+        }));
     }
 
-    @Command(key = {"join", "j"}, description = "Joins into the channel of the author", context = {Type.GUILD_CATEGORY, Type.GUILD_NEWS, Type.GUILD_TEXT})
+    @Command(key = { "vol", "vl", "volume" }, description = "Sets the volume for the bot")
+    public void volume() {
+        ctx.getArgs().ifPresent(args -> ctx.getGuild().ifPresent(guild -> {
+            if (args.size() != 1) {
+                return;
+            }
+
+            if (!MusicCondition.checkConditions(ctx, MusicCondition.SAME_VOICE_CHANNEL)) {
+                return;
+            }
+
+            GuildMusicManager musicManager = GuildMusicManager.of(guild.getId());
+            int volume;
+            try {
+                volume = Integer.parseInt(args.get(0));
+            } catch (NumberFormatException e) {
+                ctx.reply(String.format("%s is not a valid volume", args.get(0)));
+                return;
+            }
+
+            if (volume < 0)
+                return;
+
+            volume = volume > 100 ? 100 : volume;
+
+            GuildManager.of(guild.getId()).setVolume(volume);
+            musicManager.setVolume(volume);
+
+            final String volumeBar = getVolumeBar(volume);
+            ctx.getChannel().ifPresent(
+                    ch -> ch.createEmbed(spec -> spec.setColor(Nirubot.getColor()).setDescription(volumeBar)).block());
+        }));
+    }
+
+    @Command(key = { "join", "j" }, description = "Joins into the channel of the author", context = {
+            Type.GUILD_CATEGORY, Type.GUILD_NEWS, Type.GUILD_TEXT })
     public void join() {
-        Guild guild = ctx.getGuild().orElseThrow();
-        int argsSize = ctx.getArgs().map(args -> args.size()).orElse(-1);
+        ctx.getGuild().ifPresent(guild -> {
+            int argsSize = ctx.getArgs().map(List::size).orElse(-1);
 
-        if (argsSize != 0) {
-            return;
-        }
+            if (argsSize != 0) {
+                return;
+            }
 
-        if (!MusicCondition.checkConditions(ctx, MusicCondition.USER_CONNECTED)) {
-            return;
-        }
-        GuildMusicManager musicManager = PlayerManager.getInstance().getGuildMusicManager(guild);
-        ctx.getAuthorVoiceState().ifPresent(state 
-            -> state.getChannel().blockOptional().ifPresent(ch 
-            -> ch.join(con -> con.setProvider(musicManager.getProvider()))
-                .block()
-        ));
+            if (!MusicCondition.checkConditions(ctx, MusicCondition.USER_CONNECTED)) {
+                return;
+            }
+            GuildMusicManager musicManager = GuildMusicManager.of(guild.getId());
+            ctx.getAuthorVoiceState().ifPresent(state -> state.getChannel().blockOptional()
+                    .ifPresent(ch -> ch.join(con -> con.setProvider(musicManager.getProvider())).block()));
 
+        });
     }
 
-    @Command(key = {"leave", "left", "l"}, description = "Leaves the current voice channel", context = {Type.GUILD_CATEGORY, Type.GUILD_NEWS, Type.GUILD_TEXT})
+    @Command(key = { "leave", "left", "l" }, description = "Leaves the current voice channel", context = {
+            Type.GUILD_CATEGORY, Type.GUILD_NEWS, Type.GUILD_TEXT })
     public void leave() {
-        Guild guild = ctx.getGuild().orElseThrow();
-        List<String> args = ctx.getArgs().orElseThrow();
+        if (!MusicCondition.checkConditions(ctx, MusicCondition.USER_CONNECTED, MusicCondition.BOT_CONNECTED,
+                MusicCondition.SAME_VOICE_CHANNEL)) {
+            return;
+        }
 
-        if (!args.isEmpty()) {
-            return;
-        }
-        
-        if (!MusicCondition.checkConditions(ctx, MusicCondition.USER_CONNECTED, MusicCondition.BOT_CONNECTED, MusicCondition.SAME_VOICE_CHANNEL)) {
-            return;
-        }
-        
-        ctx.getSelfVoiceState().ifPresent(state 
-            -> state.getChannel().blockOptional().ifPresent(ch 
-            -> ch.sendDisconnectVoiceState()
-            .block()));
-        PlayerManager.getInstance().destroy(guild.getId().asLong());
+        ctx.getGuild().ifPresent(guild -> ctx.getArgs().ifPresent(args -> {
+            if (!args.isEmpty()) {
+                return;
+            }
+
+            ctx.getSelfVoiceState().ifPresent(
+                    state -> state.getChannel().blockOptional().ifPresent(ch -> ch.sendDisconnectVoiceState().block()));
+            GuildMusicManager.destroy(guild.getId());
+        }));
     }
 
-    @Command(key = {"repeat","loop","rp"}, description = "Repeats the current playlist", context = {Type.GUILD_CATEGORY, Type.GUILD_NEWS, Type.GUILD_TEXT})
+    @Command(key = { "repeat", "loop", "rp" }, description = "Repeats the current playlist", context = {
+            Type.GUILD_CATEGORY, Type.GUILD_NEWS, Type.GUILD_TEXT })
     public void repeat() {
-        List<String> args = ctx.getArgs().orElseThrow();
-
-        if (!args.isEmpty()) {
-            return;
-        }
-
         if (!MusicCondition.checkConditions(ctx, MusicCondition.BOT_CONNECTED, MusicCondition.SAME_VOICE_CHANNEL)) {
             return;
         }
 
-        if (PlayerManager.getInstance().repeat(ctx.getGuild().orElseThrow())) {
-            ctx.reply("Now repeating current playlist!");
-        } else {
-            ctx.reply("Stopped repeating playlist!");
-        }
-        
+        ctx.getArgs().ifPresent(args -> ctx.getGuild().ifPresent(guild -> {
+            if (!args.isEmpty()) {
+                return;
+            }
+
+            if (GuildMusicManager.of(guild.getId()).getScheduler().setRepeat()) {
+                ctx.reply("Now repeating current playlist!");
+            } else {
+                ctx.reply("Stopped repeating playlist!");
+            }
+
+        }));
+
     }
 
-    @Command(key = {"pause", "resume"}, description = "Pause/Resume music", context = {Type.GUILD_CATEGORY, Type.GUILD_NEWS, Type.GUILD_TEXT})
+    @Command(key = { "pause", "resume" }, description = "Pause/Resume music", context = { Type.GUILD_CATEGORY,
+            Type.GUILD_NEWS, Type.GUILD_TEXT })
     public void pause() {
-        Guild guild = ctx.getGuild().orElseThrow();
-        List<String> args = ctx.getArgs().orElseThrow();
+        ctx.getArgs().ifPresent(args -> ctx.getGuild().ifPresent(guild -> {
+            if (!args.isEmpty()) {
+                return;
+            }
 
-        if (!args.isEmpty()) {
-            return;
-        }
+            if (!MusicCondition.checkConditions(ctx, MusicCondition.SAME_VOICE_CHANNEL, MusicCondition.MUSIC_PLAYING)) {
+                return;
+            }
 
-        if (!MusicCondition.checkConditions(ctx, MusicCondition.SAME_VOICE_CHANNEL, MusicCondition.MUSIC_PLAYING)) {
-            return;
-        }
+            GuildMusicManager musicManager = GuildMusicManager.of(guild.getId());
 
-        PlayerManager manager = PlayerManager.getInstance();
-        GuildMusicManager musicManager = manager.getGuildMusicManager(guild);
+            musicManager.getPlayer().setPaused(!musicManager.getPlayer().isPaused());
 
-        manager.pause(guild, !musicManager.getPlayer().isPaused());
+        }));
     }
 
-    @Command(key = {"playing", "nowplaying", "np"}, description = "Shows what song currently is playing", context = {Type.GUILD_CATEGORY, Type.GUILD_NEWS, Type.GUILD_TEXT})
+    @Command(key = { "playing", "nowplaying", "np" }, description = "Shows what song currently is playing", context = {
+            Type.GUILD_CATEGORY, Type.GUILD_NEWS, Type.GUILD_TEXT })
     public void playing() {
-        Guild guild = ctx.getGuild().orElseThrow();
-        List<String> args = ctx.getArgs().orElseThrow();
-
-        if (!args.isEmpty()) {
-            return;
-        }
-
-         PlayerManager manager = PlayerManager.getInstance();
-        final AudioTrack track = manager.getPlaying(guild);
+        final AudioTrack track = ctx.getGuild()
+                .map(guild -> ctx.getArgs()
+                        .map(args -> GuildMusicManager.of(guild.getId()).getPlayer().getPlayingTrack()).orElse(null))
+                .orElse(null);
 
         if (track == null) {
             ctx.reply("No music is playing!");
@@ -221,8 +206,9 @@ public class MusicModule extends BaseModule {
         }
 
         AudioTrackInfo info = track.getInfo();
-        String uri = info.uri.startsWith("https://www.youtube.com/watch?v=") 
-            ? "https://youtu.be/" + info.identifier +  "?t=" + (track.getPosition() / 1000) : info.uri;
+        String uri = info.uri.startsWith("https://www.youtube.com/watch?v=")
+                ? "https://youtu.be/" + info.identifier + "?t=" + (track.getPosition() / 1000)
+                : info.uri;
         StringBuilder progress = new StringBuilder();
         float percent = track.getPosition() / (float) info.length;
         int totalTiles = 10;
@@ -238,7 +224,7 @@ public class MusicModule extends BaseModule {
                 progress.append("▬");
             }
         }
-        progress.append("►\n " + DiscordUtil.formatTime(minutes, seconds)+ " / ");
+        progress.append("►\n " + DiscordUtil.formatTime(minutes, seconds) + " / ");
         minutes = track.getDuration() / 1000 / 60;
         seconds = track.getDuration() / 1000 % 60;
         progress.append(DiscordUtil.formatTime(minutes, seconds));
@@ -246,137 +232,131 @@ public class MusicModule extends BaseModule {
             YoutubeDLRequest req = new YoutubeDLRequest(uri, Nirubot.getTmpDirectory().getAbsolutePath());
             req.setOption("get-thumbnail");
             YoutubeDLResponse res = YoutubeDL.execute(req);
-            ctx.getChannel().ifPresent(ch -> ch.createEmbed(spec ->
-                spec.setTitle("Now playing:")
-                    .setDescription("[" + info.title + "]" + "(" + uri + ")\n" + progress.toString())
-                    .setThumbnail(res.getOut())
-                    .setColor(Nirubot.getColor())).block()
-            );
+            ctx.getChannel()
+                    .ifPresent(ch -> ch.createEmbed(spec -> spec.setTitle("Now playing:")
+                            .setDescription("[" + info.title + "]" + "(" + uri + ")\n" + progress.toString())
+                            .setThumbnail(res.getOut()).setColor(Nirubot.getColor())).block());
         } catch (YoutubeDLException e) {
-            ctx.getChannel().ifPresent(ch -> ch.createEmbed(spec ->
-                spec.setTitle("Now playing:")
-                    .setDescription("[" + info.title + "]" + "(" + uri + ")\n" + progress.toString())
-                    .setColor(Nirubot.getColor())).block()
-            );
+            ctx.getChannel()
+                    .ifPresent(ch -> ch.createEmbed(spec -> spec.setTitle("Now playing:")
+                            .setDescription("[" + info.title + "]" + "(" + uri + ")\n" + progress.toString())
+                            .setColor(Nirubot.getColor())).block());
             Nirubot.warning(e.getMessage());
         }
     }
 
-    @Command(key = {"yt", "youtube", "yp"}, 
-        description = "Searches and plays youtube videos by given keywords", 
-        context = {Type.GUILD_CATEGORY, Type.GUILD_NEWS, Type.GUILD_TEXT})
+    @Command(key = { "yt", "youtube",
+            "yp" }, description = "Searches and plays youtube videos by given keywords", context = {
+                    Type.GUILD_CATEGORY, Type.GUILD_NEWS, Type.GUILD_TEXT })
     public void youtube() {
+        ctx.getGuild().ifPresent(guild -> ctx.getArgs().ifPresent(args -> {
+            if (args.isEmpty()) {
+                return;
+            }
 
-        List<String> args = ctx.getArgs().orElseThrow();
-        Guild guild = ctx.getGuild().orElseThrow();
+            if (!MusicCondition.checkConditions(ctx, MusicCondition.USER_CONNECTED)) {
+                return;
+            }
 
-        if (args.isEmpty()) {
-            return;
-        }
+            Optional<VoiceChannel> channel = ctx.getAuthorVoiceState().map(state -> state.getChannel().block());
 
-        if (!MusicCondition.checkConditions(ctx, MusicCondition.USER_CONNECTED)) {
-            return;
-        }
+            SearchListResponse response = getVideos(args);
 
-        Optional<VoiceChannel> channel = ctx.getAuthorVoiceState().orElseThrow().getChannel().blockOptional();
+            List<SearchResult> results = response.getItems();
 
-        SearchListResponse response = getVideos(args);
+            if (results == null) {
+                ctx.reply("No videos found!");
+                return;
+            }
 
-        List<SearchResult> results = response.getItems();
+            if (results.isEmpty()) {
+                ctx.reply("Nothing found");
+                return;
+            }
 
-        if (results == null) {
-            ctx.reply("No videos found!");
-            return;
-        }
-        
-        if (results.isEmpty()) {
-            ctx.reply("Nothing found");
-            return;
-        }
+            YouTubeVideo video = Nirubot.getGson().fromJson(results.get(0).toString(), YouTubeVideo.class);
+            GuildMusicManager manager = GuildMusicManager.of(guild.getId());
+            manager.loadAndPlay(video.getVideoId(), null);
+            manager.setVolume(GuildManager.of(guild.getId()).volume());
 
-        YouTubeVideo video = Nirubot.getGson().fromJson(results.get(0).toString(), YouTubeVideo.class);
-        PlayerManager.getInstance().loadAndPlay(ctx, video.getVideoId());
+            channel.ifPresent(ch -> ch.join(spec -> spec.setProvider(manager.getProvider())).block());
 
-        channel.ifPresent(ch -> ch.join(spec -> spec.setProvider(PlayerManager.getInstance().getGuildMusicManager(guild).getProvider())).block());
+            ctx.getChannel()
+                    .ifPresent(ch -> ch.createEmbed(spec -> spec.setColor(Nirubot.getColor()).setTitle(video.getTitle())
+                            .setUrl("https://www.youtube.com/watch?v=" + video.getVideoId())
+                            .setThumbnail(video.getThumbnailUrl())).block());
 
-        ctx.getChannel().ifPresent(ch -> ch.createEmbed(spec -> 
-            spec.setColor(Nirubot.getColor())
-                .setTitle(video.getTitle())
-                .setUrl("https://www.youtube.com/watch?v=" + video.getVideoId())
-                .setThumbnail(video.getThumbnailUrl())).block()
-        );
+        }));
     }
 
-
-    @Command(key = {"ls", "list"}, description = "Lists all queued songs", context = {Type.GUILD_CATEGORY, Type.GUILD_NEWS, Type.GUILD_TEXT})
+    @Command(key = { "ls", "list" }, description = "Lists all queued songs", context = { Type.GUILD_CATEGORY,
+            Type.GUILD_NEWS, Type.GUILD_TEXT })
     public void list() {
-
-        Guild guild = ctx.getGuild().orElseThrow();
-
-        if (!ctx.getArgs().orElseThrow().isEmpty()) {
-            return;
-        }
-
         if (!MusicCondition.checkConditions(ctx, MusicCondition.MUSIC_PLAYING)) {
             return;
         }
 
-        PlayerManager manager = PlayerManager.getInstance();
-        GuildMusicManager musicManager = manager.getGuildMusicManager(guild);
-
-        final AudioTrack track = manager.getPlaying(guild);
-
-        if (track == null) {
-            ctx.reply("No music is playing!");
-            return;
-        }
-
-        ArrayList<AudioTrackInfo> tracks = musicManager.getScheduler().getAllTrackInfos();
-
-        StringBuilder out = new StringBuilder();
-
-        out.append("Current: [" + track.getInfo().title + "](" + track.getInfo().uri + ")\n");
-
-        int it = 1;
-
-        int totalEmbs = 0;
-
-        for (AudioTrackInfo i : tracks) {
-
-            if (totalEmbs == 2)
-                break;
-
-            out.append(it + ": [" + i.title + "](" + i.uri + ")\n");
-
-            if (out.length() > 1800) {
-                final String description = out.toString().substring(0, out.length());
-                ctx.getChannel().ifPresent(ch -> ch.createEmbed(spec ->
-                    spec.setColor(Nirubot.getColor())
-                        .setDescription(description)).block()
-                );
-                out = new StringBuilder();
-
-                totalEmbs++;
-
+        ctx.getGuild().ifPresent(guild -> {
+            boolean isArgsEmpty = ctx.getArgs().map(List::isEmpty).orElse(false);
+            if (!isArgsEmpty) {
+                return;
             }
 
-            it++;
-        }
+            GuildMusicManager musicManager = GuildMusicManager.of(guild.getId());
 
-        if (out.length() != 0) {
-            final String description = out.toString().substring(0, out.length());
-            ctx.getChannel().ifPresent(ch -> ch.createEmbed(spec ->
-                spec.setColor(Nirubot.getColor())
-                    .setDescription(description)).block()
-            );
-        }
+            final AudioTrack track = musicManager.getPlayer().getPlayingTrack();
+
+            if (track == null) {
+                ctx.reply("No music is playing!");
+                return;
+            }
+
+            List<AudioTrackInfo> tracks = musicManager.getScheduler().getAllTrackInfos();
+
+            StringBuilder out = new StringBuilder();
+
+            out.append("Current: [" + track.getInfo().title + "](" + track.getInfo().uri + ")\n");
+
+            int it = 1;
+
+            int totalEmbs = 0;
+
+            for (AudioTrackInfo i : tracks) {
+
+                if (totalEmbs == 2)
+                    break;
+
+                out.append(it + ": [" + i.title + "](" + i.uri + ")\n");
+
+                if (out.length() > 1800) {
+                    final String description = out.toString().substring(0, out.length());
+                    ctx.getChannel()
+                            .ifPresent(ch -> ch
+                                    .createEmbed(spec -> spec.setColor(Nirubot.getColor()).setDescription(description))
+                                    .block());
+                    out = new StringBuilder();
+
+                    totalEmbs++;
+
+                }
+
+                it++;
+            }
+
+            if (out.length() != 0) {
+                final String description = out.toString().substring(0, out.length());
+                ctx.getChannel().ifPresent(ch -> ch
+                        .createEmbed(spec -> spec.setColor(Nirubot.getColor()).setDescription(description)).block());
+            }
+
+        });
     }
 
     public SearchListResponse getVideos(List<String> args) {
         YouTube yt = Nirubot.getYouTube();
         YouTube.Search.List search;
         try {
-             search = yt.search().list(Arrays.asList("id", "snippet"));
+            search = yt.search().list(Arrays.asList("id", "snippet"));
         } catch (IOException e) {
             e.printStackTrace();
             throw new IllegalArgumentException(e.getMessage());
@@ -408,5 +388,18 @@ public class MusicModule extends BaseModule {
         }
     }
 
-    
+    private String getVolumeBar(int volume) {
+        int volBars = volume / 10;
+        StringBuilder out = new StringBuilder();
+        out.append("Volume:\n►");
+        for (int i = 0; i < 10; i++) {
+            if (i < volBars) {
+                out.append("█");
+            } else {
+                out.append("░");
+            }
+        }
+        return out.append("◄\n" + volume + "%").toString();
+    }
+
 }

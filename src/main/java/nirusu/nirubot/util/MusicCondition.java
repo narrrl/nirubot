@@ -5,8 +5,8 @@ import java.util.Optional;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 
 import discord4j.core.object.entity.channel.VoiceChannel;
-import nirusu.nirubot.core.audio.PlayerManager;
 import nirusu.nirucmd.CommandContext;
+import nirusu.nirubot.core.audio.GuildMusicManager;
 
 public enum MusicCondition {
     USER_CONNECTED("You must be in a voice channel!") {
@@ -32,8 +32,8 @@ public enum MusicCondition {
         @Override
         public boolean check(CommandContext ctx) {
             Optional<AudioTrack> t = ctx.getGuild().flatMap(guild -> {
-                PlayerManager manager = PlayerManager.getInstance();
-                final AudioTrack track = manager.getPlaying(guild);
+                GuildMusicManager manager = GuildMusicManager.of(guild.getId());
+                final AudioTrack track = manager.getPlayer().getPlayingTrack();
                 return Optional.ofNullable(track);
             });
             return t.isPresent();

@@ -28,7 +28,9 @@ public class AdminModule extends BaseModule {
             if (ctx.isPrivate() && Nirubot.isOwner(user.getId().asLong())) {
                 Nirubot.getConfig().setPrefix(args.get(0));
             } else if (ctx.hasGuildPermission(Permission.ADMINISTRATOR)) {
-                GuildManager.getManager(ctx.getGuild().get().getId().asLong()).setPrefix(args.get(0));
+                ctx.getGuild().ifPresent(guild -> 
+                    GuildManager.of(guild.getId()).setPrefix(args.get(0))
+                );
             } else {
                 ctx.reply("Not enough permissions!");
                 return;

@@ -12,19 +12,27 @@ import java.nio.ByteBuffer;
  * provide().
  */
 public class D4jAudioProvider extends AudioProvider {
-  private final MutableAudioFrame frame = new MutableAudioFrame();
   private final AudioPlayer player;
+  private final MutableAudioFrame frame;
 
-  public D4jAudioProvider(AudioPlayer player) {
+  public D4jAudioProvider(final AudioPlayer player) {
+    // Allocate a ByteBuffer for Discord4J's AudioProvider to hold audio data for Discord
     super(ByteBuffer.allocate(StandardAudioDataFormats.DISCORD_OPUS.maximumChunkSize()));
+    // Set LavaPlayer's AudioFrame to use the same buffer as Discord4J's
+    frame = new MutableAudioFrame();
+    frame.setBuffer(getBuffer());
     this.player = player;
-    this.frame.setBuffer(getBuffer());
   }
 
   @Override
   public boolean provide() {
-    boolean didProvide = player.provide(frame);
-    if (didProvide) getBuffer().flip();
+    // AudioPlayer writes audio data to the AudioFrame
+    final boolean didProvide = player.provide(frame);
+
+    if (didProvide) {
+      getBuffer().flip();
+    }
+
     return didProvide;
   }
 }

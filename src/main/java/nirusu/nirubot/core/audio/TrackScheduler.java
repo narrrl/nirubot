@@ -6,38 +6,62 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
 import java.util.ArrayList;
 
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 
 /**
- * This class schedules tracks for the audio player. It contains the queue of tracks.
+ * This class schedules tracks for the audio player. It contains the queue of
+ * tracks.
  */
 public class TrackScheduler extends AudioEventAdapter {
-    private static final int FAIL_LIMIT = 3;
+    private final List<AudioTrack> queue;
     private final AudioPlayer player;
-    private final BlockingQueue<AudioTrack> queue;
-    private boolean repeat = false;
-    private transient int failCounter = 0;
+    private boolean repeat;
 
-    /**
-     * @param player The audio player this scheduler uses
-     */
-    public TrackScheduler(AudioPlayer player) {
-        this.player = player;
-        this.queue = new LinkedBlockingQueue<>();
+  public TrackScheduler(final AudioPlayer player) {
+    // The queue may be modifed by different threads so guarantee memory safety
+    // This does not, however, remove several race conditions currently present
+    queue = Collections.synchronizedList(new LinkedList<>());
+    this.player = player;
+  }
+
+    public List<AudioTrack> getQueue() {
+        return queue;
     }
 
-    /**
-     * Add the next track to queue or play right away if nothing is in the queue.
-     *
-     * @param track The track to play or add to queue.
-     */
-    public synchronized void queue(AudioTrack track) {
-        if (!player.startTrack(track, true)) {
-            queue.offer(track);
+    public boolean play(final AudioTrack track) {
+        return play(track, false);
+    }
+
+    public boolean play(final AudioTrack track, final boolean force) {
+        final boolean playing = player.startTrack(track, !force);
+
+        if (!playing) {
+            queue.add(track);
+        }
+
+        return playing;
+    }
+
+    public boolean skip() {
+        AudioTrack track = null;
+        boolean skipped = !queue.isEmpty() && play((track = queue.remove(0)), true);
+        if (skipped && track != null && repeat) {
+            play(track.makeClone());
+        }
+        return skipped;
+    }
+
+    @Override
+    public void onTrackEnd(final AudioPlayer player, final AudioTrack track, final AudioTrackEndReason endReason) {
+        // Advance the player if the track completed naturally (FINISHED) or if the
+        // track cannot play (LOAD_FAILED)
+        if (endReason.mayStartNext) {
+            skip();
         }
     }
 
@@ -56,10 +80,9 @@ public class TrackScheduler extends AudioEventAdapter {
             queue.add(t);
         }
 
-
     }
 
-    public synchronized ArrayList<AudioTrackInfo> getAllTrackInfos() {
+    public synchronized List<AudioTrackInfo> getAllTrackInfos() {
         ArrayList<AudioTrackInfo> tmp = new ArrayList<>();
 
         for (Object o : queue.toArray()) {
@@ -69,69 +92,39 @@ public class TrackScheduler extends AudioEventAdapter {
         return tmp;
     }
 
-    /**
-     * Start the next track, stopping the current one if it is playing.
-     */
-    public synchronized void nextTrack() {
-        player.startTrack(queue.poll(), false);
-    }
-
-    @Override
-    public void onTrackEnd(AudioPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
-
-        // fail counter to prevent fail loops with repeat
-        if (endReason.equals(AudioTrackEndReason.LOAD_FAILED)) {
-            failCounter++;
-
-            if (failCounter > FAIL_LIMIT) {
-                repeat = false;
-            }
-        }
-
-        // requeue song if it played normally
-        if (!endReason.equals(AudioTrackEndReason.LOAD_FAILED) && repeat) {
-            queue(track.makeClone());
-        }
-
-        // start next track
-        if (endReason.mayStartNext) {
-            nextTrack();
-        }
-    }
-
     public boolean setRepeat() {
         this.repeat = !this.repeat;
         return repeat;
     }
 
-	public AudioTrack remove(final int num) {
+    public Optional<AudioTrack> remove(final int num) {
         int i = 1;
         Iterator<AudioTrack> it = new ArrayList<>(queue).iterator();
-        while(it.hasNext()) {
+        while (it.hasNext()) {
             if (i == num) {
                 AudioTrack t = it.next();
                 queue.remove(t);
-                return t;
+                return Optional.of(t);
             }
             it.next();
             i++;
         }
-        return null;
+        return Optional.empty();
     }
-    
-    public AudioTrack remove(final String keyWord) {
+
+    public Optional<AudioTrack> remove(final String keyWord) {
         Iterator<AudioTrack> it = new ArrayList<>(queue).iterator();
         while (it.hasNext()) {
             AudioTrack tr = it.next();
             if (tr.getInfo().title.toLowerCase().contains(keyWord.toLowerCase())) {
                 queue.remove(tr);
-                return tr;
+                return Optional.of(tr);
             }
         }
-        return null;
+        return Optional.empty();
     }
 
-	public int size() {
-		return queue.size();
-	}
+    public int size() {
+        return queue.size();
+    }
 }
