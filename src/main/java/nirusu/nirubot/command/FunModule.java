@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import discord4j.core.object.entity.User;
 import nirusu.nirubot.Nirubot;
 import nirusu.nirubot.util.RandomHttpClient;
 import nirusu.nirubot.util.arknight.RecruitmentCalculator;
@@ -105,36 +106,51 @@ public class FunModule extends BaseModule {
         });
     }
 
-    @Command(key = {"neko", "nya", "image"}, description = "Nyaaa~~")
+    @Command(key = {"neko", "nya",}, description = "Nyaaa~~")
     public void neko() {
         ctx.getArgs().ifPresent(args -> {
-            NekoLoveImage image;
-            String type;
             if (args.isEmpty()) {
-                type = "neko";
-            } else if (args.size() == 1) {
-                type = args.get(0);
-            } else {
-                return;
+                NekoLoveImage image;
+                try {
+                    image = NekoLove.getNekoLoveImage("neko");
+                } catch (IllegalArgumentException e) {
+                    ctx.reply(e.getMessage());
+                    return;
+                }
+                ctx.getChannel().ifPresent(ch -> 
+                    ch.createEmbed(emb ->
+                        emb.setImage(image.url()).setColor(Nirubot.getColor())
+                            .setTitle(String.format("Here is your %s", "Neko"))
+                    ).block()
+                );
             }
-            try {
-                image = NekoLove.getNekoLoveImage(type);
-            } catch (IllegalArgumentException e) {
-                ctx.reply(e.getMessage());
-                return;
-            }
-
-            if (image.code() == 404) {
-                ctx.reply(String.format("Invalid Type: %s", type));
-                return;
-            }
-            ctx.getChannel().ifPresent(ch -> {
-                ch.createEmbed(emb ->
-                    emb.setImage(image.url()).setColor(Nirubot.getColor())
-                        .setTitle(String.format("Here is your %s", type))
-                ).block();
-            });
         });
+    }
+
+    @Command(key = "hug", description = "Hug another person!")
+    public void hug() {
+        ctx.getArgs().ifPresent(args -> ctx.getAuthor().ifPresent(author -> {
+            if (args.size() == 1) {
+                NekoLoveImage image;
+                try {
+                    image = NekoLove.getNekoLoveImage("hug");
+                } catch (IllegalArgumentException e) {
+                    ctx.reply(e.getMessage());
+                    return;
+                }
+
+                User user = ctx.getEvent().getMessage()
+                    .getUserMentions().collectList().blockOptional()
+                    .map(list -> list.stream().findFirst().orElse(author)).orElse(author);
+
+                ctx.getChannel().ifPresent(ch -> 
+                    ch.createEmbed(emb ->
+                        emb.setImage(image.url()).setColor(Nirubot.getColor())
+                            .setDescription(String.format("%s hugs %s", author.getMention(), user.getMention()))
+                    ).block()
+                );
+            }
+        }));
     }
     
 }

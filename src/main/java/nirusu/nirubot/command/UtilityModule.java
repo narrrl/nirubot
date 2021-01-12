@@ -13,7 +13,7 @@ import nirusu.nirucmd.annotation.Command;
 
 import java.lang.reflect.Method;
 
-public class HelpModule extends BaseModule {
+public class UtilityModule extends BaseModule {
 
     @Command( 
         key = "ping", 
