@@ -54,7 +54,7 @@ public class HelpCreator {
         StringBuilder str = new StringBuilder();
         for (Method m : module.getMethods()) {
             if (m.isAnnotationPresent(Command.class)) {
-                str.append(m.getAnnotation(Command.class).key()[0]).append(", ");
+                str.append(m.getName()).append(", ");
             }
         }
         return str.length() == 0 ? "No commands found" : str.substring(0, str.length() - 2);

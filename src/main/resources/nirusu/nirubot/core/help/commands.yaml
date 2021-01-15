@@ -1,3 +1,4 @@
+# utility module
 - name: "help"
   description: > 
     This command helps you to understand the bot better.
@@ -10,6 +11,7 @@
     This command just makes the bot reply with an estimated ping of the bot to discord.
     Its sole purpose is to know if the bot is responding.
   syntax: "<prefix>ping"
+# admin module
 - name: "shutdown"
   description: >
     This command is for the bot owner only and it shutdowns the bot.
@@ -18,6 +20,7 @@
   description: >
     This command sets the prefix for a guild. You need administrator to set the new prefix.
   syntax: "<prefix>prefix <new prefix>"
+# fun module
 - name: "neko"
   description: >
     This command sends a random neko image (SFW).
@@ -25,7 +28,7 @@
 - name: "youtubedl"
   description: >
     This command downloads vidoes from a variety of [sources](https://gist.githubusercontent.com/Nirusu99/806c59b85b47fc802fd83b97d394150d/raw/3628d212803f6d94080a43edff8c77d3a3f0247d/ytdl.txt).
-    Additionally you can add options one of these two options to get a different file format:
+    Additionally you can add one of these two options to get a different file format:
       `-audio` to get a mp3 file
       `-video` to get a mp4 file
     You can only add one at a time. If the quality is really bad you can additionally try to add `-best`.
@@ -44,3 +47,44 @@
     This command is for the recruiting tab in the gatcha game [Arknights](https://www.arknights.global/).
     It calculates the best possible combinations for a given list of tags.
   syntax: "<prefix>arknights [tag1] [tag2]..."
+# music module
+- name: "play"
+  description: >
+    Plays songs from soundcloud and youtube links. You have to be in a voice channel.
+  syntax: "<prefix>play <link>"
+- name: "skip"
+  description: >
+    Skips the current song. You have to be in the same voice channel.
+  syntax: "<prefix>skip"
+- name: "volume"
+  description: >
+    Sets the volume for the bot (0 - 100).
+  syntax: "<prefix>volume <level>"
+- name: "join"
+  description: >
+    Makes the bot join the channel you are currently in.
+  syntax: "<prefix>join"
+- name: "leave"
+  description: >
+    Makes the bot leave the current channel. You have to be in the same channel.
+  syntax: "<prefix>leave"
+- name: "repeat"
+  description: >
+    Toggle repeating the current queue.
+  syntax: "<prefix>repeat"
+- name: "pause"
+  description: >
+    Toggle the current playback (pause/resume). 
+  syntax: "<prefix>pause/repeat"
+- name: "playing"
+  description: >
+    Embeds info about the current playing song.
+  syntax: "<prefix>playing"
+- name: "youtube"
+  description: >
+    Searches and plays a song from given keyword from youtube.
+  syntax: "<prefix>youtube Keywords..."
+- name: "list"
+  description: >
+    Lists the current playing queue.
+  syntax: "<prefix>list"
