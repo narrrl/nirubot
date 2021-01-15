@@ -50,12 +50,10 @@ public class Config {
      * saved after a bot restart and have to be setted again.
      */
     private synchronized void write() {
-        try {
-            FileWriter writer = new FileWriter(configFile);
+        try (FileWriter writer = new FileWriter(configFile)) {
             String json = Nirubot.getGson().toJson(data);
             writer.write(json);
             writer.flush();
-            writer.close();
         } catch (IOException e) {
             Nirubot.warning("Couldn't write to config file");
         }
@@ -89,16 +87,16 @@ public class Config {
         return data.owners;
     }
 
-    public String getActivity() {
+    public synchronized String getActivity() {
         return data.activity;
     }
 
-    public String getActivityType() {
+    public synchronized String getActivityType() {
         return data.activityType;
     }
 
 
-    public String getPrefix() {
+    public synchronized String getPrefix() {
 
         // gson parses prefix as null if its not set in the config.json
         if (data.prefix == null) {
