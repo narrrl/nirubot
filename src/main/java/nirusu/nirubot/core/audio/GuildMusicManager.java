@@ -10,7 +10,6 @@ import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import com.sedmelluq.discord.lavaplayer.track.playback.NonAllocatingAudioFrameBuffer;
 
 import discord4j.common.util.Snowflake;
-import nirusu.nirubot.core.GuildManager;
 import nirusu.nirucmd.CommandContext;
 
 /**

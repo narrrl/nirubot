@@ -3,6 +3,7 @@ package nirusu.nirubot.util;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
 
 import nirusu.nirubot.Nirubot;
 
@@ -24,7 +25,7 @@ public final class IndexCreator {
 
         File index = new File(dir.getAbsolutePath() + File.separator + "index.html");
         
-        index.createNewFile();
+        Files.createFile(index.toPath());
 
         StringBuilder content = new StringBuilder().append(FIRST_HALF + "<ul style=\"line-height:1.5\">");
 

@@ -18,10 +18,10 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 import discord4j.core.object.entity.channel.VoiceChannel;
 import discord4j.core.object.entity.channel.Channel.Type;
 import nirusu.nirubot.Nirubot;
-import nirusu.nirubot.core.DiscordUtil;
 import nirusu.nirubot.core.GuildManager;
 import nirusu.nirubot.core.audio.GuildMusicManager;
-import nirusu.nirubot.util.MusicCondition;
+import nirusu.nirubot.util.DiscordUtil;
+import nirusu.nirubot.util.audio.MusicCondition;
 import nirusu.nirubot.util.YouTubeVideo;
 import nirusu.nirucmd.BaseModule;
 import nirusu.nirucmd.annotation.Command;
@@ -80,14 +80,16 @@ public class MusicModule extends BaseModule {
 
     @Command(key = { "vol", "vl", "volume" }, description = "Sets the volume for the bot")
     public void volume() {
+
+        if (!MusicCondition.checkConditions(ctx, MusicCondition.SAME_VOICE_CHANNEL)) {
+            return;
+        }
+
         ctx.getArgs().ifPresent(args -> ctx.getGuild().ifPresent(guild -> {
             if (args.size() != 1) {
                 return;
             }
 
-            if (!MusicCondition.checkConditions(ctx, MusicCondition.SAME_VOICE_CHANNEL)) {
-                return;
-            }
 
             GuildMusicManager musicManager = GuildMusicManager.of(guild.getId());
             int volume;
@@ -103,8 +105,8 @@ public class MusicModule extends BaseModule {
 
             volume = volume > 100 ? 100 : volume;
 
-            GuildManager.of(guild.getId()).setVolume(volume);
             musicManager.setVolume(volume);
+            GuildManager.of(guild.getId()).setVolume(volume);
 
             final String volumeBar = getVolumeBar(volume);
             ctx.getChannel().ifPresent(

@@ -1,4 +1,4 @@
-package nirusu.nirubot.util;
+package nirusu.nirubot.util.audio;
 
 import java.util.Optional;
 

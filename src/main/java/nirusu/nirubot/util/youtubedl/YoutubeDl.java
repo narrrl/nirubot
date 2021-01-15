@@ -4,7 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -85,13 +86,10 @@ public class YoutubeDl {
     private void createZip() throws InvalidYoutubeDlException {
         if (tmpDir.listFiles().length > 1) {
             // hashmap for zip
-            HashMap<String, File> files = new HashMap<>();
+            List<File> files = new ArrayList<>();
 
             // iterate through all the downloaded files
-            for (File f : tmpDir.listFiles()) {
-                // hash map to zip later
-                files.put(f.getName(), f);
-            }
+            Collections.addAll(files, tmpDir.listFiles());
 
             if (files.isEmpty()) {
                 throw new InvalidYoutubeDlException("Nothing downloaded!");

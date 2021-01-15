@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 
 import discord4j.rest.util.Color;
 import nirusu.nirubot.core.Config;
+import nirusu.nirubot.core.HelpCreator;
 import nirusu.nirubot.listener.DiscordListener;
 import nirusu.nirubot.listener.NiruListener;
 import nirusu.nirucmd.CommandDispatcher;
@@ -35,6 +36,7 @@ public class Nirubot extends AbstractIdleService {
     private static File tmpWebDir;
     private final ArrayList<NiruListener> listeners;
     private final CommandDispatcher dispatcher;
+    private final HelpCreator helpCreator;
 
     public static Nirubot getNirubot() {
         if (bot == null) {
@@ -85,6 +87,7 @@ public class Nirubot extends AbstractIdleService {
         listeners = new ArrayList<>();
         dispatcher = new CommandDispatcher.Builder()
             .addPackage("nirusu.nirubot.command").build();
+        helpCreator = new HelpCreator(dispatcher.getModules());
     }
 
     public static void main(String[] args) {
@@ -205,6 +208,10 @@ public class Nirubot extends AbstractIdleService {
     
     public CommandDispatcher getDispatcher() {
         return this.dispatcher;
+    }
+
+    public HelpCreator getHelpCreator() {
+        return this.helpCreator;
     }
 
 	public static String getTmpDirPath() {

@@ -23,13 +23,11 @@ public class DiscordListener implements NiruListener {
 
     public DiscordListener() throws LoginException {
         Config conf = Nirubot.getConfig();
-        client = Objects.requireNonNull(DiscordClient.create(conf.getToken())
-            .gateway()
-            .setSharding(ShardingStrategy.recommended())
-            .login().block());
+        client = Objects.requireNonNull(DiscordClient.create(conf.getToken()).gateway()
+                .setSharding(ShardingStrategy.recommended()).login().block());
 
-        client.getEventDispatcher().on(ReadyEvent.class).subscribe(event ->
-            Nirubot.info("Logged in as {}", event.getSelf().getUsername()));
+        client.getEventDispatcher().on(ReadyEvent.class)
+                .subscribe(event -> Nirubot.info("Logged in as {}", event.getSelf().getUsername()));
 
         client.getEventDispatcher().on(MessageCreateEvent.class).subscribe(this::onMessageRecievedEvent);
         client.onDisconnect().block();
@@ -41,7 +39,7 @@ public class DiscordListener implements NiruListener {
 
         Optional<User> auth = mes.getAuthor();
 
-        if (auth.isEmpty() || auth.get().isBot()) {
+        if (auth.map(User::isBot).orElse(true)) {
             return;
         }
 
@@ -70,9 +68,12 @@ public class DiscordListener implements NiruListener {
         // check if message starts with prefix !
         if (raw.startsWith(prefix) && raw.length() > prefix.length()) {
             // create the CommandContext
-            ctx.setArgsAndKey(raw.substring(prefix.length()).split("\\s+"), raw.substring(prefix.length()).split("\\s+")[0], true);
+            ctx.setArgsAndKey(raw.substring(prefix.length()).split("\\s+"),
+                    raw.substring(prefix.length()).split("\\s+")[0], true);
             CommandToRun cmd = Nirubot.getNirubot().getDispatcher().getCommand(ctx, ctx.getKey());
             cmd.run();
+        } else if (ctx.getSelf().map(self -> mes.getUserMentionIds().contains(self.getId())).orElse(false)) {
+            ctx.reply(String.format("The prefix is %s", prefix));
         }
     }
 

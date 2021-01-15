@@ -1,4 +1,4 @@
-package nirusu.nirubot.core;
+package nirusu.nirubot.util;
 
 import javax.annotation.Nonnull;
 
