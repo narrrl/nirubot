@@ -16,7 +16,8 @@ import org.slf4j.LoggerFactory;
 
 import discord4j.rest.util.Color;
 import nirusu.nirubot.core.Config;
-import nirusu.nirubot.core.HelpCreator;
+import nirusu.nirubot.core.help.CommandMeta;
+import nirusu.nirubot.core.help.HelpCreator;
 import nirusu.nirubot.listener.DiscordListener;
 import nirusu.nirubot.listener.NiruListener;
 import nirusu.nirucmd.CommandDispatcher;
@@ -37,6 +38,7 @@ public class Nirubot extends AbstractIdleService {
     private final ArrayList<NiruListener> listeners;
     private final CommandDispatcher dispatcher;
     private final HelpCreator helpCreator;
+    private final CommandMeta metadata;
 
     public static Nirubot getNirubot() {
         if (bot == null) {
@@ -88,6 +90,7 @@ public class Nirubot extends AbstractIdleService {
         dispatcher = new CommandDispatcher.Builder()
             .addPackage("nirusu.nirubot.command").build();
         helpCreator = new HelpCreator(dispatcher.getModules());
+        metadata = CommandMeta.getMetadataForCommands();
     }
 
     public static void main(String[] args) {
@@ -230,5 +233,9 @@ public class Nirubot extends AbstractIdleService {
                 Nirubot.error(e.getMessage(), e);
             }
         }
+    }
+
+    public CommandMeta getMetadata() {
+        return metadata;
     }
 }

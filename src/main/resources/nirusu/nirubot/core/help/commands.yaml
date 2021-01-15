@@ -1,0 +1,46 @@
+- name: "help"
+  description: > 
+    This command helps you to understand the bot better.
+    Without any arguments it lists all available modules.
+    If you specify a module it lists all commands in that module.
+    If you specify a module and a command it describes what the command does and how to execute it.
+  syntax: "<prefix>help <module> <command>"
+- name: "ping"
+  description: >
+    This command just makes the bot reply with an estimated ping of the bot to discord.
+    Its sole purpose is to know if the bot is responding.
+  syntax: "<prefix>ping"
+- name: "shutdown"
+  description: >
+    This command is for the bot owner only and it shutdowns the bot.
+  syntax: "<prefix>shutdown"
+- name: "prefix"
+  description: >
+    This command sets the prefix for a guild. You need administrator to set the new prefix.
+  syntax: "<prefix>prefix <new prefix>"
+- name: "neko"
+  description: >
+    This command sends a random neko image (SFW).
+  syntax: "<prefix>neko"
+- name: "youtubedl"
+  description: >
+    This command downloads vidoes from a variety of [sources](https://gist.githubusercontent.com/Nirusu99/806c59b85b47fc802fd83b97d394150d/raw/3628d212803f6d94080a43edff8c77d3a3f0247d/ytdl.txt).
+    Additionally you can add options one of these two options to get a different file format:
+      `-audio` to get a mp3 file
+      `-video` to get a mp4 file
+    You can only add one at a time. If the quality is really bad you can additionally try to add `-best`.
+    If the file size is above the discord limit it'll upload the file to my webserver and will send you the download link.
+  syntax: "<prefix>youtubedl <link> [-audio/-video] [-best]"
+- name: "hug"
+  description: >
+    You can hug other people with it <3
+  syntax: "<prefix>hug <tag someone you want to hug>"
+- name: "mock"
+  description: >
+    Randomizes your message with upper and lower cases.
+  syntax: "<prefix>mock Message..."
+- name: "arknights"
+  description: >
+    This command is for the recruiting tab in the gatcha game [Arknights](https://www.arknights.global/).
+    It calculates the best possible combinations for a given list of tags.
+  syntax: "<prefix>arknights [tag1] [tag2]..."

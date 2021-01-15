@@ -2,7 +2,8 @@ package nirusu.nirubot.command;
 
 import nirusu.nirubot.Nirubot;
 import nirusu.nirubot.core.GuildManager;
-import nirusu.nirubot.core.HelpCreator;
+import nirusu.nirubot.core.help.HelpCreator;
+import nirusu.nirubot.core.help.CommandMeta.Metadata;
 import nirusu.nirucmd.BaseModule;
 import nirusu.nirucmd.annotation.Command;
 
@@ -45,10 +46,14 @@ public class UtilityModule extends BaseModule {
                             args.get(0));
                 }
                 case 2 -> {
-                    help = h.getModuleWithName(args.get(0)).map(module -> h.stringOfCommand(module, args.get(1)))
-                            .orElse(String.format("No module %s found", args.get(0)));
+                    Metadata data = h.getModuleWithName(args.get(0))
+                            .map(module -> h.metadataForCommand(module, args.get(1)))
+                            .orElse(new Metadata().setName("")
+                                    .setDescription(String.format("No module %s found", args.get(0))).setSyntax(""));
                     title = String.format("Help for Command %s", args.get(1));
-                    footNote = "";
+                    help = data.getDescription().concat("\nAliases: ").concat(data.getAliases());
+                    footNote = data.getSyntax().equals("") ? ""
+                            : "Syntax: `".concat(data.getSyntax().replace("<prefix>", prefix)).concat("`");
                 }
                 default -> {
                     return;
