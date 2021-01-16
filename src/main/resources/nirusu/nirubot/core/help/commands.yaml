@@ -1,4 +1,8 @@
 # utility module
+- name: "avatar"
+  description: >
+    Sends a full sized version of the avatar of the tagged user.
+  syntax: "<prefix>avatar <user>"
 - name: "help"
   description: > 
     This command helps you to understand the bot better.
