@@ -15,6 +15,12 @@ plugins {
 
 apply plugin: 'com.github.johnrengelman.shadow'
 
+apply plugin: 'java'
+compileJava {
+    sourceCompatibility = '14'
+    targetCompatibility = '14'
+}
+
 group 'de.nirusu99'
 version '0.1'
 mainClassName = 'nirusu.nirubot.Nirubot'
@@ -25,7 +31,13 @@ repositories {
     maven { url 'https://jitpack.io' }
 }
 
+test {
+    useJUnitPlatform()
+}
+
 dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.3.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.3.1'
     implementation group: 'me.duncte123', name: 'botCommons', version: 'BETA_2.0.110'
     implementation group: 'org.jdom', name: 'jdom2', version: '2.0.6'
     implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
