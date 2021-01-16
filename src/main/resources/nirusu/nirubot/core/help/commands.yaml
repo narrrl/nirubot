@@ -92,3 +92,7 @@
   description: >
     Lists the current playing queue.
   syntax: "<prefix>list"
+- name: "remove"
+  description: >
+    Removes a song from the current playing queue. You can either specify the song name or the index of that song.
+  syntax: "<prefix>remove [index/Song Name...]"

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.SearchListResponse;
@@ -89,7 +90,6 @@ public class MusicModule extends BaseModule {
             if (args.size() != 1) {
                 return;
             }
-
 
             GuildMusicManager musicManager = GuildMusicManager.of(guild.getId());
             int volume;
@@ -354,6 +354,35 @@ public class MusicModule extends BaseModule {
         });
     }
 
+    @Command(key = { "remove",
+            "rm" }, description = "This command removes a song from the current playing queue", context = {
+                    Type.GUILD_CATEGORY, Type.GUILD_NEWS, Type.GUILD_TEXT })
+    public void remove() {
+        ctx.getArgs().ifPresent(args -> ctx.getGuild().ifPresent(guild -> {
+            GuildMusicManager manager = GuildMusicManager.of(guild.getId());
+            Optional<AudioTrack> removedTrack = Optional.empty();
+            if (args.size() == 1 && isNumeric(args.get(0))) {
+                int index;
+                try {
+                    index = Integer.parseInt(args.get(0));
+                } catch (NumberFormatException e) {
+                    return;
+                }
+                removedTrack = manager.getScheduler().remove(index);
+            } else if (!args.isEmpty()) {
+                String songName = args.stream().collect(Collectors.joining(" "));
+                removedTrack = manager.getScheduler().remove(songName);
+            }
+
+            removedTrack.ifPresentOrElse(t -> ctx.getChannel()
+                    .ifPresent(ch -> ch.createEmbed(specs -> specs
+                            .setDescription(String.format("Removed Song [%s](%s)", t.getInfo().title, t.getInfo().uri))
+                            .setColor(Nirubot.getColor())).block()),
+                    () -> ctx.reply("No song to remove found!"));
+
+        }));
+    }
+
     public SearchListResponse getVideos(List<String> args) {
         YouTube yt = Nirubot.getYouTube();
         YouTube.Search.List search;
@@ -402,6 +431,10 @@ public class MusicModule extends BaseModule {
             }
         }
         return out.append("◄\n" + volume + "%").toString();
+    }
+
+    private boolean isNumeric(String str) {
+        return str.chars().allMatch(i -> (i >= '0' && i <= '9'));
     }
 
 }

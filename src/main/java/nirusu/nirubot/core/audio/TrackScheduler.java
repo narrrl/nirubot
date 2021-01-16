@@ -99,25 +99,25 @@ public class TrackScheduler extends AudioEventAdapter {
 
     public Optional<AudioTrack> remove(final int num) {
         int i = 1;
-        Iterator<AudioTrack> it = new ArrayList<>(queue).iterator();
-        while (it.hasNext()) {
+
+        Iterator<AudioTrack> it = queue.iterator();
+        while (it.hasNext() && num >= i) {
+            AudioTrack t = it.next();
             if (i == num) {
-                AudioTrack t = it.next();
-                queue.remove(t);
+                it.remove();
                 return Optional.of(t);
             }
-            it.next();
             i++;
         }
         return Optional.empty();
     }
 
     public Optional<AudioTrack> remove(final String keyWord) {
-        Iterator<AudioTrack> it = new ArrayList<>(queue).iterator();
+        Iterator<AudioTrack> it = queue.iterator();
         while (it.hasNext()) {
             AudioTrack tr = it.next();
             if (tr.getInfo().title.toLowerCase().contains(keyWord.toLowerCase())) {
-                queue.remove(tr);
+                it.remove();
                 return Optional.of(tr);
             }
         }
