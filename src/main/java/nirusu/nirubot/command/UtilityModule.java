@@ -86,12 +86,10 @@ public class UtilityModule extends BaseModule {
             }
 
             User u = ctx.getEvent().getMessage().getUserMentions().blockFirst();
-            if (u != null) {
 
-                // get avatar url and add the size tag to get a bigger size
-                ctx.getChannel().ifPresent(
-                        ch -> ch.createEmbed(specs -> specs.setImage(u.getAvatarUrl().concat("?size=2048"))).block());
-            }
+            // get avatar url and add the size tag to get a bigger size
+            ctx.getChannel().ifPresent(
+                    ch -> ch.createEmbed(specs -> specs.setImage(u.getAvatarUrl().concat("?size=2048"))).block());
         });
     }
 }

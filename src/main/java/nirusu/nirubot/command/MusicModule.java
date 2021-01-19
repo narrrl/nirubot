@@ -2,6 +2,7 @@ package nirusu.nirubot.command;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -41,16 +42,16 @@ public class MusicModule extends BaseModule {
 
             if (args.size() == 1) {
                 link = args.get(0);
-                ctx.getAuthorVoiceState().ifPresent(state -> state.getChannel().blockOptional().ifPresent(ch -> {
+                ctx.getAuthorVoiceState().flatMap(state -> state.getChannel().blockOptional()).ifPresent(ch -> {
                     musicManager.loadAndPlay(link, ctx);
                     ch.join(con -> con.setProvider(musicManager.getProvider())).block();
-                }));
+                });
             } else if (args.size() == 2 && args.get(0).equals(NEXT_ARGUMENT)) {
                 link = args.get(1);
-                ctx.getAuthorVoiceState().ifPresent(state -> state.getChannel().blockOptional().ifPresent(ch -> {
+                ctx.getAuthorVoiceState().flatMap(state -> state.getChannel().blockOptional()).ifPresent(ch -> {
                     musicManager.loadAndPlayNext(link, ctx);
                     ch.join(con -> con.setProvider(musicManager.getProvider())).block();
-                }));
+                });
             }
 
         }));
@@ -110,7 +111,7 @@ public class MusicModule extends BaseModule {
             if (volume < 0)
                 return;
 
-            volume = volume > 100 ? 100 : volume;
+            volume = Math.min(volume, 100);
 
             musicManager.setVolume(volume);
             GuildManager.of(guild.getId()).setVolume(volume);
@@ -203,9 +204,8 @@ public class MusicModule extends BaseModule {
     @Command(key = { "playing", "nowplaying", "np" }, description = "Shows what song currently is playing", context = {
             Type.GUILD_CATEGORY, Type.GUILD_NEWS, Type.GUILD_TEXT })
     public void playing() {
-        final AudioTrack track = ctx.getGuild()
-                .map(guild -> ctx.getArgs()
-                        .map(args -> GuildMusicManager.of(guild.getId()).getPlayer().getPlayingTrack()).orElse(null))
+        final AudioTrack track = ctx.getGuild().flatMap(
+                guild -> ctx.getArgs().map(args -> GuildMusicManager.of(guild.getId()).getPlayer().getPlayingTrack()))
                 .orElse(null);
 
         if (track == null) {
@@ -232,7 +232,7 @@ public class MusicModule extends BaseModule {
                 progress.append("▬");
             }
         }
-        progress.append("►\n " + DiscordUtil.formatTime(minutes, seconds) + " / ");
+        progress.append("►\n ").append(DiscordUtil.formatTime(minutes, seconds)).append(" / ");
         minutes = track.getDuration() / 1000 / 60;
         seconds = track.getDuration() / 1000 % 60;
         progress.append(DiscordUtil.formatTime(minutes, seconds));
@@ -258,7 +258,8 @@ public class MusicModule extends BaseModule {
                     Type.GUILD_CATEGORY, Type.GUILD_NEWS, Type.GUILD_TEXT })
     public void youtube() {
         ctx.getGuild().ifPresent(guild -> ctx.getArgs().ifPresent(args -> {
-            if (args.isEmpty() || !MusicCondition.checkConditions(ctx, MusicCondition.USER_CONNECTED, MusicCondition.SAME_VOICE_CHANNEL)) {
+            if (args.isEmpty() || !MusicCondition.checkConditions(ctx, MusicCondition.USER_CONNECTED,
+                    MusicCondition.SAME_VOICE_CHANNEL)) {
                 return;
             }
 
@@ -282,7 +283,8 @@ public class MusicModule extends BaseModule {
             GuildMusicManager manager = GuildMusicManager.of(guild.getId());
             playYouTubeVideo(manager, video, loadAsNext);
             joinChannel(manager);
-            DiscordUtil.sendEmbed(ctx, spec -> spec.setColor(Nirubot.getColor()).setTitle(video.getTitle())
+            DiscordUtil.sendEmbed(ctx,
+                    spec -> spec.setColor(Nirubot.getColor()).setTitle(video.getTitle())
                             .setUrl("https://www.youtube.com/watch?v=" + video.getVideoId())
                             .setThumbnail(video.getThumbnailUrl()));
         }));
@@ -314,7 +316,8 @@ public class MusicModule extends BaseModule {
 
             StringBuilder out = new StringBuilder();
 
-            out.append("Current: [" + track.getInfo().title + "](" + track.getInfo().uri + ")\n");
+            out.append("Current: [").append(track.getInfo().title).append("](").append(track.getInfo().uri)
+                    .append(")\n");
 
             int it = 1;
 
@@ -325,10 +328,10 @@ public class MusicModule extends BaseModule {
                 if (totalEmbs == 2)
                     break;
 
-                out.append(it + ": [" + i.title + "](" + i.uri + ")\n");
+                out.append(it).append(": [").append(i.title).append("](").append(i.uri).append(")\n");
 
                 if (out.length() > 1800) {
-                    final String description = out.toString().substring(0, out.length());
+                    final String description = out.substring(0, out.length());
                     ctx.getChannel()
                             .ifPresent(ch -> ch
                                     .createEmbed(spec -> spec.setColor(Nirubot.getColor()).setDescription(description))
@@ -343,7 +346,7 @@ public class MusicModule extends BaseModule {
             }
 
             if (out.length() != 0) {
-                final String description = out.toString().substring(0, out.length());
+                final String description = out.substring(0, out.length());
                 ctx.getChannel().ifPresent(ch -> ch
                         .createEmbed(spec -> spec.setColor(Nirubot.getColor()).setDescription(description)).block());
             }
@@ -367,7 +370,7 @@ public class MusicModule extends BaseModule {
                 }
                 removedTrack = manager.getScheduler().remove(index);
             } else if (!args.isEmpty()) {
-                String songName = args.stream().collect(Collectors.joining(" "));
+                String songName = String.join(" ", args);
                 removedTrack = manager.getScheduler().remove(songName);
             }
 
@@ -396,15 +399,15 @@ public class MusicModule extends BaseModule {
 
         StringBuilder build = new StringBuilder();
 
-        for (int i = 0; i < args.size(); i++) {
-            build.append(args.get(i)).append(" ");
+        for (String arg : args) {
+            build.append(arg).append(" ");
         }
 
         String searchQuerry = build.substring(0, build.length() - 1);
 
         search.setQ(searchQuerry);
 
-        search.setType(Arrays.asList("video"));
+        search.setType(Collections.singletonList("video"));
 
         search.setFields("items(id/kind,id/videoId,snippet/title,snippet/thumbnails/default/url)");
 
@@ -429,7 +432,7 @@ public class MusicModule extends BaseModule {
                 out.append("░");
             }
         }
-        return out.append("◄\n" + volume + "%").toString();
+        return out.append("◄\n").append(volume).append("%").toString();
     }
 
     private boolean isNumeric(String str) {
@@ -437,14 +440,14 @@ public class MusicModule extends BaseModule {
     }
 
     private void joinChannel(GuildMusicManager manager) {
-        ctx.getAuthorVoiceState().ifPresent(state -> state.getChannel().blockOptional()
-                .ifPresent(ch -> ch.join(spec -> spec.setProvider(manager.getProvider())).block()));
+        ctx.getAuthorVoiceState().flatMap(state -> state.getChannel().blockOptional())
+                .ifPresent(ch -> ch.join(spec -> spec.setProvider(manager.getProvider())).block());
         ctx.getGuild().ifPresent(guild -> manager.setVolume(GuildManager.of(guild.getId()).volume()));
     }
 
     private void disconnectChannel() {
-        ctx.getSelfVoiceState().ifPresent(
-                state -> state.getChannel().blockOptional().ifPresent(ch -> ch.sendDisconnectVoiceState().block()));
+        ctx.getSelfVoiceState().flatMap(state -> state.getChannel().blockOptional())
+                .ifPresent(ch -> ch.sendDisconnectVoiceState().block());
     }
 
     private void playYouTubeVideo(GuildMusicManager manager, YouTubeVideo video, boolean loadAsNext) {

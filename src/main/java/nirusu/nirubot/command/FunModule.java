@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import discord4j.core.object.entity.User;
 import nirusu.nirubot.Nirubot;
@@ -16,7 +15,6 @@ import nirusu.nirubot.util.arknight.TagCombination;
 import nirusu.nirubot.util.gelbooru.Gelbooru;
 import nirusu.nirubot.util.gelbooru.Image;
 import nirusu.nirubot.util.gelbooru.Option;
-import nirusu.nirubot.util.gelbooru.PostTag;
 import nirusu.nirubot.util.nekolove.NekoLove;
 import nirusu.nirubot.util.nekolove.NekoLove.NekoLoveImage;
 import nirusu.nirubot.util.youtubedl.InvalidYoutubeDlException;
