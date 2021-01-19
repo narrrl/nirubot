@@ -9,9 +9,12 @@ import java.util.stream.Collectors;
 
 import discord4j.core.object.entity.User;
 import nirusu.nirubot.Nirubot;
+import nirusu.nirubot.util.DiscordUtil;
 import nirusu.nirubot.util.RandomHttpClient;
 import nirusu.nirubot.util.arknight.RecruitmentCalculator;
 import nirusu.nirubot.util.arknight.TagCombination;
+import nirusu.nirubot.util.gelbooru.Gelbooru;
+import nirusu.nirubot.util.gelbooru.Image;
 import nirusu.nirubot.util.nekolove.NekoLove;
 import nirusu.nirubot.util.nekolove.NekoLove.NekoLoveImage;
 import nirusu.nirubot.util.youtubedl.InvalidYoutubeDlException;
@@ -151,6 +154,19 @@ public class FunModule extends BaseModule {
                 );
             }
         }));
+    }
+
+    @Command(key = "nakiri", description = "Get some cute nakiri in your life")
+    public void nakiri() {
+        ctx.getArgs().ifPresent(args -> {
+                if (!args.isEmpty()) return;
+                Gelbooru.getSafeNakiri().ifPresent(img
+                        -> DiscordUtil.sendEmbed(ctx, spec
+                        -> spec.setTitle("Here is your cute Nakiri")
+                            .setUrl(img.getSource())
+                            .setColor(Nirubot.getColor())
+                            .setImage(img.getUrl())));
+        });
     }
     
 }
