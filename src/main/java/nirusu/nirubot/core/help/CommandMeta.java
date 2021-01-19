@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -21,14 +19,14 @@ import nirusu.nirubot.Nirubot;
 public class CommandMeta {
     private static final String ERROR_ON_FAILURE = "Couldn't parse commands.yaml";
     private static CommandMeta metaData;
-    private List<Metadata> commands;
+    private final List<Metadata> commands;
 
     public CommandMeta() {
         ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
         mapper.findAndRegisterModules();
         try {
             commands = mapper.readValue(CommandMeta.class.getResourceAsStream("commands.yaml"),
-                    new TypeReference<List<Metadata>>() {
+                    new TypeReference<>() {
                     });
         } catch (IOException e) {
             Nirubot.error(ERROR_ON_FAILURE, e);
@@ -69,7 +67,7 @@ public class CommandMeta {
 
         public Metadata() {
             // empty constructor for jackson
-        };
+        }
 
         public String getSyntax() {
             return this.syntax;
@@ -85,7 +83,7 @@ public class CommandMeta {
 
         public String getAliases() {
             if (aliases == null) return "";
-            return Stream.of(this.aliases).collect(Collectors.joining(", "));
+            return String.join(", ", this.aliases);
         }
 
         public Metadata setSyntax(String syntax) {

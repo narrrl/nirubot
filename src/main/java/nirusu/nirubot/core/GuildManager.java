@@ -19,7 +19,7 @@ import nirusu.nirubot.core.GuildManager.Guild.Playlist;
  */
 public class GuildManager {
 
-    public class Guild {
+    public static class Guild {
         private final Snowflake id;
         private boolean successReaction;
         private int volume;
@@ -37,7 +37,7 @@ public class GuildManager {
             playlists.put(name, pl);
         }
 
-        public class Playlist {
+        public static class Playlist {
             String[] songs;
         }
 
@@ -67,9 +67,8 @@ public class GuildManager {
      * Tries to get the guild manager for a given guild id. Creates a new
      * guildmanager if it doesnt exists.
      *
-     * @param idLong
      * @throws IllegalArgumentException if the config couldn
-     * @return
+     * @return get the guild manager for that id
      */
     public static GuildManager of(Snowflake id) {
         return getGuildManagers().computeIfAbsent(id, ignored -> {

@@ -2,11 +2,6 @@ package nirusu.nirubot.util;
 
 import java.util.function.Consumer;
 
-import javax.annotation.Nonnull;
-
-import discord4j.core.object.VoiceState;
-import discord4j.core.object.entity.Member;
-import discord4j.core.object.entity.channel.VoiceChannel;
 import discord4j.core.spec.EmbedCreateSpec;
 import nirusu.nirucmd.CommandContext;
 
@@ -15,28 +10,8 @@ public class DiscordUtil {
 
     private DiscordUtil() { throw new IllegalAccessError(); }
 
-    public static VoiceChannel findVoiceChannel(@Nonnull Member member) {
-        VoiceState state = member.getVoiceState().block();
-        return state != null ? state.getChannel().block() : null;
-    }
 
-    /**
-     * Checks if both member are in the same voice channel
-     */
-	public static boolean areInSameVoice(Member member, Member selfMember) {
-        VoiceChannel channel = findVoiceChannel(member);
-
-        if (channel == null) return false;
-
-        VoiceChannel botChannel = findVoiceChannel(selfMember);
-
-        if (botChannel == null) return true;
-
-
-        return !channel.equals(botChannel);
-    }
-
-        public static String formatTime(final long minutes , final long seconds) {
+    public static String formatTime(final long minutes , final long seconds) {
         StringBuilder out = new StringBuilder();
 
         if (minutes > 60) {
@@ -44,7 +19,7 @@ public class DiscordUtil {
             long hours = minutes / 60;
 
             if (hours < 10) {
-                out.append("0" + hours);
+                out.append("0").append(hours);
             } else {
                 out.append(hours);
             }
@@ -54,7 +29,7 @@ public class DiscordUtil {
             long min = minutes % 60;
 
             if (min < 10) {
-                out.append("0" + min);
+                out.append("0").append(min);
             } else {
                 out.append(min);
             }
@@ -63,7 +38,7 @@ public class DiscordUtil {
                 out.append("0");
             }
             else if (minutes < 10) {
-                out.append("0" + minutes);
+                out.append("0").append(minutes);
             } else {
                 out.append(minutes);
             }
@@ -72,7 +47,7 @@ public class DiscordUtil {
         out.append(":");
 
         if (seconds < 10) {
-            out.append("0" + seconds);
+            out.append("0").append(seconds);
         } else {
             out.append(seconds);
         }

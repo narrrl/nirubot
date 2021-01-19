@@ -51,7 +51,7 @@ public enum MusicCondition {
 
     private final String errorMessage;
 
-    private MusicCondition(final String errorMessage) {
+    MusicCondition(final String errorMessage) {
         this.errorMessage = errorMessage;
     }
 

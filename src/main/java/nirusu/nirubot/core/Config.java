@@ -21,7 +21,7 @@ public class Config {
      * Stores all the attributes for the config.json. Is needed to parse
      * with {@link Gson}
      */
-    public class Data {
+    public static class Data {
         private String prefix;
         private String activity;
         private String activityType;

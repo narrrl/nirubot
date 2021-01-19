@@ -36,14 +36,14 @@ public final class IndexCreator {
                 zip = f;
             } else if (!f.getName().endsWith(".html")) {
                 String[] arr = f.toURI().toString().split(dir.toString());
-                content.append("<li><a href=\"." + arr[1] + "\">" + f.getName() + "</a></li>");
+                content.append("<li><a href=\".").append(arr[1]).append("\">").append(f.getName()).append("</a></li>");
             }
         }
 
         content.append("</ul>");
 
         if (zip != null) {
-            content.append("<a href=\"./" + zip.getName() + "\">Download all!</a>");
+            content.append("<a href=\"./").append(zip.getName()).append("\">Download all!</a>");
         }
 
         content.append(SECOND_HALF);

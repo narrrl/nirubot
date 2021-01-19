@@ -30,7 +30,7 @@ public class TrackScheduler extends AudioEventAdapter {
   }
 
     public List<AudioTrack> getQueue() {
-        return queue;
+        return Collections.unmodifiableList(queue);
     }
 
     public boolean play(final AudioTrack track) {
@@ -87,9 +87,7 @@ public class TrackScheduler extends AudioEventAdapter {
 
         queue.clear();
 
-        for (AudioTrack t : tmp) {
-            queue.add(t);
-        }
+        queue.addAll(tmp);
 
     }
 

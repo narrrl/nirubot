@@ -24,14 +24,13 @@ public class YoutubeDl {
             .compile("^(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]");
     private static final Pattern OPTION_REGEX = Pattern.compile("-.+");
 
-    private YoutubeDLRequest req;
+    private final YoutubeDLRequest req;
     private final String randomString;
     private final File tmpDir;
     private final File webDir;
-    private final String videoURL;
 
     public YoutubeDl(List<String> args) throws InvalidYoutubeDlException {
-        this.videoURL = getURL(args);
+        String videoURL = getURL(args);
         this.randomString = RandomString.getRandomString(4);
         this.tmpDir = new File(Nirubot.getTmpDirectory().getAbsolutePath().concat(File.separator) + "youtube-dl"
                 + File.separator + randomString);

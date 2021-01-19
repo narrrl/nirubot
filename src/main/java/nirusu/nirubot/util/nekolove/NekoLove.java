@@ -47,7 +47,7 @@ public final class NekoLove {
         return Nirubot.getGson().fromJson(json.toString(), NekoLoveImage.class);
     }
 
-    public class NekoLoveImage {
+    public static class NekoLoveImage {
         private int code;
         private String url;
 

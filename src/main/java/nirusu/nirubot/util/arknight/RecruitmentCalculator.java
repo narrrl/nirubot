@@ -4,11 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
@@ -19,7 +15,7 @@ import com.google.gson.reflect.TypeToken;
 import nirusu.nirubot.Nirubot;
 
 public class RecruitmentCalculator {
-    private List<Operator> operators;
+    private final List<Operator> operators;
     private static RecruitmentCalculator calc;
 
     public static synchronized RecruitmentCalculator getRecruitment() {
@@ -118,7 +114,7 @@ public class RecruitmentCalculator {
                     if (!tag.equals(tag2)) {
                         tagCombinations.add(new TagCombination(Arrays.asList(tag, tag2)));
                     }
-                    tagCombinations.add(new TagCombination(Arrays.asList(tag)));
+                    tagCombinations.add(new TagCombination(Collections.singletonList(tag)));
                 }
             }
         }

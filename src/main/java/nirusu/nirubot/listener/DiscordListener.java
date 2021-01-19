@@ -3,8 +3,6 @@ package nirusu.nirubot.listener;
 import java.util.Objects;
 import java.util.Optional;
 
-import javax.security.auth.login.LoginException;
-
 import discord4j.core.DiscordClient;
 import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.domain.lifecycle.ReadyEvent;
@@ -21,7 +19,7 @@ import nirusu.nirucmd.CommandToRun;
 public class DiscordListener implements NiruListener {
     private final GatewayDiscordClient client;
 
-    public DiscordListener() throws LoginException {
+    public DiscordListener() {
         Config conf = Nirubot.getConfig();
         client = Objects.requireNonNull(DiscordClient.create(conf.getToken()).gateway()
                 .setSharding(ShardingStrategy.recommended()).login().block());
@@ -46,10 +44,6 @@ public class DiscordListener implements NiruListener {
         // get message content
         String raw = mes.getContent();
 
-        if (raw == null) {
-            return;
-        }
-
         CommandContext ctx = new CommandContext(event);
 
         String prefix;
@@ -68,8 +62,9 @@ public class DiscordListener implements NiruListener {
         // check if message starts with prefix !
         if (raw.startsWith(prefix) && raw.length() > prefix.length()) {
             // create the CommandContext
-            ctx.setArgsAndKey(raw.substring(prefix.length()).split("\\s+"),
-                    raw.substring(prefix.length()).split("\\s+")[0], true);
+            String[] userInput = raw.substring(prefix.length()).split("\\s+");
+            ctx.setArgsAndKey(userInput,
+                    userInput[0], true);
             CommandToRun cmd = Nirubot.getNirubot().getDispatcher().getCommand(ctx, ctx.getKey());
             cmd.run();
         } else if (ctx.getSelf().map(self -> mes.getUserMentionIds().contains(self.getId())).orElse(false)) {

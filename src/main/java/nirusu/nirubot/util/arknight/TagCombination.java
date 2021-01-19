@@ -1,5 +1,7 @@
 package nirusu.nirubot.util.arknight;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -10,15 +12,15 @@ import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 
 public class TagCombination implements Comparable<TagCombination> {
-    private Set<Operator> possibleOperator;
-    private List<String> tags;
+    private final Set<Operator> possibleOperator;
+    private final List<String> tags;
 
     /**
      * Case sensitive convert @param tags to upper case first
      */
     public TagCombination(final List<String> tags) {
         this.tags = new ArrayList<>();
-        tags.forEach(str -> this.tags.add(str));
+        this.tags.addAll(tags);
         this.possibleOperator = new HashSet<>();
     }
 
@@ -27,11 +29,7 @@ public class TagCombination implements Comparable<TagCombination> {
     }
 
     @Override
-    public int compareTo(TagCombination o) {
-
-        if (o == null) {
-            return 1;
-        }
+    public int compareTo(@NotNull TagCombination o) {
 
         return this.hashCode() - o.hashCode();
     }
@@ -58,11 +56,7 @@ public class TagCombination implements Comparable<TagCombination> {
         }
 
         // you cant get an 6 star without TOP_OPERATOR tag
-        if (o.getRarity() == 6 && !tags.contains("TOP_OPERATOR")) {
-            return false;
-        }
-
-		return true;
+        return o.getRarity() != 6 || tags.contains("TOP_OPERATOR");
     }
     
     @Override

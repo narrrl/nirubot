@@ -63,8 +63,8 @@ public class GuildMusicManager {
     }
 
     public void setVolume(final int volume) {
-        int real = volume > 100 ? 100 : volume;
-        real = real < 0 ? 0 : real;
+        int real = Math.min(volume, 100);
+        real = Math.max(real, 0);
         real = volume < 5 ? 1 : real / 5;
         player.setVolume(real);
     }
