@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import discord4j.core.object.entity.User;
 import nirusu.nirubot.Nirubot;
@@ -15,6 +16,7 @@ import nirusu.nirubot.util.arknight.TagCombination;
 import nirusu.nirubot.util.gelbooru.Gelbooru;
 import nirusu.nirubot.util.gelbooru.Image;
 import nirusu.nirubot.util.gelbooru.Option;
+import nirusu.nirubot.util.gelbooru.PostTag;
 import nirusu.nirubot.util.nekolove.NekoLove;
 import nirusu.nirubot.util.nekolove.NekoLove.NekoLoveImage;
 import nirusu.nirubot.util.youtubedl.InvalidYoutubeDlException;
@@ -161,8 +163,9 @@ public class FunModule extends BaseModule {
             }
 
             String search = String.join(" ", args);
-            Gelbooru.searchForTag(search)
-                    .flatMap(tag -> Gelbooru.getImageFor(new Option.Tag(List.of(tag.getTagName())), Image.Rating.SAFE))
+            List<String> tagList = Gelbooru.searchForTags(List.of(search.split(", "))).stream().map(PostTag::getTagName)
+                    .collect(Collectors.toList());
+            Gelbooru.getImageFor(new Option.Tag(tagList), Image.Rating.SAFE)
                     .ifPresent(img -> DiscordUtil.sendEmbed(ctx, spec -> spec.setTitle("Here is your cute anime girl:")
                             .setUrl(img.getSource()).setColor(Nirubot.getColor()).setImage(img.getUrl())));
         });
@@ -176,8 +179,9 @@ public class FunModule extends BaseModule {
             }
 
             String search = String.join(" ", args);
-            Gelbooru.searchForTag(search).flatMap(
-                    tag -> Gelbooru.getImageFor(new Option.Tag(List.of(tag.getTagName())), Image.Rating.EXPLICIT))
+            List<String> tagList = Gelbooru.searchForTags(List.of(search.split(", "))).stream().map(PostTag::getTagName)
+                    .collect(Collectors.toList());
+            Gelbooru.getImageFor(new Option.Tag(tagList), Image.Rating.EXPLICIT)
                     .ifPresent(img -> DiscordUtil.sendEmbed(ctx, spec -> spec.setTitle("Here is your cute anime girl:")
                             .setUrl(img.getSource()).setColor(Nirubot.getColor()).setImage(img.getUrl())));
         });

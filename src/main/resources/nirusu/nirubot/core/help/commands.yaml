@@ -58,11 +58,11 @@
 - name: "animepic"
   description: >
     This command sends random cute anime images (sfw) based on the given search term.
-  syntax: "<prefix>animepic Search Term..."
+  syntax: "<prefix>animepic tag1, tag2, tag3, ..."
 - name: "hentai"
   description: >
     This command sends random anime images (nsfw) based on the given search term.
-  syntax: "<prefix>hentai Search Term..."
+  syntax: "<prefix>hentai tag1, tag2, tag3, ..."
 # music module
 - name: "play"
   description: >

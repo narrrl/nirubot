@@ -5,8 +5,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import com.google.gson.reflect.TypeToken;
 
@@ -61,6 +63,28 @@ public class Gelbooru {
         });
     }
 
+    public static List<PostTag> searchForTags(List<String> searchTerms) {
+        List<PostTag> tags = new ArrayList<>();
+        for (String s : searchTerms) {
+            getJson("&name=" + s.replace(" ", "_").concat("&orderby=count"), TAG_SCOPE).ifPresentOrElse(js -> {
+                List<PostTag> list = Nirubot.getGson().fromJson(js, new TypeToken<List<PostTag>>() {
+                }.getType());
+                if (list.isEmpty())
+                    return;
+                tags.add(list.get(0));
+            }, () -> getJson("&name_pattern=%" + String.join("%", s.split(" ")) + "%&orderby=count", TAG_SCOPE)
+                    .ifPresent(js -> {
+                        List<PostTag> list = Nirubot.getGson().fromJson(js, new TypeToken<List<PostTag>>() {
+                        }.getType());
+                        if (list.isEmpty()) {
+                            return;
+                        }
+                        tags.add(list.get(0));
+                    })); // beauty
+        }
+        return tags;
+    }
+
     private static Optional<String> getJson(String optionsString, String scope) {
         StringBuilder json = new StringBuilder();
         HttpURLConnection con = null;
@@ -79,7 +103,7 @@ public class Gelbooru {
                 con.disconnect();
             return Optional.empty();
         }
-        return Optional.of(json.toString());
+        return json.toString().equals("[]") ? Optional.empty() : Optional.of(json.toString());
     }
 
     public static Optional<Image> getSafeNakiri() {
