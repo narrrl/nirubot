@@ -16,7 +16,6 @@ import com.sapher.youtubedl.YoutubeDLResponse;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 
-import discord4j.core.object.entity.channel.VoiceChannel;
 import discord4j.core.object.entity.channel.Channel.Type;
 import nirusu.nirubot.Nirubot;
 import nirusu.nirubot.core.GuildManager;
@@ -28,6 +27,8 @@ import nirusu.nirucmd.BaseModule;
 import nirusu.nirucmd.annotation.Command;
 
 public class MusicModule extends BaseModule {
+    private static final String NEXT_ARGUMENT = "-next";
+
     @Command(key = { "p", "play", "pl" }, description = "Plays a song", context = { Type.GUILD_CATEGORY,
             Type.GUILD_NEWS, Type.GUILD_TEXT })
     public void play() {
@@ -35,17 +36,23 @@ public class MusicModule extends BaseModule {
             return;
         }
         ctx.getGuild().ifPresent(guild -> ctx.getArgs().ifPresent(args -> {
-            if (args.size() != 1) {
-                return;
+            String link;
+            GuildMusicManager musicManager = GuildMusicManager.of(guild.getId());
+
+            if (args.size() == 1) {
+                link = args.get(0);
+                ctx.getAuthorVoiceState().ifPresent(state -> state.getChannel().blockOptional().ifPresent(ch -> {
+                    musicManager.loadAndPlay(link, ctx);
+                    ch.join(con -> con.setProvider(musicManager.getProvider())).block();
+                }));
+            } else if (args.size() == 2 && args.get(0).equals(NEXT_ARGUMENT)) {
+                link = args.get(1);
+                ctx.getAuthorVoiceState().ifPresent(state -> state.getChannel().blockOptional().ifPresent(ch -> {
+                    musicManager.loadAndPlayNext(link, ctx);
+                    ch.join(con -> con.setProvider(musicManager.getProvider())).block();
+                }));
             }
 
-            String link = args.get(0);
-            GuildMusicManager musicManager = GuildMusicManager.of(guild.getId());
-            ctx.getAuthorVoiceState().ifPresent(state -> {
-                VoiceChannel ch = state.getChannel().block();
-                musicManager.loadAndPlay(link, ctx);
-                ch.join(con -> con.setProvider(musicManager.getProvider())).block();
-            });
         }));
 
     }
@@ -127,9 +134,9 @@ public class MusicModule extends BaseModule {
             if (!MusicCondition.checkConditions(ctx, MusicCondition.USER_CONNECTED)) {
                 return;
             }
-            GuildMusicManager musicManager = GuildMusicManager.of(guild.getId());
-            ctx.getAuthorVoiceState().ifPresent(state -> state.getChannel().blockOptional()
-                    .ifPresent(ch -> ch.join(con -> con.setProvider(musicManager.getProvider())).block()));
+            GuildMusicManager manager = GuildMusicManager.of(guild.getId());
+            disconnectChannel();
+            joinChannel(manager);
 
         });
     }
@@ -147,8 +154,7 @@ public class MusicModule extends BaseModule {
                 return;
             }
 
-            ctx.getSelfVoiceState().ifPresent(
-                    state -> state.getChannel().blockOptional().ifPresent(ch -> ch.sendDisconnectVoiceState().block()));
+            disconnectChannel();
             GuildMusicManager.destroy(guild.getId());
         }));
     }
@@ -252,42 +258,33 @@ public class MusicModule extends BaseModule {
                     Type.GUILD_CATEGORY, Type.GUILD_NEWS, Type.GUILD_TEXT })
     public void youtube() {
         ctx.getGuild().ifPresent(guild -> ctx.getArgs().ifPresent(args -> {
-            if (args.isEmpty()) {
+            if (args.isEmpty() || !MusicCondition.checkConditions(ctx, MusicCondition.USER_CONNECTED, MusicCondition.SAME_VOICE_CHANNEL)) {
                 return;
             }
 
-            if (!MusicCondition.checkConditions(ctx, MusicCondition.USER_CONNECTED)) {
-                return;
+            SearchListResponse response;
+            boolean loadAsNext = args.get(0).equals(NEXT_ARGUMENT);
+            if (loadAsNext) {
+                response = getVideos(args.stream().filter(i -> args.indexOf(i) != 0).collect(Collectors.toList()));
+            } else {
+                response = getVideos(args);
             }
-
-            Optional<VoiceChannel> channel = ctx.getAuthorVoiceState().map(state -> state.getChannel().block());
-
-            SearchListResponse response = getVideos(args);
 
             List<SearchResult> results = response.getItems();
 
-            if (results == null) {
-                ctx.reply("No videos found!");
-                return;
-            }
-
-            if (results.isEmpty()) {
+            if (results == null || results.isEmpty()) {
                 ctx.reply("Nothing found");
                 return;
             }
 
             YouTubeVideo video = Nirubot.getGson().fromJson(results.get(0).toString(), YouTubeVideo.class);
+
             GuildMusicManager manager = GuildMusicManager.of(guild.getId());
-            manager.loadAndPlay(video.getVideoId(), null);
-            manager.setVolume(GuildManager.of(guild.getId()).volume());
-
-            channel.ifPresent(ch -> ch.join(spec -> spec.setProvider(manager.getProvider())).block());
-
-            ctx.getChannel()
-                    .ifPresent(ch -> ch.createEmbed(spec -> spec.setColor(Nirubot.getColor()).setTitle(video.getTitle())
+            playYouTubeVideo(manager, video, loadAsNext);
+            joinChannel(manager);
+            DiscordUtil.sendEmbed(ctx, spec -> spec.setColor(Nirubot.getColor()).setTitle(video.getTitle())
                             .setUrl("https://www.youtube.com/watch?v=" + video.getVideoId())
-                            .setThumbnail(video.getThumbnailUrl())).block());
-
+                            .setThumbnail(video.getThumbnailUrl()));
         }));
     }
 
@@ -374,10 +371,12 @@ public class MusicModule extends BaseModule {
                 removedTrack = manager.getScheduler().remove(songName);
             }
 
-            removedTrack.ifPresentOrElse(t -> ctx.getChannel()
-                    .ifPresent(ch -> ch.createEmbed(specs -> specs
-                            .setDescription(String.format("Removed Song [%s](%s)", t.getInfo().title, t.getInfo().uri))
-                            .setColor(Nirubot.getColor())).block()),
+            removedTrack.ifPresentOrElse(
+                    t -> ctx.getChannel()
+                            .ifPresent(ch -> ch.createEmbed(specs -> specs
+                                    .setDescription(
+                                            String.format("Removed Song [%s](%s)", t.getInfo().title, t.getInfo().uri))
+                                    .setColor(Nirubot.getColor())).block()),
                     () -> ctx.reply("No song to remove found!"));
 
         }));
@@ -435,6 +434,27 @@ public class MusicModule extends BaseModule {
 
     private boolean isNumeric(String str) {
         return str.chars().allMatch(i -> (i >= '0' && i <= '9'));
+    }
+
+    private void joinChannel(GuildMusicManager manager) {
+        ctx.getAuthorVoiceState().ifPresent(state -> state.getChannel().blockOptional()
+                .ifPresent(ch -> ch.join(spec -> spec.setProvider(manager.getProvider())).block()));
+        ctx.getGuild().ifPresent(guild -> manager.setVolume(GuildManager.of(guild.getId()).volume()));
+    }
+
+    private void disconnectChannel() {
+        ctx.getSelfVoiceState().ifPresent(
+                state -> state.getChannel().blockOptional().ifPresent(ch -> ch.sendDisconnectVoiceState().block()));
+    }
+
+    private void playYouTubeVideo(GuildMusicManager manager, YouTubeVideo video, boolean loadAsNext) {
+        ctx.getGuild().ifPresent(guild -> {
+            if (loadAsNext) {
+                manager.loadAndPlayNext(video.getVideoId(), null);
+            } else {
+                manager.loadAndPlay(video.getVideoId(), null);
+            }
+        });
     }
 
 }

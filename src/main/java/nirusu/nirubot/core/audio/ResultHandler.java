@@ -14,15 +14,21 @@ import reactor.util.annotation.NonNull;
 public class ResultHandler implements AudioLoadResultHandler {
     private final Optional<CommandContext> ctx;
     private final GuildMusicManager manager;
+    private final boolean playSongAsNext;
 
-    private ResultHandler(@NonNull GuildMusicManager manager, CommandContext ctx) {
+    private ResultHandler(@NonNull GuildMusicManager manager, CommandContext ctx, boolean playSongAsNext) {
         this.ctx = Optional.ofNullable(ctx);
         this.manager = manager;
+        this.playSongAsNext = playSongAsNext;
     }
 
     @Override
     public void trackLoaded(AudioTrack track) {
-        manager.getScheduler().play(track);
+        if (playSongAsNext) {
+            manager.getScheduler().playNext(track);
+        } else {
+            manager.getScheduler().play(track);
+        }
         ctx.ifPresent(c -> c.getChannel()
                 .ifPresent(ch -> ch.createEmbed(spec -> spec.setTitle("Song loaded: " + track.getInfo().title)
                         .setUrl(track.getInfo().uri).setColor(Nirubot.getColor())).block()));
@@ -35,7 +41,11 @@ public class ResultHandler implements AudioLoadResultHandler {
             return;
 
         for (AudioTrack t : playlist.getTracks()) {
-            manager.getScheduler().play(t);
+            if (playSongAsNext) {
+                manager.getScheduler().playNext(t);
+            } else {
+                manager.getScheduler().play(t);
+            }
         }
         ctx.ifPresent(c -> c.getChannel()
                 .ifPresent(ch -> ch.createEmbed(
@@ -56,6 +66,7 @@ public class ResultHandler implements AudioLoadResultHandler {
     public static final class Builder {
         private final GuildMusicManager manager;
         private CommandContext ctx = null;
+        private boolean playSongAsNext = false;
 
         public Builder(@NonNull GuildMusicManager manager) {
             this.manager = manager;
@@ -66,8 +77,13 @@ public class ResultHandler implements AudioLoadResultHandler {
             return this;
         }
 
+        public Builder setPlayAsNext(boolean b) {
+            this.playSongAsNext = b;
+            return this;
+        }
+
         public ResultHandler build() {
-            return new ResultHandler(manager, ctx);
+            return new ResultHandler(manager, ctx, playSongAsNext);
         }
 
     }

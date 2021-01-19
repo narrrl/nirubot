@@ -1,10 +1,14 @@
 package nirusu.nirubot.util;
 
+import java.util.function.Consumer;
+
 import javax.annotation.Nonnull;
 
 import discord4j.core.object.VoiceState;
 import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.channel.VoiceChannel;
+import discord4j.core.spec.EmbedCreateSpec;
+import nirusu.nirucmd.CommandContext;
 
 public class DiscordUtil {
 
@@ -74,5 +78,9 @@ public class DiscordUtil {
         }
 
         return out.toString();
+    }
+
+    public static void sendEmbed(CommandContext ctx, Consumer<? super EmbedCreateSpec> spec) {
+        ctx.getChannel().ifPresent(ch -> ch.createEmbed(spec).block());
     }
 }

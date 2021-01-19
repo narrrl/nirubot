@@ -4,6 +4,8 @@ import java.util.Optional;
 
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 
+import discord4j.core.object.VoiceState;
+import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.channel.VoiceChannel;
 import nirusu.nirucmd.CommandContext;
 import nirusu.nirubot.core.audio.GuildMusicManager;
@@ -14,18 +16,18 @@ public enum MusicCondition {
         public boolean check(CommandContext ctx) {
             return ctx.getAuthorVoiceState().flatMap(user -> user.getChannel().blockOptional()).isPresent();
         }
-    }, SAME_VOICE_CHANNEL("You must be in the same voice channel as the bot!") {
+    },
+    SAME_VOICE_CHANNEL("You must be in the same voice channel as the bot!") {
         @Override
         public boolean check(CommandContext ctx) {
-            Optional<Boolean> sameChannel = ctx.getAuthor().flatMap(user 
-                -> ctx.getSelfVoiceState().flatMap(state 
-                -> state.getChannel().blockOptional().flatMap(channel 
-                -> channel.isMemberConnected(user.getId()).blockOptional())));
-
-            if (sameChannel.isPresent()) {
-                return sameChannel.get();
-            } 
-            return false;
+            Optional<VoiceState> botState = ctx.getSelfVoiceState();
+            Optional<VoiceState> userState = ctx.getAuthorVoiceState();
+            return botState
+                    .map(bs -> bs.getChannel().blockOptional()
+                            .map(ch -> ch.isMemberConnected(ctx.getMember().map(Member::getId).orElse(null))
+                                    .blockOptional().orElse(false))
+                            .orElse(true))
+                    .orElse(userState.map(us -> us.getChannel().blockOptional().isPresent()).orElse(false));
         }
     },
     MUSIC_PLAYING("No music is playing!") {
@@ -71,5 +73,5 @@ public enum MusicCondition {
         return true;
 
     }
-    
+
 }

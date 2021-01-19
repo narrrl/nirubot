@@ -37,6 +37,17 @@ public class TrackScheduler extends AudioEventAdapter {
         return play(track, false);
     }
 
+    public boolean playNext(final AudioTrack track) {
+        final boolean playing = player.startTrack(track, true);
+
+        if (!playing) {
+            queue.add(0, track);
+        }
+
+        return playing;
+
+    }
+
     public boolean play(final AudioTrack track, final boolean force) {
         final boolean playing = player.startTrack(track, !force);
 

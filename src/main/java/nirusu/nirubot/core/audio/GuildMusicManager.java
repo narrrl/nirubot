@@ -72,7 +72,12 @@ public class GuildMusicManager {
 	public void loadAndPlay(String link, CommandContext ctx) {
         ResultHandler handler = new ResultHandler.Builder(this).setCTX(ctx).build();
         PLAYER_MANAGER.loadItemOrdered(this, link, handler);
-	}
+    }
+    
+    public void loadAndPlayNext(String link, CommandContext ctx) {
+        ResultHandler handler = new ResultHandler.Builder(this).setCTX(ctx).setPlayAsNext(true).build();
+        PLAYER_MANAGER.loadItemOrdered(this, link, handler);
+    }
 
 	public static void destroy(Snowflake id) {
         GuildMusicManager manager = MANAGERS.remove(id);
