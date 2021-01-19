@@ -2,8 +2,6 @@ package nirusu.nirubot.util.gelbooru;
 
 import com.google.gson.annotations.SerializedName;
 
-import java.util.Locale;
-
 public class Image {
     private String source;
     private String tags;

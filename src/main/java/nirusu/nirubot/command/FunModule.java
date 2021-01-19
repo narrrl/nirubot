@@ -15,6 +15,8 @@ import nirusu.nirubot.util.arknight.RecruitmentCalculator;
 import nirusu.nirubot.util.arknight.TagCombination;
 import nirusu.nirubot.util.gelbooru.Gelbooru;
 import nirusu.nirubot.util.gelbooru.Image;
+import nirusu.nirubot.util.gelbooru.Option;
+import nirusu.nirubot.util.gelbooru.PostTag;
 import nirusu.nirubot.util.nekolove.NekoLove;
 import nirusu.nirubot.util.nekolove.NekoLove.NekoLoveImage;
 import nirusu.nirubot.util.youtubedl.InvalidYoutubeDlException;
@@ -27,9 +29,9 @@ public class FunModule extends BaseModule {
 
     @Command(key = "mock", description = "Random upper and lower cases")
     public void mock() {
-        String message = ctx.getArgs().orElse(Collections.emptyList()).stream().collect(Collectors.joining(" "));
+        String message = String.join(" ", ctx.getArgs().orElse(Collections.emptyList()));
 
-        if (message == null || message.equals("")) {
+        if (message.equals("")) {
             return;
         }
         List<Byte> nums;
@@ -49,39 +51,38 @@ public class FunModule extends BaseModule {
         ctx.reply(builder.toString());
     }
 
-    @Command(key = { "ytd", "youtubedl", "youtubedownload", "ytdownload" }, description = "Downloads youtube videos with youtubedl")
+    @Command(key = { "ytd", "youtubedl", "youtubedownload",
+            "ytdownload" }, description = "Downloads youtube videos with youtubedl")
     public void youtubedl() {
         ctx.getArgs().ifPresent(args -> ctx.getAuthor().ifPresent(author -> {
             ctx.reply("Started downloading and converting! This might take some time");
-            new Thread( () -> {
-                    File out;
-                    try {
-                        out = new YoutubeDl(args).start();
-                    } catch (InvalidYoutubeDlException e) {
-                        if (e.getMessage() != null) {
-                            ctx.reply(String.format("Error: %s", e.getMessage()));
-                        } else {
-                            e.printStackTrace();
-                        }
-                        return;
+            new Thread(() -> {
+                File out;
+                try {
+                    out = new YoutubeDl(args).start();
+                } catch (InvalidYoutubeDlException e) {
+                    if (e.getMessage() != null) {
+                        ctx.reply(String.format("Error: %s", e.getMessage()));
+                    } else {
+                        e.printStackTrace();
                     }
-                    if (out.length() > CommandContext.getMaxFileSize()|| out.isDirectory()) {
-                        ctx.reply(String.format("You can download %s here: %s%s %s",
-                            out.getName(), 
-                            Nirubot.getHost() + Nirubot.getTmpDirPath(), 
-                            out.getName(),
-                            author.getMention()));
-                        return;
-                    }
-                    ctx.sendFile(out);
+                    return;
+                }
+                if (out.length() > CommandContext.getMaxFileSize() || out.isDirectory()) {
+                    ctx.reply(String.format("You can download %s here: %s%s %s", out.getName(),
+                            Nirubot.getHost() + Nirubot.getTmpDirPath(), out.getName(), author.getMention()));
+                    return;
+                }
+                ctx.sendFile(out);
             }).start(); // there he goes
         }));
     }
 
-    @Command(key = {"ark", "arknights", "arkcalc"}, description = "Calculates the best possible tag combinations for given input")
+    @Command(key = { "ark", "arknights",
+            "arkcalc" }, description = "Calculates the best possible tag combinations for given input")
     public void arknights() {
         ctx.getArgs().ifPresent(args -> {
-            if (args.size() >  15 || args.size() < 2) {
+            if (args.size() > 15 || args.size() < 2) {
                 return;
             }
             List<TagCombination> all = RecruitmentCalculator.getRecruitment().calculate(args, ctx.getUserInput());
@@ -91,17 +92,11 @@ public class FunModule extends BaseModule {
                 boolean first = true;
                 for (String str : RecruitmentCalculator.formatForDiscord(all)) {
                     if (first) {
-                        ch.createEmbed(emb -> 
-                            emb.setDescription(str)
-                               .setColor(Nirubot.getColor())
-                               .setTitle("All Combinations:")
-                        ).block();
+                        ch.createEmbed(emb -> emb.setDescription(str).setColor(Nirubot.getColor())
+                                .setTitle("All Combinations:")).block();
                         first = false;
                     } else {
-                        ch.createEmbed(emb -> 
-                            emb.setDescription(str)
-                               .setColor(Nirubot.getColor())
-                        ).block();
+                        ch.createEmbed(emb -> emb.setDescription(str).setColor(Nirubot.getColor())).block();
 
                     }
                 }
@@ -109,7 +104,7 @@ public class FunModule extends BaseModule {
         });
     }
 
-    @Command(key = {"neko", "nya",}, description = "Nyaaa~~")
+    @Command(key = { "neko", "nya", }, description = "Nyaaa~~")
     public void neko() {
         ctx.getArgs().ifPresent(args -> {
             if (args.isEmpty()) {
@@ -120,12 +115,8 @@ public class FunModule extends BaseModule {
                     ctx.reply(e.getMessage());
                     return;
                 }
-                ctx.getChannel().ifPresent(ch -> 
-                    ch.createEmbed(emb ->
-                        emb.setImage(image.url()).setColor(Nirubot.getColor())
-                            .setTitle(String.format("Here is your %s", "Neko"))
-                    ).block()
-                );
+                ctx.getChannel().ifPresent(ch -> ch.createEmbed(emb -> emb.setImage(image.url())
+                        .setColor(Nirubot.getColor()).setTitle(String.format("Here is your %s", "Neko"))).block());
             }
         });
     }
@@ -142,16 +133,13 @@ public class FunModule extends BaseModule {
                     return;
                 }
 
-                User user = ctx.getEvent().getMessage()
-                    .getUserMentions().collectList().blockOptional()
-                    .map(list -> list.stream().findFirst().orElse(author)).orElse(author);
+                User user = ctx.getEvent().getMessage().getUserMentions().collectList().blockOptional()
+                        .map(list -> list.stream().findFirst().orElse(author)).orElse(author);
 
-                ctx.getChannel().ifPresent(ch -> 
-                    ch.createEmbed(emb ->
-                        emb.setImage(image.url()).setColor(Nirubot.getColor())
-                            .setDescription(String.format("%s hugs %s", author.getMention(), user.getMention()))
-                    ).block()
-                );
+                ctx.getChannel().ifPresent(ch -> ch
+                        .createEmbed(emb -> emb.setImage(image.url()).setColor(Nirubot.getColor())
+                                .setDescription(String.format("%s hugs %s", author.getMention(), user.getMention())))
+                        .block());
             }
         }));
     }
@@ -159,14 +147,42 @@ public class FunModule extends BaseModule {
     @Command(key = "nakiri", description = "Get some cute nakiri in your life")
     public void nakiri() {
         ctx.getArgs().ifPresent(args -> {
-                if (!args.isEmpty()) return;
-                Gelbooru.getSafeNakiri().ifPresent(img
-                        -> DiscordUtil.sendEmbed(ctx, spec
-                        -> spec.setTitle("Here is your cute Nakiri")
-                            .setUrl(img.getSource())
-                            .setColor(Nirubot.getColor())
-                            .setImage(img.getUrl())));
+            if (!args.isEmpty())
+                return;
+            Gelbooru.getSafeNakiri()
+                    .ifPresent(img -> DiscordUtil.sendEmbed(ctx, spec -> spec.setTitle("Here is your cute Nakiri")
+                            .setUrl(img.getSource()).setColor(Nirubot.getColor()).setImage(img.getUrl())));
         });
     }
-    
+
+    @Command(key = { "animepic", "pic", "image" }, description = "Get some anime pics")
+    public void animepic() {
+        ctx.getArgs().ifPresent(args -> {
+            if (args.isEmpty()) {
+                return;
+            }
+
+            String search = String.join(" ", args);
+            Gelbooru.searchForTag(search)
+                    .flatMap(tag -> Gelbooru.getImageFor(new Option.Tag(List.of(tag.getTagName())), Image.Rating.SAFE))
+                    .ifPresent(img -> DiscordUtil.sendEmbed(ctx, spec -> spec.setTitle("Here is your cute anime girl:")
+                            .setUrl(img.getSource()).setColor(Nirubot.getColor()).setImage(img.getUrl())));
+        });
+    }
+
+    @Command(key = "hentai", description = "Oh hell no")
+    public void hentai() {
+        ctx.getArgs().ifPresent(args -> {
+            if (args.isEmpty()) {
+                return;
+            }
+
+            String search = String.join(" ", args);
+            Gelbooru.searchForTag(search).flatMap(
+                    tag -> Gelbooru.getImageFor(new Option.Tag(List.of(tag.getTagName())), Image.Rating.EXPLICIT))
+                    .ifPresent(img -> DiscordUtil.sendEmbed(ctx, spec -> spec.setTitle("Here is your cute anime girl:")
+                            .setUrl(img.getSource()).setColor(Nirubot.getColor()).setImage(img.getUrl())));
+        });
+    }
+
 }

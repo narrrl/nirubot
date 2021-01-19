@@ -55,6 +55,14 @@
   description: >
     This command sends random cute nakiri images.
   syntax: "<prefix>nakiri"
+- name: "animepic"
+  description: >
+    This command sends random cute anime images (sfw) based on the given search term.
+  syntax: "<prefix>animepic Search Term..."
+- name: "hentai"
+  description: >
+    This command sends random anime images (nsfw) based on the given search term.
+  syntax: "<prefix>hentai Search Term..."
 # music module
 - name: "play"
   description: >
