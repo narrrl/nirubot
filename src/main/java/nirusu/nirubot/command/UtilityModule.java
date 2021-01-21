@@ -1,10 +1,13 @@
 package nirusu.nirubot.command;
 
+import java.util.List;
+
 import discord4j.core.object.entity.User;
 import nirusu.nirubot.Nirubot;
 import nirusu.nirubot.core.GuildManager;
 import nirusu.nirubot.core.help.HelpCreator;
 import nirusu.nirubot.core.help.CommandMeta.Metadata;
+import nirusu.nirubot.util.DiscordUtil;
 import nirusu.nirucmd.BaseModule;
 import nirusu.nirucmd.annotation.Command;
 
@@ -91,5 +94,18 @@ public class UtilityModule extends BaseModule {
             ctx.getChannel().ifPresent(
                     ch -> ch.createEmbed(specs -> specs.setImage(u.getAvatarUrl().concat("?size=2048"))).block());
         });
+    }
+
+    @Command(key = "invite", description = "Sends a invite for the bot, to invite it to your server")
+    public void invite() {
+        if (!ctx.getArgs().map(List::isEmpty).orElse(false)) {
+            return;
+        }
+
+        DiscordUtil.sendEmbed(ctx, spec -> spec.setTitle("Invite this bot to your server!")
+                .setUrl(String.format("https://discord.com/api/oauth2/authorize?client_id=%d&permissions=8&scope=bot",
+                        ctx.getSelf().map(self -> self.getId().asLong()).orElse(-1L)))
+                .setImage("https://media1.tenor.com/images/b7254b1f7083b0d8088905de997ef5bb/tenor.gif"));
+
     }
 }

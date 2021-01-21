@@ -15,6 +15,10 @@
     This command just makes the bot reply with an estimated ping of the bot to discord.
     Its sole purpose is to know if the bot is responding.
   syntax: "<prefix>ping"
+- name: "invite"
+  description: >
+    This command sends an invite link for the bot.
+  syntax: "<prefix>invite"
 # admin module
 - name: "shutdown"
   description: >
