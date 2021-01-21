@@ -2,12 +2,11 @@ package nirusu.nirubot.command;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import discord4j.core.object.entity.User;
+import discord4j.core.object.entity.channel.TextChannel;
 import nirusu.nirubot.Nirubot;
 import nirusu.nirubot.util.DiscordUtil;
 import nirusu.nirubot.util.RandomHttpClient;
@@ -166,8 +165,11 @@ public class FunModule extends BaseModule {
             List<String> tagList = Gelbooru.searchForTags(List.of(search.split(", "))).stream().map(PostTag::getTagName)
                     .collect(Collectors.toList());
             Gelbooru.getImageFor(new Option.Tag(tagList), Image.Rating.SAFE)
-                    .ifPresent(img -> DiscordUtil.sendEmbed(ctx, spec -> spec.setTitle("Here is your cute anime girl:")
-                            .setUrl(img.getSource()).setColor(Nirubot.getColor()).setImage(img.getUrl())));
+                    .ifPresentOrElse(img -> DiscordUtil.sendEmbed(ctx, spec -> spec.setTitle("Here is your cute anime girl:")
+                            .setUrl(img.getSource()).setColor(Nirubot.getColor()).setImage(img.getUrl())
+                            .setFooter(String.join(", ", img.getTags()),
+                                    ctx.getGuild().map(g -> g.getIconUrl(discord4j.rest.util.Image.Format.PNG)
+                                            .orElse("")).orElse(""))), () -> ctx.reply("Nothing found"));
         });
     }
 
@@ -178,13 +180,44 @@ public class FunModule extends BaseModule {
                 return;
             }
 
+            if (ctx.getChannel().map(ch -> !((TextChannel) ch).isNsfw()).orElse(true)) {
+                return;
+            }
+
             String search = String.join(" ", args);
             List<String> tagList = Gelbooru.searchForTags(List.of(search.split(", "))).stream().map(PostTag::getTagName)
                     .collect(Collectors.toList());
             Gelbooru.getImageFor(new Option.Tag(tagList), Image.Rating.EXPLICIT)
-                    .ifPresent(img -> DiscordUtil.sendEmbed(ctx, spec -> spec.setTitle("Here is your cute anime girl:")
-                            .setUrl(img.getSource()).setColor(Nirubot.getColor()).setImage(img.getUrl())));
+                    .ifPresentOrElse(img -> DiscordUtil.sendEmbed(ctx, spec -> spec.setTitle("Here is your cute anime girl:")
+                            .setUrl(img.getSource()).setColor(Nirubot.getColor()).setImage(img.getUrl())
+                            .setFooter(String.join(", ", img.getTags()),
+                                    ctx.getGuild().map(g -> g.getIconUrl(discord4j.rest.util.Image.Format.PNG)
+                                            .orElse("")).orElse(""))), () -> ctx.reply("Nothing found"));
         });
     }
+
+    @Command(key = { "tags", "tagsearch" }, description = "Gives you information about a searched tag")
+    public void tagsearch() {
+        ctx.getArgs().ifPresent(args -> {
+            if (args.isEmpty()) {
+                return;
+            }
+            String search = String.join(" ", args);
+            Set<PostTag> list = Gelbooru.searchForSimilarTags(search);
+            if (list.isEmpty()) {
+                ctx.reply("Noting found");
+                return;
+            }
+            String desc = list.stream().filter(i -> i.getCount() > 20).sorted(Comparator.comparingInt(PostTag::getCount))
+                    .map(PostTag::toString).collect(Collectors.joining("\n"));
+            String finalList = desc.length() < 2048
+                    ? desc.replace("_", "\\_")
+                    : desc.substring(0, 2048).replace("_", "\\_");
+            DiscordUtil.sendEmbed(ctx, spec -> spec
+                    .setDescription(finalList)
+                    .setColor(Nirubot.getColor()));
+        });
+    }
+
 
 }

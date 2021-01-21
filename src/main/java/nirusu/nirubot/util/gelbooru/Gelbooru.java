@@ -5,9 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import com.google.gson.reflect.TypeToken;
@@ -19,10 +17,12 @@ import nirusu.nirubot.util.gelbooru.Option.Count;
 
 public class Gelbooru {
     private static final String API_URL = "https://gelbooru.com/index.php?page=dapi&s=%s&q=index&json=1&tags=";
-    private static final String RATING_TAG = "rating:";
     private static final String SORT_TAG = "sort:";
     private static final String TAG_SCOPE = "tag";
     private static final String POST_SCOPE = "post";
+    private static final String SORT_BY_COUNT = "&orderby=count";
+    private static final String TAG_NAME_QUERRY = "&name_pattern=";
+
 
     private Gelbooru() {
         throw new IllegalAccessError();
@@ -51,36 +51,46 @@ public class Gelbooru {
         });
     }
 
-    public static Optional<PostTag> searchForTag(String searchTerm) {
-        String optionsString = "&name_pattern=%" + String.join("%", searchTerm.split(" ")) + "%";
-        return getJson(optionsString, TAG_SCOPE).map(js -> {
-            List<PostTag> tags = Nirubot.getGson().fromJson(js, new TypeToken<List<PostTag>>() {
-            }.getType());
-            if (tags.isEmpty()) {
-                return null;
-            }
-            return tags.get(0);
-        });
+    public static Optional<List<PostTag>> searchForTag(String searchTerm) {
+        String normalOptions = "&name=" + searchTerm.replace(" ", "_");
+        String optionsString = TAG_NAME_QUERRY + "%" + String.join("%", searchTerm.split(" ")) + "%";
+        String optionString2 = TAG_NAME_QUERRY + "%" +
+                    List.of(searchTerm.split(" ")).stream()
+                            .sorted(Comparator.reverseOrder())
+                            .collect(Collectors.joining("%")) + "%";
+        return getJson(normalOptions + SORT_BY_COUNT, TAG_SCOPE).map(Gelbooru::convertToList)
+                .or(() -> getJson(optionsString + SORT_BY_COUNT, TAG_SCOPE).map(Gelbooru::convertToList)
+                        .or(() -> getJson(optionString2 + SORT_BY_COUNT, TAG_SCOPE).map(Gelbooru::convertToList)));
+    }
+
+    public static Set<PostTag> searchForSimilarTags(String searchTerm) {
+        Set<PostTag> tagList = new HashSet<>();
+        String normalOptions = "&name=" + searchTerm.replace(" ", "_");
+        String optionsString = TAG_NAME_QUERRY + "%" + String.join("%", searchTerm.split(" ")) + "%";
+        String optionString2 = TAG_NAME_QUERRY + "%" +
+                List.of(searchTerm.split(" ")).stream()
+                        .sorted(Comparator.reverseOrder())
+                        .collect(Collectors.joining("%")) + "%";
+        getJson(normalOptions + SORT_BY_COUNT, TAG_SCOPE).map(Gelbooru::convertToList).ifPresent(tagList::addAll);
+        getJson(optionsString + SORT_BY_COUNT, TAG_SCOPE).map(Gelbooru::convertToList).ifPresent(tagList::addAll);
+        getJson(optionString2 + SORT_BY_COUNT, TAG_SCOPE).map(Gelbooru::convertToList).ifPresent(tagList::addAll);
+        return tagList;
+    }
+
+    private static List<PostTag> convertToList(String json) {
+        return Nirubot.getGson().fromJson(json, new TypeToken<List<PostTag>>() {
+        }.getType());
     }
 
     public static List<PostTag> searchForTags(List<String> searchTerms) {
         List<PostTag> tags = new ArrayList<>();
         for (String s : searchTerms) {
-            getJson("&name=" + s.replace(" ", "_").concat("&orderby=count"), TAG_SCOPE).ifPresentOrElse(js -> {
-                List<PostTag> list = Nirubot.getGson().fromJson(js, new TypeToken<List<PostTag>>() {
-                }.getType());
-                if (list.isEmpty())
+            searchForTag(s).ifPresent(list -> {
+                if (list.isEmpty()) {
                     return;
+                }
                 tags.add(list.get(0));
-            }, () -> getJson("&name_pattern=%" + String.join("%", s.split(" ")) + "%&orderby=count", TAG_SCOPE)
-                    .ifPresent(js -> {
-                        List<PostTag> list = Nirubot.getGson().fromJson(js, new TypeToken<List<PostTag>>() {
-                        }.getType());
-                        if (list.isEmpty()) {
-                            return;
-                        }
-                        tags.add(list.get(0));
-                    })); // beauty
+            });
         }
         return tags;
     }
@@ -97,6 +107,7 @@ public class Gelbooru {
                 json.append(line);
             }
             in.close();
+            con.disconnect();
 
         } catch (IOException e) {
             if (con != null)
