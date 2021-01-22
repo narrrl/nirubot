@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 
 import discord4j.core.object.entity.User;
 import discord4j.core.object.entity.channel.TextChannel;
-import discord4j.rest.util.Image.Format;
 import nirusu.nirubot.Nirubot;
 import nirusu.nirubot.util.DiscordUtil;
 import nirusu.nirubot.util.RandomHttpClient;
@@ -169,9 +168,7 @@ public class FunModule extends BaseModule {
                     .ifPresentOrElse(img -> DiscordUtil.sendEmbed(ctx,
                             spec -> spec.setTitle("Here is your cute anime girl:").setUrl(img.getSource())
                                     .setColor(Nirubot.getColor()).setImage(img.getUrl())
-                                    .setFooter(String.join(", ", img.getTags()), ctx.getGuild()
-                                            .map(g -> g.getIconUrl(Format.PNG).orElse(""))
-                                            .orElse(""))),
+                                    .setFooter(String.join(", ", img.getTags()), null)),
                             () -> ctx.reply("Nothing found"));
         });
     }
@@ -184,7 +181,7 @@ public class FunModule extends BaseModule {
             }
 
             if (ctx.getChannel().map(ch -> ch instanceof TextChannel && !((TextChannel) ch).isNsfw()).orElse(true)) {
-                ctx.reply("Not here, pervert <a:Lewd:393566157287981058>");
+                ctx.reply("Not here, pervert <a:Lewd:802272997792546907>");
                 return;
             }
 
@@ -196,8 +193,7 @@ public class FunModule extends BaseModule {
                             img -> DiscordUtil.sendEmbed(ctx,
                                     spec -> spec.setTitle("Here is your cute anime girl:").setUrl(img.getSource())
                                             .setColor(Nirubot.getColor()).setImage(img.getUrl())
-                                            .setFooter(String.join(", ", img.getTags()), ctx.getGuild()
-                                                    .map(g -> g.getIconUrl(Format.PNG).orElse("")).orElse(""))),
+                                            .setFooter(String.join(", ", img.getTags()), null)),
                             () -> ctx.reply("Nothing found"));
         });
     }
