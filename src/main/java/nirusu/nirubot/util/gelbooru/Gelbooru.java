@@ -23,7 +23,6 @@ public class Gelbooru {
     private static final String SORT_BY_COUNT = "&orderby=count";
     private static final String TAG_NAME_QUERRY = "&name_pattern=";
 
-
     private Gelbooru() {
         throw new IllegalAccessError();
     }
@@ -51,30 +50,26 @@ public class Gelbooru {
         });
     }
 
-    public static Optional<List<PostTag>> searchForTag(String searchTerm) {
-        String normalOptions = "&name=" + searchTerm.replace(" ", "_");
-        String optionsString = TAG_NAME_QUERRY + "%" + String.join("%", searchTerm.split(" ")) + "%";
-        String optionString2 = TAG_NAME_QUERRY + "%" +
-                    List.of(searchTerm.split(" ")).stream()
-                            .sorted(Comparator.reverseOrder())
-                            .collect(Collectors.joining("%")) + "%";
-        return getJson(normalOptions + SORT_BY_COUNT, TAG_SCOPE).map(Gelbooru::convertToList)
-                .or(() -> getJson(optionsString + SORT_BY_COUNT, TAG_SCOPE).map(Gelbooru::convertToList)
-                        .or(() -> getJson(optionString2 + SORT_BY_COUNT, TAG_SCOPE).map(Gelbooru::convertToList)));
+    public static List<PostTag> searchForTag(String searchTerm) {
+        List<String> searchQuerries = getNamePatternsForTagSearchQuerry(searchTerm, true);
+        return searchQuerries.stream().map(str -> getJson(str, TAG_SCOPE)).filter(Optional::isPresent).findFirst()
+                .orElse(Optional.empty()).map(Gelbooru::convertToList).orElse(Collections.emptyList());
     }
 
     public static Set<PostTag> searchForSimilarTags(String searchTerm) {
         Set<PostTag> tagList = new HashSet<>();
-        String normalOptions = "&name=" + searchTerm.replace(" ", "_");
-        String optionsString = TAG_NAME_QUERRY + "%" + String.join("%", searchTerm.split(" ")) + "%";
-        String optionString2 = TAG_NAME_QUERRY + "%" +
-                List.of(searchTerm.split(" ")).stream()
-                        .sorted(Comparator.reverseOrder())
-                        .collect(Collectors.joining("%")) + "%";
-        getJson(normalOptions + SORT_BY_COUNT, TAG_SCOPE).map(Gelbooru::convertToList).ifPresent(tagList::addAll);
-        getJson(optionsString + SORT_BY_COUNT, TAG_SCOPE).map(Gelbooru::convertToList).ifPresent(tagList::addAll);
-        getJson(optionString2 + SORT_BY_COUNT, TAG_SCOPE).map(Gelbooru::convertToList).ifPresent(tagList::addAll);
+        getNamePatternsForTagSearchQuerry(searchTerm, true).forEach(str -> getJson(str.concat(SORT_BY_COUNT), TAG_SCOPE)
+                .map(Gelbooru::convertToList).ifPresent(tagList::addAll));
         return tagList;
+    }
+
+    private static List<String> getNamePatternsForTagSearchQuerry(String userInput, boolean withReversed) {
+        String normalSearch = "&name=" + userInput.replace(" ", "_");
+        String regexSearch = TAG_NAME_QUERRY + "%" + String.join("%", userInput.split(" ")) + "%";
+        String regexSearchReversed = TAG_NAME_QUERRY + "%" + List.of(userInput.split(" ")).stream()
+                .sorted(Comparator.reverseOrder()).collect(Collectors.joining("%")) + "%";
+        return List.of(normalSearch, regexSearch, regexSearchReversed);
+
     }
 
     private static List<PostTag> convertToList(String json) {
@@ -84,14 +79,7 @@ public class Gelbooru {
 
     public static List<PostTag> searchForTags(List<String> searchTerms) {
         List<PostTag> tags = new ArrayList<>();
-        for (String s : searchTerms) {
-            searchForTag(s).ifPresent(list -> {
-                if (list.isEmpty()) {
-                    return;
-                }
-                tags.add(list.get(0));
-            });
-        }
+        searchTerms.stream().map(Gelbooru::searchForTag).forEach(tags::addAll);
         return tags;
     }
 
