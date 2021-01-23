@@ -74,7 +74,7 @@ public class UtilityModule extends BaseModule {
                             : data.getDescription().concat("\nAliases: ").concat(data.getAliases());
                     // foot note is the syntax for that command
                     footNote = data.getSyntax().equals("") ? ""
-                            : "Syntax: `".concat(data.getSyntax().replace("<prefix>", prefix)).concat("`");
+                            : "Syntax: \n`".concat(data.getSyntax().replace("<prefix>", prefix)).concat("`");
                 }
                 // if args size is not right return and do nothing
                 default -> {

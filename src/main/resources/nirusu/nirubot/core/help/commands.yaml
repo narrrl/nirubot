@@ -39,10 +39,10 @@
     - listening
     - competing
     - streaming
-    Where streaming should have a link at the end to the arguments.
+    Where streaming should have a link at the end of the arguments.
   syntax: |
-    "<prefix>activity [watching/listening/competing] Status Message..."
-    "<prefix>activity streaming Status Message... <url>"
+    <prefix>activity [watching/listening/competing] Status Message...
+    <prefix>activity streaming Status Message... <url>
 # fun module
 - name: "neko"
   description: >

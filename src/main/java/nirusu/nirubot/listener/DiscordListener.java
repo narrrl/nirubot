@@ -8,7 +8,6 @@ import discord4j.core.event.domain.lifecycle.ReadyEvent;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.User;
-import discord4j.core.object.presence.Presence;
 import discord4j.core.shard.ShardingStrategy;
 import discord4j.discordjson.json.gateway.StatusUpdate;
 import nirusu.nirubot.Nirubot;
@@ -32,7 +31,6 @@ public class DiscordListener implements NiruListener {
         client.getEventDispatcher().on(MessageCreateEvent.class).subscribe(this::onMessageRecievedEvent);
         List<String> status = new ArrayList<>(List.of(conf.getActivityType()));
         status.addAll(Arrays.asList(conf.getActivity().split(" ")));
-        status.forEach(Nirubot::info);
         DiscordUtil.getActivityUpdateRequest(status)
                 .ifPresent(req -> client.updatePresence(
                         StatusUpdate.builder().afk(false).status("").activities(Collections.singletonList(req)).build())
