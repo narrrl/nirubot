@@ -32,6 +32,17 @@
   description: >
     This command sets the prefix for a guild. You need administrator to set the new prefix.
   syntax: "<prefix>prefix <new prefix>"
+- name: "activity"
+  description: |
+    This command sets the activity of the bot. There are 4 different types of Activities:
+    - watching
+    - listening
+    - competing
+    - streaming
+    Where streaming should have a link at the end to the arguments.
+  syntax: |
+    "<prefix>activity [watching/listening/competing] Status Message..."
+    "<prefix>activity streaming Status Message... <url>"
 # fun module
 - name: "neko"
   description: >

@@ -1,7 +1,6 @@
 package nirusu.nirubot.listener;
 
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 import discord4j.core.DiscordClient;
 import discord4j.core.GatewayDiscordClient;
@@ -9,10 +8,13 @@ import discord4j.core.event.domain.lifecycle.ReadyEvent;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.User;
+import discord4j.core.object.presence.Presence;
 import discord4j.core.shard.ShardingStrategy;
+import discord4j.discordjson.json.gateway.StatusUpdate;
 import nirusu.nirubot.Nirubot;
 import nirusu.nirubot.core.Config;
 import nirusu.nirubot.core.GuildManager;
+import nirusu.nirubot.util.DiscordUtil;
 import nirusu.nirucmd.CommandContext;
 import nirusu.nirucmd.CommandToRun;
 
@@ -28,6 +30,13 @@ public class DiscordListener implements NiruListener {
                 .subscribe(event -> Nirubot.info("Logged in as {}", event.getSelf().getUsername()));
 
         client.getEventDispatcher().on(MessageCreateEvent.class).subscribe(this::onMessageRecievedEvent);
+        List<String> status = new ArrayList<>(List.of(conf.getActivityType()));
+        status.addAll(Arrays.asList(conf.getActivity().split(" ")));
+        status.forEach(Nirubot::info);
+        DiscordUtil.getActivityUpdateRequest(status)
+                .ifPresent(req -> client.updatePresence(
+                        StatusUpdate.builder().afk(false).status("").activities(Collections.singletonList(req)).build())
+                        .block());
         client.onDisconnect().block();
 
     }
@@ -63,8 +72,7 @@ public class DiscordListener implements NiruListener {
         if (raw.startsWith(prefix) && raw.length() > prefix.length()) {
             // create the CommandContext
             String[] userInput = raw.substring(prefix.length()).split("\\s+");
-            ctx.setArgsAndKey(userInput,
-                    userInput[0], true);
+            ctx.setArgsAndKey(userInput, userInput[0], true);
             CommandToRun cmd = Nirubot.getNirubot().getDispatcher().getCommand(ctx, ctx.getKey());
             cmd.run();
         } else if (ctx.getSelf().map(self -> mes.getUserMentionIds().contains(self.getId())).orElse(false)) {

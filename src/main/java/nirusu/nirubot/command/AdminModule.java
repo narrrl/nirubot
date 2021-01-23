@@ -3,6 +3,7 @@ package nirusu.nirubot.command;
 import discord4j.rest.util.Permission;
 import nirusu.nirubot.Nirubot;
 import nirusu.nirubot.core.GuildManager;
+import nirusu.nirubot.util.DiscordUtil;
 import nirusu.nirucmd.BaseModule;
 import nirusu.nirucmd.annotation.Command;
 
@@ -35,6 +36,19 @@ public class AdminModule extends BaseModule {
             }
             ctx.reply(String.format("Changed prefix to %s", args.get(0)));
         }));
+    }
+
+    @Command(key = { "activity",
+            "activ" }, description = "Sets the playing/listening/streaming/watching activity for the bot")
+    public void activity() {
+        ctx.getArgs().ifPresent(args -> {
+            if (!Nirubot.isOwner(ctx.getAuthor().map(a -> a.getId().asLong()).orElse(-1L))) {
+                return;
+            }
+
+            DiscordUtil.getActivityUpdateRequest(args).ifPresentOrElse(req -> DiscordUtil.setActivity(ctx, req),
+                    () -> ctx.reply("Invalid activity type!"));
+        });
     }
 
 }

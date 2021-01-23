@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import discord4j.core.object.entity.User;
 import discord4j.core.object.entity.channel.TextChannel;
+import discord4j.rest.util.Permission;
 import nirusu.nirubot.Nirubot;
 import nirusu.nirubot.util.DiscordUtil;
 import nirusu.nirubot.util.RandomHttpClient;
@@ -48,6 +49,11 @@ public class FunModule extends BaseModule {
             builder.append(c);
         }
         ctx.reply(builder.toString());
+        ctx.getSelfMember().ifPresent(u -> u.getBasePermissions().blockOptional().ifPresent(perms -> {
+            if (perms.contains(Permission.MANAGE_MESSAGES)) {
+                ctx.getEvent().getMessage().delete().block();
+            }
+        }));
     }
 
     @Command(key = { "ytd", "youtubedl", "youtubedownload",
@@ -164,12 +170,12 @@ public class FunModule extends BaseModule {
             String search = String.join(" ", args);
             List<String> tagList = Gelbooru.searchForTags(List.of(search.split(", "))).stream().map(PostTag::getTagName)
                     .collect(Collectors.toList());
-            Gelbooru.getImageFor(new Option.Tag(tagList), Image.Rating.SAFE)
-                    .ifPresentOrElse(img -> DiscordUtil.sendEmbed(ctx,
+            Gelbooru.getImageFor(new Option.Tag(tagList), Image.Rating.SAFE).ifPresentOrElse(
+                    img -> DiscordUtil.sendEmbed(ctx,
                             spec -> spec.setTitle("Here is your cute anime girl:").setUrl(img.getSource())
                                     .setColor(Nirubot.getColor()).setImage(img.getUrl())
                                     .setFooter(String.join(", ", img.getTags()), null)),
-                            () -> ctx.reply("Nothing found"));
+                    () -> ctx.reply("Nothing found"));
         });
     }
 
@@ -188,13 +194,12 @@ public class FunModule extends BaseModule {
             String search = String.join(" ", args);
             List<String> tagList = Gelbooru.searchForTags(List.of(search.split(", "))).stream().map(PostTag::getTagName)
                     .collect(Collectors.toList());
-            Gelbooru.getImageFor(new Option.Tag(tagList), Image.Rating.EXPLICIT)
-                    .ifPresentOrElse(
-                            img -> DiscordUtil.sendEmbed(ctx,
-                                    spec -> spec.setTitle("Here is your cute anime girl:").setUrl(img.getSource())
-                                            .setColor(Nirubot.getColor()).setImage(img.getUrl())
-                                            .setFooter(String.join(", ", img.getTags()), null)),
-                            () -> ctx.reply("Nothing found"));
+            Gelbooru.getImageFor(new Option.Tag(tagList), Image.Rating.EXPLICIT).ifPresentOrElse(
+                    img -> DiscordUtil.sendEmbed(ctx,
+                            spec -> spec.setTitle("Here is your cute anime girl:").setUrl(img.getSource())
+                                    .setColor(Nirubot.getColor()).setImage(img.getUrl())
+                                    .setFooter(String.join(", ", img.getTags()), null)),
+                    () -> ctx.reply("Nothing found"));
         });
     }
 
