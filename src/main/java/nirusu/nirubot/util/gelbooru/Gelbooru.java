@@ -69,7 +69,6 @@ public class Gelbooru {
         String regexSearchReversed = TAG_NAME_QUERRY + "%" + List.of(userInput.split(" ")).stream()
                 .sorted(Comparator.reverseOrder()).collect(Collectors.joining("%")) + "%";
         return List.of(normalSearch, regexSearch, regexSearchReversed);
-
     }
 
     private static List<PostTag> convertToList(String json) {

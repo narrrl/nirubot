@@ -1,5 +1,9 @@
 package nirusu.nirubot.command;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.time.Instant;
 import java.util.List;
 
 import discord4j.core.object.entity.User;
@@ -12,6 +16,11 @@ import nirusu.nirucmd.BaseModule;
 import nirusu.nirucmd.annotation.Command;
 
 public class UtilityModule extends BaseModule {
+    private static final String JAVA_VERSION = System.getProperty("java.version");
+    private static final String OS = String.format("%s - %s", System.getProperty("os.name"),
+            System.getProperty("os.version"));
+    private static final String ARCH = System.getProperty("os.arch");
+    private static final int MAX_PROCS = Runtime.getRuntime().availableProcessors();
 
     @Command(key = "ping", description = "This command pings the bot")
     public void ping() {
@@ -107,5 +116,60 @@ public class UtilityModule extends BaseModule {
                         ctx.getSelf().map(self -> self.getId().asLong()).orElse(-1L)))
                 .setImage("https://media1.tenor.com/images/b7254b1f7083b0d8088905de997ef5bb/tenor.gif"));
 
+    }
+
+    @Command(key = "info", description = "Get the current application informations")
+    public void info() {
+        ctx.getArgs().ifPresent(args -> {
+            if (!args.isEmpty()) {
+                return;
+            }
+
+            DiscordUtil.sendEmbed(ctx, spec -> spec.setTitle(ctx.getSelf().map(User::getUsername).orElse(""))
+                    .setDescription(getApplicationInfo()).setColor(Nirubot.getColor())
+                    .setThumbnail(ctx.getSelf().map(User::getAvatarUrl).orElse("")).setTimestamp(Instant.now()));
+
+        });
+    }
+
+    private synchronized String getApplicationInfo() {
+        StringBuilder owners = new StringBuilder();
+        for (long l : Nirubot.getConfig().getOwners()) {
+            owners.append("<@").append(l).append(">").append(", ");
+        }
+        String ownerString = owners.length() < 2 ? "" : owners.substring(0, owners.length() - 2);
+        int load = 0;
+        try {
+            String[] cmdline = { "sh", "-c", "echo $(vmstat 1 2|tail -1|awk '{print $15}')" };
+            Process pr = Runtime.getRuntime().exec(cmdline);
+            StringBuilder output = new StringBuilder();
+            try (BufferedReader stdInput = new BufferedReader(new InputStreamReader(pr.getInputStream()))) {
+                // Read the output from the command
+                String s = null;
+                while ((s = stdInput.readLine()) != null) {
+                    output.append(s);
+                }
+            }
+            load = 100 - Integer.parseInt(output.toString());
+        } catch (IOException | NumberFormatException e) {
+            e.printStackTrace();
+        }
+        String loadString = getUsageBar(load);
+        return String.format(
+                "**Java Version:** %s%n**OS:** %s%n**Bot-Owner:** %s%n**Used Memory:** %dMb%n**Cores:** %d%n**Architecture:** %s%n**CPU-Usage:** %s",
+                JAVA_VERSION, OS,  ownerString, ((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1000000),
+                MAX_PROCS, ARCH, load + "%\n" + loadString);
+    }
+
+    private String getUsageBar(int usage) {
+        StringBuilder usageBar = new StringBuilder();
+        for (int i = 10; i <= 100; i += 10) {
+            if (i <= usage) {
+                usageBar.append("█");
+            } else {
+                usageBar.append("░");
+            }
+        }
+        return usageBar.toString();
     }
 }

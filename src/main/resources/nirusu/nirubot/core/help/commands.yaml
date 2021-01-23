@@ -19,6 +19,10 @@
   description: >
     This command sends an invite link for the bot.
   syntax: "<prefix>invite"
+- name: "info"
+  description: >
+    This command prints out some information about this application
+  syntax: "<prefix>info"
 # admin module
 - name: "shutdown"
   description: >
