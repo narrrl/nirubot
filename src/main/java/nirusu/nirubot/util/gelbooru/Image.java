@@ -2,12 +2,15 @@ package nirusu.nirubot.util.gelbooru;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.Set;
+
 public class Image {
     private String source;
     private String tags;
     @SerializedName("file_url")
     private String url;
     private String rating;
+    private Long id;
 
     public String getSource() {
         return source;
@@ -24,6 +27,15 @@ public class Image {
     public Rating getRating() {
         return Rating.of(rating);
     }
+
+    public boolean hasTag(String tag) {
+        return Set.of(getTags()).contains(tag);
+    }
+
+    public String getPostUrl() {
+        return String.format("https://gelbooru.com/index.php?page=post&s=view&id=%d", id);
+    }
+
 
     public enum Rating {
         SAFE("s"), QUESTIONABLE("q"), EXPLICIT("e"), UNKNOWN("u");

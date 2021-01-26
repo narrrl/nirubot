@@ -191,11 +191,7 @@ public class FunModule extends BaseModule {
             String search = String.join(" ", args);
             List<String> tagList = Gelbooru.searchForTags(List.of(search.split(", "))).stream().map(PostTag::getTagName)
                     .collect(Collectors.toList());
-            Gelbooru.getImageFor(new Option.Tag(tagList), Image.Rating.SAFE).ifPresentOrElse(
-                    img -> DiscordUtil.sendEmbed(ctx,
-                            spec -> spec.setTitle("Here is your cute anime girl:").setUrl(img.getSource())
-                                    .setColor(Nirubot.getColor()).setImage(img.getUrl())
-                                    .setFooter(String.join(", ", img.getTags()), "")),
+            Gelbooru.getImageFor(new Option.Tag(tagList), Image.Rating.SAFE).ifPresentOrElse(this::sendImageToDiscord,
                     () -> ctx.reply("Nothing found"));
         });
     }
@@ -215,36 +211,25 @@ public class FunModule extends BaseModule {
             String search = String.join(" ", args);
             List<String> tagList = Gelbooru.searchForTags(List.of(search.split(", "))).stream().map(PostTag::getTagName)
                     .collect(Collectors.toList());
-            Gelbooru.getImageFor(new Option.Tag(tagList), Image.Rating.EXPLICIT).ifPresentOrElse(
-                    img -> DiscordUtil.sendEmbed(ctx,
-                            spec -> spec.setTitle("Here is your cute anime girl:").setUrl(img.getSource())
-                                    .setColor(Nirubot.getColor()).setImage(img.getUrl())
-                                    .setFooter(String.join(", ", img.getTags()), "")),
-                    () -> ctx.reply("Nothing found"));
-        });
-    }
-
-    @Command(key = { "tags", "tagsearch" }, description = "Gives you information about a searched tag")
-    public void tagsearch() {
-        ctx.getArgs().ifPresent(args -> {
-            if (args.isEmpty()) {
-                return;
-            }
-            String search = String.join(" ", args);
-            Set<PostTag> list = Gelbooru.searchForSimilarTags(search);
-            if (list.isEmpty()) {
+            if (tagList.isEmpty()) {
                 ctx.reply("Noting found");
                 return;
             }
-            String desc = list.stream().filter(i -> i.getCount() > 20)
-                    .sorted(Comparator.comparingInt(PostTag::getCount)).map(PostTag::toString)
-                    .collect(Collectors.joining("\n"));
-            String finalList = desc.length() < 2048 ? desc.replace("_", "\\_")
-                    : desc.substring(0, 2048).replace("_", "\\_");
-            DiscordUtil.sendEmbed(ctx, spec -> spec.setDescription(finalList).setColor(Nirubot.getColor()));
+            Gelbooru.getImageFor(new Option.Tag(tagList), Image.Rating.EXPLICIT)
+                    .ifPresentOrElse(this::sendImageToDiscord, () -> ctx.reply("Nothing found"));
         });
     }
 
+    private void sendImageToDiscord(Image img) {
+        if (img.hasTag("video")) {
+            ctx.reply(img.getUrl());
+            return;
+        }
+        DiscordUtil.sendEmbed(ctx,
+                spec -> spec.setTitle("Here is your cute anime girl:").setUrl(img.getPostUrl())
+                        .setColor(Nirubot.getColor()).setImage(img.getUrl())
+                        .setFooter(String.format("Source: %s", img.getSource()), ""));
+    }
 
     @Command(key = "ping", description = "This command pings the bot")
     public void ping() {
@@ -289,7 +274,8 @@ public class FunModule extends BaseModule {
                 case 2 -> {
                     // get meta data for command
                     CommandMeta.Metadata data = h.getModuleWithName(args.get(0))
-                            .map(module -> h.metadataForCommand(module, args.get(1))).orElse(new CommandMeta.Metadata().setName("")
+                            .map(module -> h.metadataForCommand(module, args.get(1)))
+                            .orElse(new CommandMeta.Metadata().setName("")
                                     .setDescription(String.format("No module %s found", args.get(0))).setSyntax(""));
                     // set title for embed
                     title = String.format("Help for Command %s", args.get(1));
@@ -381,8 +367,9 @@ public class FunModule extends BaseModule {
         String loadString = getUsageBar(load);
         return String.format(
                 "**Java Version:** %s%n**OS:** %s%n**Bot-Owner:** %s%n**Used Memory:** %dMb%n**Cores:** %d%n**Architecture:** %s%n**CPU-Usage:** %s",
-                JAVA_VERSION, OS,  ownerString, ((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1000000),
-                MAX_PROCS, ARCH, load + "%\n" + loadString);
+                JAVA_VERSION, OS, ownerString,
+                ((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1000000), MAX_PROCS, ARCH,
+                load + "%\n" + loadString);
     }
 
     private String getUsageBar(int usage) {
