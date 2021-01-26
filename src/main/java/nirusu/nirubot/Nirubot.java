@@ -4,6 +4,9 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
@@ -14,6 +17,7 @@ import com.google.gson.Gson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import discord4j.common.util.Snowflake;
 import discord4j.rest.util.Color;
 import nirusu.nirubot.core.Config;
 import nirusu.nirubot.core.help.CommandMeta;
@@ -39,6 +43,7 @@ public class Nirubot extends AbstractIdleService {
     private final CommandDispatcher dispatcher;
     private final HelpCreator helpCreator;
     private final CommandMeta metadata;
+    private final Set<Snowflake> downloadingUsers;
 
     public static Nirubot getNirubot() {
         if (bot == null) {
@@ -91,6 +96,7 @@ public class Nirubot extends AbstractIdleService {
             .addPackage("nirusu.nirubot.command").build();
         helpCreator = new HelpCreator(dispatcher.getModules());
         metadata = CommandMeta.getMetadataForCommands();
+        downloadingUsers = new HashSet<>();
     }
 
     public static void main(String[] args) {
@@ -182,6 +188,18 @@ public class Nirubot extends AbstractIdleService {
         return Color.of(0, 153, 255);
     }
 
+    public boolean userIsDownloading(Snowflake id) {
+        return downloadingUsers.contains(id);
+    }
+
+    public boolean userStartedDownload(Snowflake id) {
+        return downloadingUsers.add(id);
+    }
+
+    public boolean userFinishedDownload(Snowflake id) {
+        return downloadingUsers.remove(id);
+    }
+
     public void exit() {
         shutDown();
         // fuck you bot
@@ -208,7 +226,7 @@ public class Nirubot extends AbstractIdleService {
 	public static String getHost() {
 		return getConfig().getHost();
     }
-    
+
     public CommandDispatcher getDispatcher() {
         return this.dispatcher;
     }

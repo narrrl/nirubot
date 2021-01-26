@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import com.google.api.services.youtube.YouTube;
@@ -136,9 +137,11 @@ public class MusicModule extends BaseModule {
                 return;
             }
             GuildMusicManager manager = GuildMusicManager.of(guild.getId());
-            disconnectChannel();
+            CompletableFuture<Boolean> future = CompletableFuture.supplyAsync(this::disconnectChannel);
+            while(!future.isDone()) {
+                // wait for completion
+            }
             joinChannel(manager);
-
         });
     }
 
@@ -439,15 +442,15 @@ public class MusicModule extends BaseModule {
         return str.chars().allMatch(i -> (i >= '0' && i <= '9'));
     }
 
-    private void joinChannel(GuildMusicManager manager) {
+    private synchronized void joinChannel(GuildMusicManager manager) {
         ctx.getAuthorVoiceState().flatMap(state -> state.getChannel().blockOptional())
                 .ifPresent(ch -> ch.join(spec -> spec.setProvider(manager.getProvider())).block());
         ctx.getGuild().ifPresent(guild -> manager.setVolume(GuildManager.of(guild.getId()).volume()));
     }
 
-    private void disconnectChannel() {
-        ctx.getSelfVoiceState().flatMap(state -> state.getChannel().blockOptional())
-                .ifPresent(ch -> ch.sendDisconnectVoiceState().block());
+    private synchronized boolean disconnectChannel() {
+        return ctx.getSelfVoiceState().flatMap(state -> state.getChannel().blockOptional())
+                .map(ch -> { ch.sendDisconnectVoiceState().block(); return true; } ).orElse(false);
     }
 
     private void playYouTubeVideo(GuildMusicManager manager, YouTubeVideo video, boolean loadAsNext) {
