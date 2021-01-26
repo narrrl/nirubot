@@ -137,10 +137,6 @@ public class MusicModule extends BaseModule {
                 return;
             }
             GuildMusicManager manager = GuildMusicManager.of(guild.getId());
-            CompletableFuture<Boolean> future = CompletableFuture.supplyAsync(this::disconnectChannel);
-            while(!future.isDone()) {
-                // wait for completion
-            }
             joinChannel(manager);
         });
     }
