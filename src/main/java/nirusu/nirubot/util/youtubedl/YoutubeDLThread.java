@@ -35,7 +35,7 @@ public final class YoutubeDLThread extends Thread {
         } catch (InvalidYoutubeDlException e) {
             this.isRunning = false;
             if (e.getMessage() != null) {
-                ctx.reply(String.format("Error: %s", e.getMessage()));
+                ctx.reply(e.getMessage());
             } else {
                 e.printStackTrace();
             }
