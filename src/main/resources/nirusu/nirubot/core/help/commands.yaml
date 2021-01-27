@@ -4,7 +4,7 @@
     Sends a full sized version of the avatar of the tagged user.
   syntax: "<prefix>avatar <user>"
 - name: "help"
-  description: > 
+  description: >
     This command helps you to understand the bot better.
     Without any arguments it lists all available modules.
     If you specify a module it lists all commands in that module.
@@ -109,7 +109,7 @@
   syntax: "<prefix>repeat"
 - name: "pause"
   description: >
-    Toggle the current playback (pause/resume). 
+    Toggle the current playback (pause/resume).
   syntax: "<prefix>pause/repeat"
 - name: "playing"
   description: >
