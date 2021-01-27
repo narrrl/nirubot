@@ -37,7 +37,9 @@ public class RecruitmentCalculator {
 
         // gets parsed by Gson
         try {
-            list = Nirubot.getGson().fromJson(Files.readString(opList.toPath(), StandardCharsets.UTF_8), new TypeToken<List<Operator>>(){}.getType());
+            list = Nirubot.getGson().fromJson(Files.readString(opList.toPath(), StandardCharsets.UTF_8),
+                    new TypeToken<List<Operator>>() {
+                    }.getType());
         } catch (JsonSyntaxException | IOException e) {
             throw new IllegalArgumentException("Couldn't read operator list");
         }
@@ -46,20 +48,22 @@ public class RecruitmentCalculator {
     }
 
     /**
-     * Calculates all possible combinations with fitting operators.
-     * Tags dont have to be formatted right, because they're getting converted anyway.
-     * @param userInput the tags as list
+     * Calculates all possible combinations with fitting operators. Tags dont have
+     * to be formatted right, because they're getting converted anyway.
+     * 
+     * @param userInput  the tags as list
      * @param totalInput all tags as one big string
-     * @return a sorted list from worst to best of {@link nirusu.nirubot.util.arknight.TagCombination}
+     * @return a sorted list from worst to best of
+     *         {@link nirusu.nirubot.util.arknight.TagCombination}
      */
     public List<TagCombination> calculate(@Nonnull final List<String> userInput, final String totalInput) {
         // convert the tags first because users input might be wrong
-        // everything gets converted to upper case and spaced are swapped with underscore
+        // everything gets converted to upper case and spaced are swapped with
+        // underscore
         List<String> tags = Operator.convertTags(userInput, totalInput);
 
         // create set to prevent duplicates
         HashSet<TagCombination> tagCombinations = getCombinations(tags);
-
 
         // add operator who have the tags
         for (TagCombination cb : tagCombinations) {
@@ -80,7 +84,8 @@ public class RecruitmentCalculator {
         toRemove.forEach(tagCombinations::remove);
 
         // sort list from worst to best and return
-        return tagCombinations.stream().sorted(Comparator.comparingDouble(TagCombination::getAvgRarity)).collect(Collectors.toList());
+        return tagCombinations.stream().sorted(Comparator.comparingDouble(TagCombination::getAvgRarity))
+                .collect(Collectors.toList());
     }
 
     public static List<String> formatForDiscord(List<TagCombination> tags) {
@@ -120,6 +125,5 @@ public class RecruitmentCalculator {
         }
         return tagCombinations;
     }
-
 
 }

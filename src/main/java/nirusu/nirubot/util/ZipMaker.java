@@ -15,8 +15,7 @@ public class ZipMaker {
         throw new IllegalAccessError();
     }
 
-    public static File compressFiles(List<File> files, final String name, final File tmpDir) 
-        throws IOException {        
+    public static File compressFiles(List<File> files, final String name, final File tmpDir) throws IOException {
 
         tmpDir.mkdir();
 
@@ -44,9 +43,8 @@ public class ZipMaker {
 
                 }
             }
-        }   
+        }
         fos.close();
-
 
         return out;
     }

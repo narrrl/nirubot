@@ -25,9 +25,8 @@ public class CommandMeta {
         ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
         mapper.findAndRegisterModules();
         try {
-            commands = mapper.readValue(CommandMeta.class.getResourceAsStream("commands.yaml"),
-                    new TypeReference<>() {
-                    });
+            commands = mapper.readValue(CommandMeta.class.getResourceAsStream("commands.yaml"), new TypeReference<>() {
+            });
         } catch (IOException e) {
             Nirubot.error(ERROR_ON_FAILURE, e);
             throw new IllegalArgumentException();
@@ -82,7 +81,8 @@ public class CommandMeta {
         }
 
         public String getAliases() {
-            if (aliases == null) return "";
+            if (aliases == null)
+                return "";
             return String.join(", ", this.aliases);
         }
 

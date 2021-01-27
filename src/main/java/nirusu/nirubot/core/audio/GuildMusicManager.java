@@ -36,7 +36,6 @@ public class GuildMusicManager {
     private final TrackScheduler scheduler;
     private final D4jAudioProvider provider;
 
-
     private GuildMusicManager() {
         player = PLAYER_MANAGER.createPlayer();
         scheduler = new TrackScheduler(player);
@@ -69,18 +68,18 @@ public class GuildMusicManager {
         player.setVolume(real);
     }
 
-	public void loadAndPlay(String link, CommandContext ctx) {
+    public void loadAndPlay(String link, CommandContext ctx) {
         ResultHandler handler = new ResultHandler.Builder(this).setCTX(ctx).build();
         PLAYER_MANAGER.loadItemOrdered(this, link, handler);
     }
-    
+
     public void loadAndPlayNext(String link, CommandContext ctx) {
         ResultHandler handler = new ResultHandler.Builder(this).setCTX(ctx).setPlayAsNext(true).build();
         PLAYER_MANAGER.loadItemOrdered(this, link, handler);
     }
 
-	public static void destroy(Snowflake id) {
+    public static void destroy(Snowflake id) {
         GuildMusicManager manager = MANAGERS.remove(id);
         manager.player.destroy();
-	}
+    }
 }

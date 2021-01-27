@@ -22,12 +22,12 @@ public class TrackScheduler extends AudioEventAdapter {
     private final AudioPlayer player;
     private boolean repeat;
 
-  public TrackScheduler(final AudioPlayer player) {
-    // The queue may be modifed by different threads so guarantee memory safety
-    // This does not, however, remove several race conditions currently present
-    queue = Collections.synchronizedList(new LinkedList<>());
-    this.player = player;
-  }
+    public TrackScheduler(final AudioPlayer player) {
+        // The queue may be modifed by different threads so guarantee memory safety
+        // This does not, however, remove several race conditions currently present
+        queue = Collections.synchronizedList(new LinkedList<>());
+        this.player = player;
+    }
 
     public List<AudioTrack> getQueue() {
         return Collections.unmodifiableList(queue);

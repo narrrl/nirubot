@@ -6,8 +6,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.stream.Stream;
 
 import com.google.api.client.http.javanet.NetHttpTransport;
@@ -19,7 +17,6 @@ import com.google.gson.Gson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import discord4j.common.util.Snowflake;
 import discord4j.rest.util.Color;
 import nirusu.nirubot.core.Config;
 import nirusu.nirubot.core.help.CommandMeta;
@@ -45,7 +42,6 @@ public class Nirubot extends AbstractIdleService {
     private final CommandDispatcher dispatcher;
     private final HelpCreator helpCreator;
     private final CommandMeta metadata;
-    private final Set<Snowflake> downloadingUsers;
 
     public static Nirubot getNirubot() {
         if (bot == null) {
@@ -97,11 +93,9 @@ public class Nirubot extends AbstractIdleService {
     public Nirubot() {
         super();
         listeners = new ArrayList<>();
-        dispatcher = new CommandDispatcher.Builder()
-            .addPackage("nirusu.nirubot.command").build();
+        dispatcher = new CommandDispatcher.Builder().addPackage("nirusu.nirubot.command").build();
         helpCreator = new HelpCreator(dispatcher.getModules());
         metadata = CommandMeta.getMetadataForCommands();
-        downloadingUsers = new HashSet<>();
     }
 
     public static void main(String[] args) {
@@ -197,18 +191,6 @@ public class Nirubot extends AbstractIdleService {
         return Color.of(0, 153, 255);
     }
 
-    public boolean userIsDownloading(Snowflake id) {
-        return downloadingUsers.contains(id);
-    }
-
-    public boolean userStartedDownload(Snowflake id) {
-        return downloadingUsers.add(id);
-    }
-
-    public boolean userFinishedDownload(Snowflake id) {
-        return downloadingUsers.remove(id);
-    }
-
     public void exit() {
         shutDown();
         // fuck you bot
@@ -232,8 +214,8 @@ public class Nirubot extends AbstractIdleService {
         return yt;
     }
 
-	public static String getHost() {
-		return getConfig().getHost();
+    public static String getHost() {
+        return getConfig().getHost();
     }
 
     public CommandDispatcher getDispatcher() {
@@ -254,13 +236,13 @@ public class Nirubot extends AbstractIdleService {
         dir.mkdirs();
     }
 
-	public static String getTmpDirPath() {
-		return getConfig().getTmpDirPath();
+    public static String getTmpDirPath() {
+        return getConfig().getTmpDirPath();
     }
 
-
     public static void deleteRecursive(final File dir) throws IOException {
-        if (!dir.exists()) return;
+        if (!dir.exists())
+            return;
         if (!dir.isDirectory()) {
             try {
                 Files.delete(dir.toPath());
@@ -270,7 +252,13 @@ public class Nirubot extends AbstractIdleService {
 
         } else {
             try (Stream<Path> stream = Files.walk(dir.toPath())) {
-                stream.sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
+                stream.sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(f -> {
+                    try {
+                        Files.delete(f.toPath());
+                    } catch (IOException e) {
+                        error(e.getMessage(), e);
+                    }
+                });
             }
         }
     }

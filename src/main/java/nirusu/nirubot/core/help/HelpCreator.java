@@ -16,7 +16,7 @@ public class HelpCreator {
     private final Map<String, Class<? extends BaseModule>> modulesMap;
     private final CommandMeta metadata = CommandMeta.getMetadataForCommands();
     private static final Metadata INVALID = new Metadata().setName("").setSyntax("")
-                                            .setDescription("Command not found");
+            .setDescription("Command not found");
 
     public HelpCreator(@Nonnull Set<Class<? extends BaseModule>> modules) {
         modulesMap = new HashMap<>();
@@ -25,11 +25,11 @@ public class HelpCreator {
         }
     }
 
-
     public Metadata metadataForCommand(Class<? extends BaseModule> module, String key) {
         for (Method m : module.getMethods()) {
             if (commandContainsKey(m, key)) {
-                return metadata.getMetadataForName(m.getName()).map(meta -> meta.setAliases(getAliasesForCommand(m))).orElse(INVALID);
+                return metadata.getMetadataForName(m.getName()).map(meta -> meta.setAliases(getAliasesForCommand(m)))
+                        .orElse(INVALID);
             }
         }
         return INVALID;

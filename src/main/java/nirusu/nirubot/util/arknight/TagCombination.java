@@ -45,10 +45,11 @@ public class TagCombination implements Comparable<TagCombination> {
 
     /**
      * Checks if a operator is a possibility for given tag combination
+     * 
      * @param o the operator
      * @return true if operator has the right tags
      */
-	public boolean accepts(Operator o) {
+    public boolean accepts(Operator o) {
         for (String tag : tags) {
             if (!o.hasTag(tag)) {
                 return false;
@@ -58,7 +59,7 @@ public class TagCombination implements Comparable<TagCombination> {
         // you cant get an 6 star without TOP_OPERATOR tag
         return o.getRarity() != 6 || tags.contains("TOP_OPERATOR");
     }
-    
+
     @Override
     public boolean equals(Object o) {
         if (o == null) {
@@ -71,14 +72,15 @@ public class TagCombination implements Comparable<TagCombination> {
         return this.hashCode() - cb.hashCode() == 0;
     }
 
-	public boolean hasOperator() {
-		return !possibleOperator.isEmpty();
+    public boolean hasOperator() {
+        return !possibleOperator.isEmpty();
     }
-    
+
     @Override
     public String toString() {
         StringBuilder out = new StringBuilder();
-        List<Operator> ops = possibleOperator.stream().sorted(Comparator.comparingInt(Operator::getRarity)).collect(Collectors.toList());
+        List<Operator> ops = possibleOperator.stream().sorted(Comparator.comparingInt(Operator::getRarity))
+                .collect(Collectors.toList());
         out.append("**");
         tags.forEach(str -> out.append(str).append(","));
         out.replace(out.length() - 1, out.length(), "");
@@ -90,7 +92,8 @@ public class TagCombination implements Comparable<TagCombination> {
     // when the embed is bigger than 2048 because of hyperlinks
     public List<String> toStringAsList() {
         List<String> strings = new ArrayList<>();
-        List<Operator> ops = possibleOperator.stream().sorted(Comparator.comparingInt(Operator::getRarity)).collect(Collectors.toList());
+        List<Operator> ops = possibleOperator.stream().sorted(Comparator.comparingInt(Operator::getRarity))
+                .collect(Collectors.toList());
         StringBuilder str = new StringBuilder();
         str.append("\n**");
         tags.forEach(tagsStr -> str.append(tagsStr).append(","));
@@ -139,5 +142,5 @@ public class TagCombination implements Comparable<TagCombination> {
         return lowest + ((float) highest / 10);
 
     }
-    
+
 }

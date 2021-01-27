@@ -70,7 +70,8 @@ public final class YoutubeDLThread extends Thread {
     private long computeFileSize(File f) {
         long size = 0;
         if (f.isDirectory()) {
-            // be careful if you have more than 9 exabytes of storage. Could produce overflow then.
+            // be careful if you have more than 9 exabytes of storage. Could produce
+            // overflow then.
             size = Stream.of(f.listFiles()).map(File::length).reduce(0L, (a, b) -> a + b);
         } else {
             size = f.length();

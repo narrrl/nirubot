@@ -51,23 +51,27 @@ public class Gelbooru {
     }
 
     public static Optional<PostTag> searchForTag(String searchTerm) {
-        return searchWithoutPattern(searchTerm).or(() -> searchWithPattern(searchTerm)).or(() -> searchWithPatternReversed(searchTerm));
+        return searchWithoutPattern(searchTerm).or(() -> searchWithPattern(searchTerm))
+                .or(() -> searchWithPatternReversed(searchTerm));
     }
 
     private static Optional<PostTag> searchWithoutPattern(String userInput) {
         String normalSearch = "&name=" + userInput.replace(" ", "_");
-        return getJson(normalSearch.concat(SORT_BY_COUNT), TAG_SCOPE).map(Gelbooru::convertToList).flatMap(Gelbooru::getTagWithMostPosts);
+        return getJson(normalSearch.concat(SORT_BY_COUNT), TAG_SCOPE).map(Gelbooru::convertToList)
+                .flatMap(Gelbooru::getTagWithMostPosts);
     }
 
     private static Optional<PostTag> searchWithPattern(String userInput) {
         String regexSearch = TAG_NAME_QUERRY + "%" + String.join("%", userInput.split(" ")) + "%";
-        return getJson(regexSearch.concat(SORT_BY_COUNT), TAG_SCOPE).map(Gelbooru::convertToList).flatMap(Gelbooru::getTagWithMostPosts);
+        return getJson(regexSearch.concat(SORT_BY_COUNT), TAG_SCOPE).map(Gelbooru::convertToList)
+                .flatMap(Gelbooru::getTagWithMostPosts);
     }
 
     private static Optional<PostTag> searchWithPatternReversed(String userInput) {
         String regexSearchReversed = TAG_NAME_QUERRY + "%" + List.of(userInput.split(" ")).stream()
                 .sorted(Comparator.reverseOrder()).collect(Collectors.joining("%")) + "%";
-        return getJson(regexSearchReversed.concat(SORT_BY_COUNT), TAG_SCOPE).map(Gelbooru::convertToList).flatMap(Gelbooru::getTagWithMostPosts);
+        return getJson(regexSearchReversed.concat(SORT_BY_COUNT), TAG_SCOPE).map(Gelbooru::convertToList)
+                .flatMap(Gelbooru::getTagWithMostPosts);
     }
 
     private static Optional<PostTag> getTagWithMostPosts(List<PostTag> list) {

@@ -3,8 +3,8 @@ package nirusu.nirubot.util;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * This class is the skeleton for a youtube video json 
- * that get requested in {@link nirusu.nirubot.command.fun.music.YTSearch#execute(nirusu.nirubot.command.CommandContext)}
+ * This class is the skeleton for a youtube video json that get requested in
+ * {@link nirusu.nirubot.command.fun.music.YTSearch#execute(nirusu.nirubot.command.CommandContext)}
  * 
  */
 public class YouTubeVideo {
@@ -19,15 +19,16 @@ public class YouTubeVideo {
     public class Snippet {
         private String title;
         private Thumbnails thumbnails;
+
         public class Thumbnails {
             @SerializedName("default")
             public Default defaultThumbnail;
+
             public class Default {
                 private String url;
             }
         }
     }
-
 
     public String getThumbnailUrl() {
         return this.snippet.thumbnails.defaultThumbnail.url;

@@ -29,7 +29,7 @@ public class RandomHttpClient {
             while ((inputLine = in.readLine()) != null) {
                 nums.add(Integer.parseInt(inputLine));
             }
-        } 
+        }
         return nums;
     }
 
@@ -38,7 +38,6 @@ public class RandomHttpClient {
 
         try (BufferedReader in = new BufferedReader(new InputStreamReader(getURL(1, 0, amount, 2).openStream()))) {
             String inputLine;
-
 
             while ((inputLine = in.readLine()) != null) {
                 nums.add(Byte.parseByte(inputLine));
