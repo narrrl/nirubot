@@ -3,10 +3,12 @@ package nirusu.nirubot;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
@@ -74,7 +76,10 @@ public class Nirubot extends AbstractIdleService {
 
         if (tmpDir == null) {
             tmpDir = new File(System.getProperty("user.dir").concat(File.separator).concat("tmp"));
-            tmpDir.mkdir();
+        }
+
+        if (!tmpDir.exists()) {
+            tmpDir.mkdirs();
         }
 
         return tmpDir;
@@ -133,7 +138,11 @@ public class Nirubot extends AbstractIdleService {
 
         }, executor -> new Thread(executor, "Watchdog").start());
         Nirubot.info("Cleaning tmp directory");
-        cleanDir(getTmpDirectory());
+        try {
+            deleteRecursive(getTmpDirectory());
+        } catch (IOException e) {
+            Nirubot.warning(e.getMessage());
+        }
         bot.startAsync();
     }
 
@@ -235,20 +244,33 @@ public class Nirubot extends AbstractIdleService {
         return this.helpCreator;
     }
 
+    public void cleanTmpDir() {
+        File dir = getTmpDirectory();
+        try {
+            deleteRecursive(dir);
+        } catch (IOException e) {
+            warning(e.getMessage());
+        }
+        dir.mkdirs();
+    }
+
 	public static String getTmpDirPath() {
 		return getConfig().getTmpDirPath();
     }
 
-    public static void cleanDir(final File dir) {
-        if (!dir.isDirectory() || !dir.exists()) return;
-        for (File f : dir.listFiles()) {
-            if (f.isDirectory()) {
-                cleanDir(f);
-            }
+
+    public static void deleteRecursive(final File dir) throws IOException {
+        if (!dir.exists()) return;
+        if (!dir.isDirectory()) {
             try {
-                Files.delete(f.toPath());
+                Files.delete(dir.toPath());
             } catch (IOException e) {
                 Nirubot.error(e.getMessage(), e);
+            }
+
+        } else {
+            try (Stream<Path> stream = Files.walk(dir.toPath())) {
+                stream.sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
             }
         }
     }

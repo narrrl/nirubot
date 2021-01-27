@@ -1,14 +1,12 @@
 package nirusu.nirubot.command;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import discord4j.common.util.Snowflake;
 import discord4j.core.object.entity.User;
 import discord4j.core.object.entity.channel.TextChannel;
 import discord4j.rest.util.Permission;
@@ -26,10 +24,8 @@ import nirusu.nirubot.util.gelbooru.Option;
 import nirusu.nirubot.util.gelbooru.PostTag;
 import nirusu.nirubot.util.nekolove.NekoLove;
 import nirusu.nirubot.util.nekolove.NekoLove.NekoLoveImage;
-import nirusu.nirubot.util.youtubedl.InvalidYoutubeDlException;
-import nirusu.nirubot.util.youtubedl.YoutubeDl;
+import nirusu.nirubot.util.youtubedl.YoutubeDLHandler;
 import nirusu.nirucmd.BaseModule;
-import nirusu.nirucmd.CommandContext;
 import nirusu.nirucmd.annotation.Command;
 
 public class FunModule extends BaseModule {
@@ -72,35 +68,11 @@ public class FunModule extends BaseModule {
             "ytdownload" }, description = "Downloads youtube videos with youtubedl")
     public void youtubedl() {
         ctx.getArgs().ifPresent(args -> ctx.getAuthor().ifPresent(author -> {
-            Nirubot bot = Nirubot.getNirubot();
-            Snowflake id = author.getId();
-            if (bot.userIsDownloading(id)) {
+            if (!YoutubeDLHandler.getInstance().startDownload(ctx, args, author)) {
                 ctx.reply("You can only download one video at a time");
                 return;
             }
             ctx.reply("Started downloading and converting! This might take some time");
-            new Thread(() -> {
-                bot.userStartedDownload(id);
-                File out;
-                try {
-                    out = new YoutubeDl(args).start();
-                } catch (InvalidYoutubeDlException e) {
-                    bot.userFinishedDownload(id);
-                    if (e.getMessage() != null) {
-                        ctx.reply(String.format("Error: %s", e.getMessage()));
-                    } else {
-                        e.printStackTrace();
-                    }
-                    return;
-                }
-                bot.userFinishedDownload(id);
-                if (out.length() > CommandContext.getMaxFileSize() || out.isDirectory()) {
-                    ctx.reply(String.format("You can download %s here: %s%s %s", out.getName(),
-                            Nirubot.getHost() + Nirubot.getTmpDirPath(), out.getName(), author.getMention()));
-                    return;
-                }
-                ctx.sendFile(out);
-            }).start(); // there he goes
         }));
     }
 
