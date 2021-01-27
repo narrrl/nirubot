@@ -137,9 +137,7 @@ public class MusicModule extends BaseModule {
             }
 
             GuildMusicManager manager = GuildMusicManager.of(guild.getId());
-            disconnectChannel();
             joinChannel(manager);
-
         });
     }
 
@@ -440,15 +438,15 @@ public class MusicModule extends BaseModule {
         return str.chars().allMatch(i -> (i >= '0' && i <= '9'));
     }
 
-    private void joinChannel(GuildMusicManager manager) {
+    private synchronized void joinChannel(GuildMusicManager manager) {
         ctx.getAuthorVoiceState().flatMap(state -> state.getChannel().blockOptional())
                 .ifPresent(ch -> ch.join(spec -> spec.setProvider(manager.getProvider())).block());
         ctx.getGuild().ifPresent(guild -> manager.setVolume(GuildManager.of(guild.getId()).volume()));
     }
 
-    private void disconnectChannel() {
-        ctx.getSelfVoiceState().flatMap(state -> state.getChannel().blockOptional())
-                .ifPresent(ch -> ch.sendDisconnectVoiceState().block());
+    private synchronized boolean disconnectChannel() {
+        return ctx.getSelfVoiceState().flatMap(state -> state.getChannel().blockOptional())
+                .map(ch -> { ch.sendDisconnectVoiceState().block(); return true; } ).orElse(false);
     }
 
     private void playYouTubeVideo(GuildMusicManager manager, YouTubeVideo video, boolean loadAsNext) {

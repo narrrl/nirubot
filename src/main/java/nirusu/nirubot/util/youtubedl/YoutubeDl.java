@@ -35,7 +35,6 @@ public class YoutubeDl {
         this.tmpDir = new File(Nirubot.getTmpDirectory().getAbsolutePath().concat(File.separator) + "youtube-dl"
                 + File.separator + randomString);
         this.tmpDir.mkdirs();
-        Nirubot.cleanDir(tmpDir);
         this.webDir = new File(Nirubot.getWebDir().getAbsolutePath() + File.separator + randomString);
         this.webDir.mkdirs();
 

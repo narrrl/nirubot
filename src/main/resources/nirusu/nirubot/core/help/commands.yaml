@@ -82,10 +82,6 @@
   description: >
     This command sends random anime images (nsfw) based on the given search term.
   syntax: "<prefix>hentai tag1, tag2, tag3, ..."
-- name: "tagsearch"
-  description: >
-    This command gives you info about a searched tag.
-  syntax: "<prefix>tags searched tag..."
 # music module
 - name: "play"
   description: >
