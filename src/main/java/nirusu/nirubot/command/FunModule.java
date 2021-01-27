@@ -66,19 +66,21 @@ public class FunModule extends BaseModule {
     }
 
     /**
-     * ttt start [player]: Start a New Game
-     * ttt put [index]: put your piece to a given index
-     * ttt reset: reset the game
+     * ttt start [player]: Start a New Game<br>
+     * ttt put [index]: put your piece to a given index<br>
+     * ttt reset: reset the game<br>
      */
     @Command(key = {"tictactoe", "ttt"}, description = "Play TicTacToe", context = {
             Channel.Type.GUILD_CATEGORY, Channel.Type.GUILD_NEWS, Channel.Type.GUILD_TEXT})
     public void ticTacToe() {
         ctx.getArgs().ifPresent(args -> {
-            if (args.size() == 0) {
+            if (args.isEmpty()) {
                 return;
             }
+            //check the first arg parameter
             switch (args.get(0)) {
                 case "start" -> {
+                    //validate arg length
                     if (args.size() != 2) {
                         ctx.reply("Usage: ttt start <@player>");
                         break;
@@ -90,7 +92,7 @@ public class FunModule extends BaseModule {
                         return;
                     }
                     ctx.reply("Hey " + mentionedUsers.get(0).getMention() + " you have been challanged!");
-                    DiscordUtil.sendEmbed(ctx, embedCreateSpec -> embedCreateSpec.setColor(Nirubot.getColor()).setDescription("foo"));
+
                 }
                 case "put" -> {
 
