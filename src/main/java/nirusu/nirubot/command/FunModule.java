@@ -8,6 +8,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import discord4j.core.object.entity.User;
+import discord4j.core.object.entity.channel.Channel;
 import discord4j.core.object.entity.channel.TextChannel;
 import discord4j.rest.util.Permission;
 import nirusu.nirubot.Nirubot;
@@ -64,8 +65,48 @@ public class FunModule extends BaseModule {
         });
     }
 
-    @Command(key = { "ytd", "youtubedl", "youtubedownload",
-            "ytdownload" }, description = "Downloads youtube videos with youtubedl")
+    /**
+     * ttt start [player]: Start a New Game
+     * ttt put [index]: put your piece to a given index
+     * ttt reset: reset the game
+     */
+    @Command(key = {"tictactoe", "ttt"}, description = "Play TicTacToe", context = {
+            Channel.Type.GUILD_CATEGORY, Channel.Type.GUILD_NEWS, Channel.Type.GUILD_TEXT})
+    public void ticTacToe() {
+        ctx.getArgs().ifPresent(args -> {
+            if (args.size() == 0) {
+                return;
+            }
+            switch (args.get(0)) {
+                case "start" -> {
+                    if (args.size() != 2) {
+                        ctx.reply("Usage: ttt start <@player>");
+                        break;
+                    }
+                    List<User> mentionedUsers = ctx.getEvent()
+                            .getMessage().getUserMentions().collectList().blockOptional()
+                            .orElseGet(Collections::emptyList);
+                    if (mentionedUsers.isEmpty()) {
+                        return;
+                    }
+                    ctx.reply("Hey " + mentionedUsers.get(0).getMention() + " you have been challanged!");
+                    DiscordUtil.sendEmbed(ctx, embedCreateSpec -> embedCreateSpec.setColor(Nirubot.getColor()).setDescription("foo"));
+                }
+                case "put" -> {
+
+                }
+                case "reset" -> {
+
+                }
+                default -> {
+                    ctx.reply("Error, Unsupported command " + args.get(0));
+                }
+            }
+        });
+    }
+
+    @Command(key = {"ytd", "youtubedl", "youtubedownload",
+            "ytdownload"}, description = "Downloads youtube videos with youtubedl")
     public void youtubedl() {
         ctx.getArgs().ifPresent(args -> ctx.getAuthor().ifPresent(author -> {
             if (!YoutubeDLHandler.getInstance().startDownload(ctx, args, author)) {
@@ -76,8 +117,8 @@ public class FunModule extends BaseModule {
         }));
     }
 
-    @Command(key = { "ark", "arknights",
-            "arkcalc" }, description = "Calculates the best possible tag combinations for given input")
+    @Command(key = {"ark", "arknights",
+            "arkcalc"}, description = "Calculates the best possible tag combinations for given input")
     public void arknights() {
         ctx.getArgs().ifPresent(args -> {
             if (args.size() > 15 || args.size() < 2) {
@@ -102,7 +143,7 @@ public class FunModule extends BaseModule {
         });
     }
 
-    @Command(key = { "neko", "nya", }, description = "Nyaaa~~")
+    @Command(key = {"neko", "nya",}, description = "Nyaaa~~")
     public void neko() {
         ctx.getArgs().ifPresent(args -> {
             if (args.isEmpty()) {
@@ -153,7 +194,7 @@ public class FunModule extends BaseModule {
         });
     }
 
-    @Command(key = { "animepic", "pic", "image" }, description = "Get some anime pics")
+    @Command(key = {"animepic", "pic", "image"}, description = "Get some anime pics")
     public void animepic() {
         ctx.getArgs().ifPresent(args -> {
             if (args.isEmpty()) {
@@ -218,7 +259,7 @@ public class FunModule extends BaseModule {
         });
     }
 
-    @Command(key = { "help", "h" }, description = "Help command")
+    @Command(key = {"help", "h"}, description = "Help command")
     public void help() {
         ctx.getArgs().ifPresent(args -> {
             HelpCreator h = Nirubot.getNirubot().getHelpCreator();
@@ -322,7 +363,7 @@ public class FunModule extends BaseModule {
         String ownerString = owners.length() < 2 ? "" : owners.substring(0, owners.length() - 2);
         int load = 0;
         try {
-            String[] cmdline = { "sh", "-c", "echo $(vmstat 1 2|tail -1|awk '{print $15}')" };
+            String[] cmdline = {"sh", "-c", "echo $(vmstat 1 2|tail -1|awk '{print $15}')"};
             Process pr = Runtime.getRuntime().exec(cmdline);
             StringBuilder output = new StringBuilder();
             try (BufferedReader stdInput = new BufferedReader(new InputStreamReader(pr.getInputStream()))) {

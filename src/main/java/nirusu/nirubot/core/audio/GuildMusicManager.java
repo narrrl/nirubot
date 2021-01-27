@@ -47,8 +47,6 @@ public class GuildMusicManager {
 
     /**
      * Creates a player and a track scheduler.
-     * 
-     * @param manager Audio player manager to use for creating the player.
      */
     public AudioPlayer getPlayer() {
         return player;
@@ -69,18 +67,18 @@ public class GuildMusicManager {
         player.setVolume(real);
     }
 
-	public void loadAndPlay(String link, CommandContext ctx) {
+    public void loadAndPlay(String link, CommandContext ctx) {
         ResultHandler handler = new ResultHandler.Builder(this).setCTX(ctx).build();
         PLAYER_MANAGER.loadItemOrdered(this, link, handler);
     }
-    
+
     public void loadAndPlayNext(String link, CommandContext ctx) {
         ResultHandler handler = new ResultHandler.Builder(this).setCTX(ctx).setPlayAsNext(true).build();
         PLAYER_MANAGER.loadItemOrdered(this, link, handler);
     }
 
-	public static void destroy(Snowflake id) {
+    public static void destroy(Snowflake id) {
         GuildMusicManager manager = MANAGERS.remove(id);
         manager.player.destroy();
-	}
+    }
 }
