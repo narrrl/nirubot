@@ -29,7 +29,7 @@ public class RandomHttpClient {
             while ((inputLine = in.readLine()) != null) {
                 nums.add(Integer.parseInt(inputLine));
             }
-        } 
+        }
         return nums;
     }
 

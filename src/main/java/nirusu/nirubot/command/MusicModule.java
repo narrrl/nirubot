@@ -135,6 +135,7 @@ public class MusicModule extends BaseModule {
             if (!MusicCondition.checkConditions(ctx, MusicCondition.USER_CONNECTED)) {
                 return;
             }
+
             GuildMusicManager manager = GuildMusicManager.of(guild.getId());
             disconnectChannel();
             joinChannel(manager);
