@@ -504,6 +504,13 @@ public class FunModule extends BaseModule {
             stopGame();
         });
 
+        //check for draw
+        if (game.getBoard().getFillLevel() == TTTBoard.BOARD_SIZE * TTTBoard.BOARD_SIZE) {
+            ctx.reply("draw!");
+            stopGame();
+            return;
+        }
+
         //change the move rights
         game.advanceUser();
 

@@ -9,13 +9,19 @@ public class TTTBoard {
 
 
     private int[][] board;
+    private int fillLevel;
 
     public TTTBoard() {
         this.board = new int[BOARD_SIZE][BOARD_SIZE];
+        this.fillLevel = 0;
     }
 
     public int[][] getArray() {
         return board;
+    }
+
+    public int getFillLevel() {
+        return fillLevel;
     }
 
     public boolean put(final int x, final int y, int player) {
@@ -26,6 +32,9 @@ public class TTTBoard {
 
         //put the number into the board
         this.board[y][x] = player;
+
+        //increment fill level
+        this.fillLevel++;
         return true;
     }
 
