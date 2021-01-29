@@ -33,7 +33,8 @@ public final class NekoLove {
             }
             in.close();
         } catch (IOException e) {
-            if (connection != null) connection.disconnect();
+            if (connection != null)
+                connection.disconnect();
             throw new IllegalArgumentException(e.getMessage(), e);
         }
 

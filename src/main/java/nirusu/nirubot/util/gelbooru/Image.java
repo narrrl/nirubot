@@ -36,7 +36,6 @@ public class Image {
         return String.format("https://gelbooru.com/index.php?page=post&s=view&id=%d", id);
     }
 
-
     public enum Rating {
         SAFE("s"), QUESTIONABLE("q"), EXPLICIT("e"), UNKNOWN("u");
 

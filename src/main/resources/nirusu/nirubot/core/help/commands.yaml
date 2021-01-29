@@ -115,7 +115,7 @@
   syntax: "<prefix>repeat"
 - name: "pause"
   description: >
-    Toggle the current playback (pause/resume). 
+    Toggle the current playback (pause/resume).
   syntax: "<prefix>pause/repeat"
 - name: "playing"
   description: >

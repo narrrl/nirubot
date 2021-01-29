@@ -445,8 +445,10 @@ public class MusicModule extends BaseModule {
     }
 
     private synchronized boolean disconnectChannel() {
-        return ctx.getSelfVoiceState().flatMap(state -> state.getChannel().blockOptional())
-                .map(ch -> { ch.sendDisconnectVoiceState().block(); return true; } ).orElse(false);
+        return ctx.getSelfVoiceState().flatMap(state -> state.getChannel().blockOptional()).map(ch -> {
+            ch.sendDisconnectVoiceState().block();
+            return true;
+        }).orElse(false);
     }
 
     private void playYouTubeVideo(GuildMusicManager manager, YouTubeVideo video, boolean loadAsNext) {

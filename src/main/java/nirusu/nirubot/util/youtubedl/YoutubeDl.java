@@ -42,8 +42,6 @@ public class YoutubeDl {
         setOptions(args, req);
     }
 
-
-
     public File start() throws InvalidYoutubeDlException {
         // download files
         try {
@@ -53,8 +51,7 @@ public class YoutubeDl {
         }
 
         // return if file can be send directly
-        if (tmpDir.listFiles().length == 1 
-            && tmpDir.listFiles()[0].length() < CommandContext.getMaxFileSize()) {                    
+        if (tmpDir.listFiles().length == 1 && tmpDir.listFiles()[0].length() < CommandContext.getMaxFileSize()) {
             return tmpDir.listFiles()[0];
         }
 
@@ -79,7 +76,6 @@ public class YoutubeDl {
 
         return webDir;
     }
-
 
     private void createZip() throws InvalidYoutubeDlException {
         if (tmpDir.listFiles().length > 1) {
@@ -116,7 +112,7 @@ public class YoutubeDl {
         for (String arg : args) {
             // if the given arg matches the regex for an option
             if (YoutubeDl.OPTION_REGEX.matcher(arg).matches()) {
-                    // set option
+                // set option
                 Option op = Option.getOption(arg);
                 if (op.equals(Option.AUDIO) || op.equals(Option.VIDEO)) {
                     if (!specificFormat) {
@@ -139,7 +135,8 @@ public class YoutubeDl {
                 url = arg;
                 offset++;
                 if (offset > 1) {
-                    throw new InvalidYoutubeDlException("You can download only from one source at a time (Remove one of the links)");
+                    throw new InvalidYoutubeDlException(
+                            "You can download only from one source at a time (Remove one of the links)");
                 }
             }
         }
@@ -150,5 +147,5 @@ public class YoutubeDl {
 
         return url;
     }
-    
+
 }

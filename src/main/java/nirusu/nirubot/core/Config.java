@@ -9,17 +9,17 @@ import java.nio.file.Files;
 import nirusu.nirubot.Nirubot;
 
 /**
- * This class handles all the configurations for the bot. The configurations
- * get loaded on startup and writes all changes to the config.json.
- * The json gets readed with {@link Gson}.
+ * This class handles all the configurations for the bot. The configurations get
+ * loaded on startup and writes all changes to the config.json. The json gets
+ * readed with {@link Gson}.
  */
 public class Config {
     private final File configFile;
     private final Data data;
 
     /**
-     * Stores all the attributes for the config.json. Is needed to parse
-     * with {@link Gson}
+     * Stores all the attributes for the config.json. Is needed to parse with
+     * {@link Gson}
      */
     public static class Data {
         private String prefix;
@@ -34,20 +34,16 @@ public class Config {
 
     public Config() throws IOException {
         // reades config file from root dir
-        configFile = new File(System.getProperty("user.dir")
-                .concat(File.separator + "config.json"));
+        configFile = new File(System.getProperty("user.dir").concat(File.separator + "config.json"));
         // convert to data object with gson
-        data = Nirubot.getGson().fromJson(Files.readString(configFile.toPath(),
-                    StandardCharsets.UTF_8), Data.class);
+        data = Nirubot.getGson().fromJson(Files.readString(configFile.toPath(), StandardCharsets.UTF_8), Data.class);
     }
 
-
-
     /**
-     * Writes the {@link #data} to the config file with {@link Gson}. If the
-     * config couldn't be written the bot prints a warning message but will
-     * continue as nothing happened. That means the changed settings won't be
-     * saved after a bot restart and have to be setted again.
+     * Writes the {@link #data} to the config file with {@link Gson}. If the config
+     * couldn't be written the bot prints a warning message but will continue as
+     * nothing happened. That means the changed settings won't be saved after a bot
+     * restart and have to be setted again.
      */
     private synchronized void write() {
         try (FileWriter writer = new FileWriter(configFile)) {
@@ -95,7 +91,6 @@ public class Config {
         return data.activityType;
     }
 
-
     public synchronized String getPrefix() {
 
         // gson parses prefix as null if its not set in the config.json
@@ -106,18 +101,16 @@ public class Config {
         return data.prefix;
     }
 
+    public String getTmpDirPath() {
+        if (data.tmpDirPath == null)
+            throw new IllegalArgumentException("No temp dir set in config!");
+        return this.data.tmpDirPath;
+    }
 
-
-	public String getTmpDirPath() {
-        if (data.tmpDirPath == null) throw new IllegalArgumentException("No temp dir set in config!");
-		return this.data.tmpDirPath;
-	}
-
-
-
-	public String getHost() {
-        if (data.host == null) throw new IllegalArgumentException("No hostname declared in config!");
-		return this.data.host;
-	}
+    public String getHost() {
+        if (data.host == null)
+            throw new IllegalArgumentException("No hostname declared in config!");
+        return this.data.host;
+    }
 
 }

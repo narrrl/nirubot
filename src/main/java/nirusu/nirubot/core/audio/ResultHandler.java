@@ -29,8 +29,9 @@ public class ResultHandler implements AudioLoadResultHandler {
         } else {
             manager.getScheduler().play(track);
         }
-        ctx.flatMap(CommandContext::getChannel).ifPresent(ch -> ch.createEmbed(spec -> spec.setTitle("Song loaded: " + track.getInfo().title)
-                .setUrl(track.getInfo().uri).setColor(Nirubot.getColor())).block());
+        ctx.flatMap(CommandContext::getChannel)
+                .ifPresent(ch -> ch.createEmbed(spec -> spec.setTitle("Song loaded: " + track.getInfo().title)
+                        .setUrl(track.getInfo().uri).setColor(Nirubot.getColor())).block());
 
     }
 
@@ -46,9 +47,10 @@ public class ResultHandler implements AudioLoadResultHandler {
                 manager.getScheduler().play(t);
             }
         }
-        ctx.flatMap(CommandContext::getChannel).ifPresent(ch -> ch.createEmbed(
-                spec -> spec.setTitle("Playlist loaded: " + playlist.getName()).setColor(Nirubot.getColor()))
-                .block());
+        ctx.flatMap(CommandContext::getChannel)
+                .ifPresent(ch -> ch.createEmbed(
+                        spec -> spec.setTitle("Playlist loaded: " + playlist.getName()).setColor(Nirubot.getColor()))
+                        .block());
     }
 
     @Override

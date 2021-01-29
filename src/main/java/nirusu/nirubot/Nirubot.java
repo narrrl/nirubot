@@ -93,8 +93,10 @@ public class Nirubot extends AbstractIdleService {
     public Nirubot() {
         super();
         listeners = new ArrayList<>();
+
         dispatcher = new CommandDispatcher.Builder()
                 .addPackage("nirusu.nirubot.command").build();
+      
         helpCreator = new HelpCreator(dispatcher.getModules());
         metadata = CommandMeta.getMetadataForCommands();
     }
@@ -192,7 +194,7 @@ public class Nirubot extends AbstractIdleService {
         return Color.of(0, 153, 255);
     }
 
-
+  
     public void exit() {
         shutDown();
         // fuck you bot
@@ -242,9 +244,9 @@ public class Nirubot extends AbstractIdleService {
         return getConfig().getTmpDirPath();
     }
 
-
     public static void deleteRecursive(final File dir) throws IOException {
-        if (!dir.exists()) return;
+        if (!dir.exists())
+            return;
         if (!dir.isDirectory()) {
             try {
                 Files.delete(dir.toPath());
@@ -258,7 +260,9 @@ public class Nirubot extends AbstractIdleService {
                     try {
                         Files.delete(f.toPath());
                     } catch (IOException e) {
+
                         Nirubot.error(e.getMessage(), e);
+
                     }
                 });
             }

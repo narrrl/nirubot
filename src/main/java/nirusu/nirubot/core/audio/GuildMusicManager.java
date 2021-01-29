@@ -36,7 +36,6 @@ public class GuildMusicManager {
     private final TrackScheduler scheduler;
     private final D4jAudioProvider provider;
 
-
     private GuildMusicManager() {
         player = PLAYER_MANAGER.createPlayer();
         scheduler = new TrackScheduler(player);

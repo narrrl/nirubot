@@ -8,22 +8,26 @@ import java.util.List;
  */
 public class Operator implements Comparable<Operator> {
     public enum Qualification {
-        STARTER,SENIOR_OPERATOR,TOP_OPERATOR, NONE
+        STARTER, SENIOR_OPERATOR, TOP_OPERATOR, NONE
     }
+
     public enum Position {
-        MELEE,RANGED
+        MELEE, RANGED
     }
+
     public enum OperatorClass {
-        GUARD,MEDIC,VANGUARD,CASTER,SNIPER,DEFENDER,SUPPORTER,SPECIALIST
+        GUARD, MEDIC, VANGUARD, CASTER, SNIPER, DEFENDER, SUPPORTER, SPECIALIST
     }
+
     public enum Affix {
-        HEALING,SUPPORT,DPS,AOE,SLOW,SURVIVAL,DEFENSE,DEBUFF,SHIFT,CROWD_CONTROL,NUKER,SUMMON,FAST_REDEPLOY,DP_RECOVERY,ROBOT
+        HEALING, SUPPORT, DPS, AOE, SLOW, SURVIVAL, DEFENSE, DEBUFF, SHIFT, CROWD_CONTROL, NUKER, SUMMON, FAST_REDEPLOY,
+        DP_RECOVERY, ROBOT
     }
 
     private int rarity;
 
     private Qualification qualification;
-    
+
     private Position position;
 
     private OperatorClass operatorClass;
@@ -34,7 +38,8 @@ public class Operator implements Comparable<Operator> {
 
     @Override
     public String toString() {
-        return "[" + this.name + "](" + "https://aceship.github.io/AN-EN-Tags/akhrchars.html?opname=" + this.name.replace(" ", "_") + ") " + rarity + "☆";
+        return "[" + this.name + "](" + "https://aceship.github.io/AN-EN-Tags/akhrchars.html?opname="
+                + this.name.replace(" ", "_") + ") " + rarity + "☆";
     }
 
     @Override
@@ -47,7 +52,7 @@ public class Operator implements Comparable<Operator> {
         return name.hashCode();
     }
 
-	public boolean hasTag(final String tag) {
+    public boolean hasTag(final String tag) {
 
         if (tag == null) {
             return false;
@@ -67,10 +72,10 @@ public class Operator implements Comparable<Operator> {
             }
             return false;
         }
-	}
+    }
 
-	public int getRarity() {
-		return this.rarity;
+    public int getRarity() {
+        return this.rarity;
     }
 
     static List<String> convertTags(final List<String> oldTags, final String total) {
@@ -100,7 +105,6 @@ public class Operator implements Comparable<Operator> {
         }
         return newTags;
     }
-    
 
     public static String getAllTagsAsString() {
         StringBuilder out = new StringBuilder();
@@ -120,6 +124,5 @@ public class Operator implements Comparable<Operator> {
         }
         return out.substring(0, out.length() - 1);
     }
-
 
 }
