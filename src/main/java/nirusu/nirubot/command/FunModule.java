@@ -78,6 +78,9 @@ public class FunModule extends BaseModule {
     @Command(key = {"tictactoe", "ttt"}, description = "Play TicTacToe", context
             = {Channel.Type.GUILD_CATEGORY, Channel.Type.GUILD_NEWS, Channel.Type.GUILD_TEXT})
     public void ticTacToe() {
+        //delete the user message only works with MANAGE_MESSAGES permission
+        ctx.getEvent().getMessage().delete();
+
         ctx.getArgs().ifPresent(args -> {
             if (args.isEmpty()) {
                 return;
@@ -87,7 +90,7 @@ public class FunModule extends BaseModule {
                 case "start" -> {
                     //validate arg length
                     if (args.size() != 2) {
-                        ctx.reply("Usage: ttt start <@player>");
+                        ctx.reply("Usage: ttt start @<player>");
                         return;
                     }
 
@@ -103,15 +106,11 @@ public class FunModule extends BaseModule {
 
                     putPieceTTT(args);
                 }
-                case "stop" -> {
-                    stopGame();
-                }
+                case "stop" -> stopGame();
+
                 default -> ctx.reply("Error, Unsupported command " + args.get(0));
             }
         });
-
-        //delete the users message TODO: doesn't work :(
-        ctx.getEvent().getMessage().delete();
     }
 
     @Command(key = {"ytd", "youtubedl", "youtubedownload",
