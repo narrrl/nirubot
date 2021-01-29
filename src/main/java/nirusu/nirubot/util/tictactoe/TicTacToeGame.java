@@ -10,7 +10,7 @@ public class TicTacToeGame {
     /**
      * This HashMap stores the player and the game. Stores Two instances per game.
      */
-    public static Map<Snowflake, TicTacToeGame> games = new HashMap<>();
+    public static final Map<Snowflake, TicTacToeGame> games = new HashMap<>();
 
     private Snowflake playerOne;
     private Snowflake playerTwo;
