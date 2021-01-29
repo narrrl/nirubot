@@ -1,12 +1,6 @@
 package nirusu.nirubot.command;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.time.Instant;
-import java.util.*;
-import java.util.stream.Collectors;
-
+import discord4j.common.util.Snowflake;
 import discord4j.core.object.entity.User;
 import discord4j.core.object.entity.channel.Channel;
 import discord4j.core.object.entity.channel.TextChannel;
@@ -25,9 +19,20 @@ import nirusu.nirubot.util.gelbooru.Option;
 import nirusu.nirubot.util.gelbooru.PostTag;
 import nirusu.nirubot.util.nekolove.NekoLove;
 import nirusu.nirubot.util.nekolove.NekoLove.NekoLoveImage;
+import nirusu.nirubot.util.tictactoe.TTTBoard;
+import nirusu.nirubot.util.tictactoe.TicTacToeGame;
 import nirusu.nirubot.util.youtubedl.YoutubeDLHandler;
 import nirusu.nirucmd.BaseModule;
 import nirusu.nirucmd.annotation.Command;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.time.Instant;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class FunModule extends BaseModule {
     private static final String JAVA_VERSION = System.getProperty("java.version");
@@ -68,7 +73,7 @@ public class FunModule extends BaseModule {
     /**
      * ttt start [player]: Start a New Game<br>
      * ttt put [index]: put your piece to a given index<br>
-     * ttt reset: reset the game<br>
+     * ttt stop: reset the game<br>
      */
     @Command(key = {"tictactoe", "ttt"}, description = "Play TicTacToe", context = {
             Channel.Type.GUILD_CATEGORY, Channel.Type.GUILD_NEWS, Channel.Type.GUILD_TEXT})
@@ -85,24 +90,105 @@ public class FunModule extends BaseModule {
                         ctx.reply("Usage: ttt start <@player>");
                         break;
                     }
+                    //get the challanged user
                     List<User> mentionedUsers = ctx.getEvent()
                             .getMessage().getUserMentions().collectList().blockOptional()
                             .orElseGet(Collections::emptyList);
-                    if (mentionedUsers.isEmpty()) {
+
+                    if (mentionedUsers.isEmpty()) break;
+
+
+                    //get the challanger.
+                    // Throw an exception if noone is returned because this command can only be called from a message
+                    Snowflake challanger = ctx.getEvent().getMessage().getAuthor()
+                            .orElseThrow(IllegalArgumentException::new).getId();
+
+                    //check is a game is already running
+                    if (TicTacToeGame.games.containsKey(challanger)) {
+
+                        //send an embed if this user already has a game
+                        ctx.getChannel().ifPresent(ch -> ch.createEmbed(spec ->
+                                spec.setColor(Nirubot.getColor()).setTitle("you already have a game running")
+                                        .setDescription(TicTacToeGame.games.get(challanger).getBoard().toString()))
+                                .block());
                         return;
                     }
+
+                    //create the game and store it two times
+                    TicTacToeGame game = new TicTacToeGame(challanger, mentionedUsers.get(0).getId());
+                    TicTacToeGame.games.put(challanger, game);
+                    TicTacToeGame.games.put(mentionedUsers.get(0).getId(), game);
+
                     ctx.reply("Hey " + mentionedUsers.get(0).getMention() + " you have been challanged!");
 
                 }
                 case "put" -> {
+                    //check args
+                    if (args.size() != 3) {
+                        ctx.reply("Usage: ttt put <x> <y>");
+                        break;
+                    }
 
-                }
-                case "reset" -> {
+                    //try to get x and y coordinate
+                    int x, y;
+                    try {
+                        x = Integer.parseInt(args.get(1));
+                        y = Integer.parseInt(args.get(2));
 
+                        if (!(x > -1 && y > -1 && x < TTTBoard.BOARD_SIZE && y < TTTBoard.BOARD_SIZE))
+                            throw new NumberFormatException();
+
+                    } catch (NumberFormatException exc) {
+                        ctx.reply("Please enter a valid number.");
+                        break;
+                    }
+
+                    //get the message author.
+                    // Throw an exception if no one is returned because this command can only be called from a message
+                    Snowflake author = ctx.getEvent().getMessage().getAuthor()
+                            .orElseThrow(IllegalArgumentException::new).getId();
+
+                    //check if a game is running
+                    if (!TicTacToeGame.games.containsKey(author)) ctx.reply("You currently don't have a game running.");
+
+                    TicTacToeGame game = TicTacToeGame.games.get(author);
+
+                    //check if you are allowed to move
+                    if (!game.getPlayerToMove().equals(author)) {
+                        ctx.reply("It's not your move.");
+                        break;
+                    }
+
+                    //check if the field is already occupied
+                    if (game.getBoard().getArray()[y][x] != TTTBoard.NOPLAYER) {
+                        ctx.reply("Nice try.");
+                        break;
+                    }
+
+                    //make the move in the first board
+                    game.getBoard().put(x, y, game.evalPlayer(author));
+
+                    //check if somebody won
+                    game.getWinner().ifPresent(winner -> {
+                        ctx.reply(winner + " won!");
+                        stopGame();
+                    });
+
+                    //change the move rights
+                    game.advanceUser();
+
+                    //Do not make changes in the second board because it is actually the same object.
+
+                    //print board
+                    ctx.getChannel().ifPresent(ch -> ch.createEmbed(spec ->
+                            spec.setColor(Nirubot.getColor()).setTitle("Game")
+                                    .setDescription(game.getBoard().toString()))
+                            .block());
                 }
-                default -> {
-                    ctx.reply("Error, Unsupported command " + args.get(0));
+                case "stop" -> {
+                    stopGame();
                 }
+                default -> ctx.reply("Error, Unsupported command " + args.get(0));
             }
         });
     }
@@ -397,5 +483,21 @@ public class FunModule extends BaseModule {
             }
         }
         return usageBar.toString();
+    }
+
+    private void stopGame() {
+        //get the message author.
+        // Throw an exception if noone is returned because this command can only be called from a message
+        Snowflake author = ctx.getEvent().getMessage().getAuthor()
+                .orElseThrow(IllegalArgumentException::new).getId();
+
+        //remove the game that references the challanged
+        Snowflake challangedPlayer = TicTacToeGame.games.get(author).getPlayerTwo();
+        TicTacToeGame.games.remove(challangedPlayer);
+
+        //remove the game referencing the author
+        TicTacToeGame.games.remove(author);
+
+        ctx.reply("Game stopped.");
     }
 }
