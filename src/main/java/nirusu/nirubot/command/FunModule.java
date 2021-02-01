@@ -77,7 +77,7 @@ public class FunModule extends BaseModule {
      */
     @Command(key = {"tictactoe", "ttt"}, description = "Play TicTacToe", context
             = {Channel.Type.GUILD_CATEGORY, Channel.Type.GUILD_NEWS, Channel.Type.GUILD_TEXT})
-    public void ticTacToe() {
+    public void tictactoe() {
         //delete the user message only works with MANAGE_MESSAGES permission
         ctx.getEvent().getMessage().delete();
 
