@@ -93,7 +93,10 @@ public class Nirubot extends AbstractIdleService {
     public Nirubot() {
         super();
         listeners = new ArrayList<>();
-        dispatcher = new CommandDispatcher.Builder().addPackage("nirusu.nirubot.command").build();
+
+        dispatcher = new CommandDispatcher.Builder()
+                .addPackage("nirusu.nirubot.command").build();
+      
         helpCreator = new HelpCreator(dispatcher.getModules());
         metadata = CommandMeta.getMetadataForCommands();
     }
@@ -191,6 +194,7 @@ public class Nirubot extends AbstractIdleService {
         return Color.of(0, 153, 255);
     }
 
+  
     public void exit() {
         shutDown();
         // fuck you bot
@@ -256,7 +260,9 @@ public class Nirubot extends AbstractIdleService {
                     try {
                         Files.delete(f.toPath());
                     } catch (IOException e) {
-                        error(e.getMessage(), e);
+
+                        Nirubot.error(e.getMessage(), e);
+
                     }
                 });
             }

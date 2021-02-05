@@ -11,7 +11,6 @@ public class AdminModule extends BaseModule {
 
     @Command(key = { "shutdown", "shutd" }, description = "Shutdown the bot")
     public void shutdown() {
-
         ctx.getAuthor().ifPresent(user -> {
             if (Nirubot.isOwner(user.getId().asLong())) {
                 ctx.reply("Bai bai!");

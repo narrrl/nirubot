@@ -82,6 +82,12 @@
   description: >
     This command sends random anime images (nsfw) based on the given search term.
   syntax: "<prefix>hentai tag1, tag2, tag3, ..."
+- name: "tictactoe"
+  description: >
+    This command is used to play TicTacToe. Use ttt start @<User> to start a match, ttt put <x> <y> to put down your
+    piece and ttt stop to stop the match.
+  syntax: "ttt [start @<user>/put <x> <y>/stop]"
+
 # music module
 - name: "play"
   description: >
