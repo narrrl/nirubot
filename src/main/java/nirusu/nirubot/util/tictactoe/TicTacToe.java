@@ -6,6 +6,7 @@ public class TicTacToe {
     private static final String WRONG_PLAYER = "This is not your Turn!";
     private static final String CANNOT_PLACE = "You can't place here";
     private static final String PLAYER_WON = "Player {} won the game!";
+    private static final String DRAW = "Draw!";
     private final Player one;
     private final Player two;
     private final TicTacToeBoard board;
@@ -36,6 +37,9 @@ public class TicTacToe {
             if (hasWone(pl)) {
                 isRunning = false;
                 return PLAYER_WON.replace("{}", p.toString());
+            } else if (isDraw()) {
+                isRunning = false;
+                return DRAW;
             }
         }
 
@@ -80,6 +84,19 @@ public class TicTacToe {
             }
         }
         return false;
+    }
+
+    private boolean isDraw() {
+        int offset = 0;
+        for (int i = 0; i < board.size(); i++) {
+            if (board.get(board.size() - 1 - i, i).equals(Player.empty())) offset++;
+            if (board.get(i, i).equals(Player.empty())) offset++;
+            for (int j = 0; j < board.size(); j++) {
+                if (board.get(i, j).equals(Player.empty())) offset++;
+                if (board.get(j, i).equals(Player.empty())) offset++;
+            }
+        }
+        return offset == 0;
     }
 
     public synchronized boolean hasEnded() {
