@@ -1,6 +1,9 @@
 package nirusu.nirubot.util.tictactoe;
 
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.Stack;
 
 public class TicTacToe {
     private static final String WRONG_PLAYER = "This is not your Turn!";
@@ -36,12 +39,14 @@ public class TicTacToe {
         for (Player pl : Arrays.asList(one, two)) {
             if (hasWone(pl)) {
                 isRunning = false;
-                return PLAYER_WON.replace("{}", p.toString());
-            } else if (isDraw()) {
-                isRunning = false;
-                return DRAW;
-            }
-        }
+                return board.toString() + "\n" + PLAYER_WON.replace("{}", p.toString());
+            }  
+       }
+
+       if (!canWin(one) && !canWin(two)) {
+           isRunning = false;
+           return board.toString() + "\n" + DRAW;
+       }
 
         advanceUser();
 
@@ -86,17 +91,40 @@ public class TicTacToe {
         return false;
     }
 
-    private boolean isDraw() {
-        int offset = 0;
+    private boolean canWin(Player p) {
+        Set<Player> dia = new HashSet<>();
+        Set<Player> secDia = new HashSet<>();
+        Player o = getOtherPlayer(p);
         for (int i = 0; i < board.size(); i++) {
-            if (board.get(board.size() - 1 - i, i).equals(Player.empty())) offset++;
-            if (board.get(i, i).equals(Player.empty())) offset++;
+
+            dia.add(board.get(i, i));
+            secDia.add(board.get(board.size() - 1 - i, i));
+
+            if (i == board.size() - 1 && (!dia.contains(o) || !secDia.contains(o))) {
+                return true;
+            }
+
+            Set<Player> col = new HashSet<>();
+            Set<Player> row = new HashSet<>();
+
             for (int j = 0; j < board.size(); j++) {
-                if (board.get(i, j).equals(Player.empty())) offset++;
-                if (board.get(j, i).equals(Player.empty())) offset++;
+                col.add(board.get(i, j));
+                row.add(board.get(j, i));
+
+            }
+
+            if (!col.contains(o) || !row.contains(o)) {
+                return true;
             }
         }
-        return offset == 0;
+        return false;
+    }
+
+    private Player getOtherPlayer(Player p) {
+        if (p.equals(one)) {
+            return two;
+        }
+        return one;
     }
 
     public synchronized boolean hasEnded() {
