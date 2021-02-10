@@ -6,7 +6,7 @@ You can download and edit the bot however you want.
 
 ## Installation
 
-Clone the repo and run `bash build.sh` and then go to `/release/`. You will find a `nirubot-{$VERSION}-all.jar`. Copy this, and the `config.json` from `src/main/resources/` into one folder (anywhere on your computer).
+Clone the repo and run `bash build.sh` and then go to `/release/`. You will find a `nirubot.jar`. Copy this, and the `config.json` from `src/main/resources/` into a folder (anywhere on your computer).
 Now execute `java -jar nirubot.jar` inside the directory with the jar and the config.
 Don't forget to put your bot-token into the config! And __NEVER__ share the bot-token with anyone!
 
