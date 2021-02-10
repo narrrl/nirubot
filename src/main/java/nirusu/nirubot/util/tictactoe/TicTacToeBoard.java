@@ -1,7 +1,8 @@
 package nirusu.nirubot.util.tictactoe;
 
 /**
- * This class represents a basic tic tac toe board. All fields are filled with {@link nirusu.nirubot.util.tictactoe.Player#empty()}
+ * This class represents a basic tic tac toe board. All fields are filled with
+ * {@link nirusu.nirubot.util.tictactoe.Player#empty()}
  */
 public class TicTacToeBoard {
     private Player[][] board;
@@ -20,8 +21,10 @@ public class TicTacToeBoard {
 
     /**
      * puts a given @param player at the given coordinates @param x and @param y.
-     * @return true if the player has been placed at the given coordinates or else if the coordinates where our of bound
-     * or if a player was already there.
+     * 
+     * @return true if the player has been placed at the given coordinates or else
+     *         if the coordinates where our of bound or if a player was already
+     *         there.
      */
     public boolean put(final int x, final int y, Player player) {
         if (x > board.length - 1 || y > board.length - 1) {

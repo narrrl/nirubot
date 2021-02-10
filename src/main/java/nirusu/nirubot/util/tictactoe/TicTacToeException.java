@@ -9,5 +9,5 @@ public class TicTacToeException extends RuntimeException {
     public TicTacToeException(String cause) {
         super(cause);
     }
-    
+
 }

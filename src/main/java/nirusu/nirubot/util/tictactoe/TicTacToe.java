@@ -3,7 +3,6 @@ package nirusu.nirubot.util.tictactoe;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.Stack;
 
 public class TicTacToe {
     private static final String WRONG_PLAYER = "This is not your Turn!";
@@ -20,7 +19,7 @@ public class TicTacToe {
         this.one = one;
         this.two = two;
 
-        //player one always starts
+        // player one always starts
         this.current = one;
 
         this.board = new TicTacToeBoard(boardSize);
@@ -40,20 +39,20 @@ public class TicTacToe {
             if (hasWone(pl)) {
                 isRunning = false;
                 return board.toString() + "\n" + PLAYER_WON.replace("{}", p.toString());
-            }  
-       }
+            }
+        }
 
-       if (!canWin(one) && !canWin(two)) {
-           isRunning = false;
-           return board.toString() + "\n" + DRAW;
-       }
+        if (!canWin(one) && !canWin(two)) {
+            isRunning = false;
+            return board.toString() + "\n" + DRAW;
+        }
 
         advanceUser();
 
         return board.toString();
     }
 
-    //switch the next player to move
+    // switch the next player to move
     private void advanceUser() {
         if (current.equals(one)) {
             current = two;
@@ -61,7 +60,6 @@ public class TicTacToe {
         }
         current = one;
     }
-
 
     private boolean hasWone(Player p) {
         int dia = 0;
@@ -71,7 +69,8 @@ public class TicTacToe {
             dia += board.get(i, i).numeric();
             secDia += board.get(board.size() - 1 - i, i).numeric();
 
-            if (Math.abs(dia / board.size() - p.numeric()) < 0.01 || Math.abs(secDia / board.size() - p.numeric()) < 0.01) {
+            if (Math.abs(dia / board.size() - p.numeric()) < 0.01
+                    || Math.abs(secDia / board.size() - p.numeric()) < 0.01) {
                 return true;
             }
 
@@ -84,7 +83,8 @@ public class TicTacToe {
 
             }
 
-            if (Math.abs(col / board.size() - p.numeric()) < 0.01 || Math.abs(row / board.size() - p.numeric()) < 0.01) {
+            if (Math.abs(col / board.size() - p.numeric()) < 0.01
+                    || Math.abs(row / board.size() - p.numeric()) < 0.01) {
                 return true;
             }
         }
