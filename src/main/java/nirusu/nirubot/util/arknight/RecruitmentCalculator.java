@@ -1,9 +1,9 @@
 package nirusu.nirubot.util.arknight;
 
-import java.io.File;
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -31,16 +31,26 @@ public class RecruitmentCalculator {
     }
 
     public synchronized List<Operator> loadOperators() {
-        // file must be in root directory
-        File opList = new File(System.getProperty("user.dir").concat(File.separator + "operators.json"));
+        // get operator json
+        InputStream in = getClass().getResourceAsStream("operators.json");
+        StringBuilder opList = new StringBuilder();
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(in))) {
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                opList.append(line);
+            }
+
+        } catch (IOException e) {
+            Nirubot.error("Couldn't get Operator.json for the recruitment tag calculator", e);
+        }
         ArrayList<Operator> list;
 
-        // gets parsed by Gson
+        // parse with Gson to a array list
         try {
-            list = Nirubot.getGson().fromJson(Files.readString(opList.toPath(), StandardCharsets.UTF_8),
+            list = Nirubot.getGson().fromJson(opList.toString(),
                     new TypeToken<List<Operator>>() {
                     }.getType());
-        } catch (JsonSyntaxException | IOException e) {
+        } catch (JsonSyntaxException e) {
             throw new IllegalArgumentException("Couldn't read operator list");
         }
 

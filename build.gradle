@@ -57,9 +57,10 @@ dependencies {
 sourceSets {
     main {
         resources {
-            exclude '**/*.json'
+            exclude '/*.json'
             include '**/*.yaml'
             include '**/*.xml'
+            include '**/nirusu/**/*.json'
         }
     }
 }
