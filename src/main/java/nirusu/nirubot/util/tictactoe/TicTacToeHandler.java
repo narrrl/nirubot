@@ -151,4 +151,50 @@ public class TicTacToeHandler {
             }
         });
     }
+
+    public enum TicTacToeCommand {
+        START {
+            @Override
+            public void exec(CommandContext ctx) {
+                try {
+                    TicTacToeHandler.createGame(ctx);
+                } catch (TicTacToeException e) {
+                    ctx.reply(e.getMessage());
+                }
+            }
+        },
+        ACCEPT {
+            @Override
+            public void exec(CommandContext ctx) {
+                if (TicTacToeHandler.acceptGame(ctx)) {
+                    ctx.reply("May the game begin!");
+                }
+            }
+        },
+        PUT {
+            @Override
+            public void exec(CommandContext ctx) {
+                ctx.getChannel().ifPresent(ch -> TicTacToeHandler.of(ch.getId()).ifPresent(h -> 
+                        h.makeTurn(ctx)
+                ));
+            }
+        },
+        INVALID {
+            @Override
+            public void exec(CommandContext ctx) {
+                ctx.reply("Unknown Command!");
+            }
+        };
+
+        public abstract void exec(CommandContext ctx);
+
+        public static TicTacToeCommand get(String key) {
+            for (TicTacToeCommand cmd : values()) {
+                if (cmd.name().equalsIgnoreCase(key)) {
+                    return cmd;
+                }
+            }
+            return INVALID;
+        }
+    }
 }

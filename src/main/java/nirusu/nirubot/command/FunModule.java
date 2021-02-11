@@ -18,8 +18,7 @@ import nirusu.nirubot.util.gelbooru.Option;
 import nirusu.nirubot.util.gelbooru.PostTag;
 import nirusu.nirubot.util.nekolove.NekoLove;
 import nirusu.nirubot.util.nekolove.NekoLove.NekoLoveImage;
-import nirusu.nirubot.util.tictactoe.TicTacToeException;
-import nirusu.nirubot.util.tictactoe.TicTacToeHandler;
+import nirusu.nirubot.util.tictactoe.TicTacToeHandler.TicTacToeCommand;
 import nirusu.nirubot.util.youtubedl.YoutubeDLHandler;
 import nirusu.nirucmd.BaseModule;
 import nirusu.nirucmd.annotation.Command;
@@ -77,7 +76,7 @@ public class FunModule extends BaseModule {
     @Command(key = { "tictactoe", "ttt" }, description = "Play TicTacToe", context = { Channel.Type.GUILD_CATEGORY,
             Channel.Type.GUILD_NEWS, Channel.Type.GUILD_TEXT })
     public void tictactoe() {
-        ctx.getChannel().ifPresent(ch -> ctx.getArgs().ifPresent(args -> {
+        ctx.getArgs().ifPresent(args -> {
 
             if (args.isEmpty()) {
                 return;
@@ -85,32 +84,8 @@ public class FunModule extends BaseModule {
 
             String key = args.get(0);
 
-            if (key.equals("start")) {
-
-                try {
-                    TicTacToeHandler.createGame(ctx);
-                } catch (TicTacToeException e) {
-                    ctx.reply(e.getMessage());
-                    return;
-                }
-
-            } else if (key.equals("accept")) {
-
-                if (TicTacToeHandler.acceptGame(ctx)) {
-                    ctx.reply("May the game begin!");
-                }
-
-            } else {
-                TicTacToeHandler.of(ch.getId()).ifPresent(h -> {
-                    if (key.equals("put")) {
-                        h.makeTurn(ctx);
-                    } else {
-                        ctx.reply("Unknown command!");
-                    }
-                });
-            }
-
-        }));
+            TicTacToeCommand.get(key).exec(ctx);
+        });
     }
 
     @Command(key = { "ytd", "youtubedl", "youtubedownload",
