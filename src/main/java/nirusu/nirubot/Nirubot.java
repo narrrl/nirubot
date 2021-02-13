@@ -21,8 +21,8 @@ import discord4j.rest.util.Color;
 import nirusu.nirubot.core.Config;
 import nirusu.nirubot.core.help.CommandMeta;
 import nirusu.nirubot.core.help.HelpCreator;
-import nirusu.nirubot.listener.DiscordListener;
-import nirusu.nirubot.listener.NiruListener;
+import nirusu.nirubot.service.DiscordListener;
+import nirusu.nirubot.service.NiruListener;
 import nirusu.nirucmd.CommandDispatcher;
 
 import javax.annotation.Nonnull;

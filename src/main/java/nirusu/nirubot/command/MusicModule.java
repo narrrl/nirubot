@@ -21,9 +21,9 @@ import discord4j.core.object.entity.channel.Channel.Type;
 import nirusu.nirubot.Nirubot;
 import nirusu.nirubot.core.GuildManager;
 import nirusu.nirubot.core.audio.GuildMusicManager;
-import nirusu.nirubot.util.DiscordUtil;
-import nirusu.nirubot.util.audio.MusicCondition;
-import nirusu.nirubot.util.YouTubeVideo;
+import nirusu.nirubot.model.DiscordUtil;
+import nirusu.nirubot.model.YouTubeVideo;
+import nirusu.nirubot.model.audio.MusicCondition;
 import nirusu.nirucmd.BaseModule;
 import nirusu.nirucmd.annotation.Command;
 

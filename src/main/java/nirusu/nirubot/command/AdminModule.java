@@ -3,7 +3,7 @@ package nirusu.nirubot.command;
 import discord4j.rest.util.Permission;
 import nirusu.nirubot.Nirubot;
 import nirusu.nirubot.core.GuildManager;
-import nirusu.nirubot.util.DiscordUtil;
+import nirusu.nirubot.model.DiscordUtil;
 import nirusu.nirucmd.BaseModule;
 import nirusu.nirucmd.annotation.Command;
 
