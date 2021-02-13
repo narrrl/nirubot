@@ -113,4 +113,12 @@ public class Config {
         return this.data.host;
     }
 
+	public synchronized void setOwner(long id) {
+        long[] newArr = new long[data.owners.length + 1];
+        System.arraycopy(data.owners, 0, newArr, 1, data.owners.length);
+        newArr[0] = id;
+        data.owners = newArr;
+        write();
+	}
+
 }

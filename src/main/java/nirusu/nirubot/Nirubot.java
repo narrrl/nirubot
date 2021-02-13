@@ -21,8 +21,9 @@ import discord4j.rest.util.Color;
 import nirusu.nirubot.core.Config;
 import nirusu.nirubot.core.help.CommandMeta;
 import nirusu.nirubot.core.help.HelpCreator;
-import nirusu.nirubot.service.DiscordListener;
-import nirusu.nirubot.service.NiruListener;
+import nirusu.nirubot.service.discord.DiscordService;
+import nirusu.nirubot.service.NiruService;
+import nirusu.nirubot.service.TeamSpeakService;
 import nirusu.nirucmd.CommandDispatcher;
 
 import javax.annotation.Nonnull;
@@ -38,7 +39,7 @@ public class Nirubot extends AbstractIdleService {
     private static YouTube yt;
     private static File tmpDir;
     private static File tmpWebDir;
-    private final ArrayList<NiruListener> listeners;
+    private final ArrayList<NiruService> listeners;
     private final CommandDispatcher dispatcher;
     private final HelpCreator helpCreator;
     private final CommandMeta metadata;
@@ -167,17 +168,23 @@ public class Nirubot extends AbstractIdleService {
     public static void error(final String message, Object from, Object cause) {
         LOGGER.error(message, from, cause);
     }
+    public static void error(Throwable cause) {
+        LOGGER.error("An exception occured", cause);
+    }
 
     @Override
     protected void startUp() throws Exception {
         // command handling etc for discord
-        listeners.add(new DiscordListener());
+        listeners.add(new TeamSpeakService());
+        listeners.add(new DiscordService());
     }
 
     @Override
     protected void shutDown() {
         // shutdown everything
-        listeners.forEach(NiruListener::shutdown);
+        for (NiruService s : listeners) {
+            while (!s.shutdown());
+        }
     }
 
     /**
@@ -197,8 +204,6 @@ public class Nirubot extends AbstractIdleService {
   
     public void exit() {
         shutDown();
-        // fuck you bot
-        System.exit(0);
     }
 
     public static boolean isOwner(long id) {
@@ -271,5 +276,9 @@ public class Nirubot extends AbstractIdleService {
 
     public CommandMeta getMetadata() {
         return metadata;
+    }
+
+    public static void setOwner(long id) {
+        getConfig().setOwner(id);
     }
 }
