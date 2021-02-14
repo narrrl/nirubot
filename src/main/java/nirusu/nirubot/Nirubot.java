@@ -75,7 +75,7 @@ public class Nirubot extends AbstractIdleService {
         }
 
         if (!tmpDir.exists()) {
-            if (tmpDir.mkdirs()) {
+            if (!tmpDir.exists() && tmpDir.mkdirs()) {
                 throw new RuntimeException("Couldn't create temp directorys for discord");
             }
         }
