@@ -107,7 +107,7 @@ public class Nirubot extends AbstractIdleService {
         listeners.add(new TeamSpeakService());
 
         for (NiruService s : listeners) {
-            new Thread(s::start).start();
+            new Thread(s, s.name()).start();
         }
     }
 

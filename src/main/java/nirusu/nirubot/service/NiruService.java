@@ -1,6 +1,8 @@
 package nirusu.nirubot.service;
 
-public interface NiruService {
+public interface NiruService extends Runnable {
     void shutdown();
-    void start();
+    default String name() {
+        return this.getClass().getSimpleName();
+    }
 }

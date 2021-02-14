@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import ch.qos.logback.core.net.server.Client;
-import discord4j.common.close.CloseException;
 import discord4j.common.util.Snowflake;
 import discord4j.core.DiscordClient;
 import discord4j.core.GatewayDiscordClient;
@@ -54,7 +52,7 @@ public class DiscordService implements NiruService {
     }
 
     @Override
-    public void start() {
+    public void run() {
         final DiscordClient client = DiscordClient.builder(conf.getToken())
                 .onClientResponse(ResponseFunction.emptyIfNotFound()).build();
 
@@ -84,6 +82,4 @@ public class DiscordService implements NiruService {
                     return gate.onDisconnect();
                 }).block();
     }
-
-
 }

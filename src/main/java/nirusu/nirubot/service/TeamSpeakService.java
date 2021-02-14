@@ -10,7 +10,7 @@ public class TeamSpeakService implements NiruService {
     }
 
     @Override
-    public void start() {
+    public void run() {
         Nirubot.info("TeamSpeak Service is starting!");
 
     }
