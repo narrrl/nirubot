@@ -51,6 +51,10 @@ public final class YoutubeDLHandler {
         }, 1, 1, TimeUnit.DAYS);
     }
 
+    public void shutdown() {
+        usersDownloading.values().forEach(Thread::interrupt);
+    }
+
     public boolean isUserDownloading(Snowflake id) {
         return this.usersDownloading.containsKey(id);
     }

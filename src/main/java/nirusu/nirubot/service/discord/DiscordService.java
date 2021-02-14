@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import ch.qos.logback.core.net.server.Client;
+import discord4j.common.close.CloseException;
 import discord4j.common.util.Snowflake;
 import discord4j.core.DiscordClient;
 import discord4j.core.GatewayDiscordClient;
@@ -20,16 +22,39 @@ import discord4j.store.api.mapping.MappingStoreService;
 import nirusu.nirubot.Nirubot;
 import nirusu.nirubot.core.Config;
 import nirusu.nirubot.model.DiscordUtil;
+import nirusu.nirubot.model.youtubedl.YoutubeDLHandler;
 import nirusu.nirubot.service.NiruService;
 import reactor.core.publisher.Mono;
 
 public class DiscordService implements NiruService {
+    private final Config conf;
     private GatewayDiscordClient gateway;
-    private boolean shutdown;
 
     public DiscordService() {
-        shutdown = false;
-        Config conf = Nirubot.getConfig();
+        conf = Nirubot.getConfig();
+    }
+
+    private <T extends Event> void register(GatewayDiscordClient gateway, EventListener<T> eventListener) {
+        gateway.getEventDispatcher().on(eventListener.eventType())
+                .flatMap(event -> eventListener.execute(event)
+                        .timeout(Duration.ofMinutes(5),
+                                Mono.error(new RuntimeException(String.format("%s timed out", event))))
+                        .onErrorResume(err -> Mono.fromRunnable(() -> Nirubot.error("An exception occured {}", err))))
+                .subscribe(null, Nirubot::error);
+    }
+
+    @Override
+    public synchronized void shutdown() {
+        Nirubot.info("Discord listener is shutting down");
+        YoutubeDLHandler.getInstance().shutdown();
+        gateway.logout()
+            .then(Mono.fromRunnable(
+                () -> Nirubot.info("Discord listener was shutdown"))
+            );
+    }
+
+    @Override
+    public void start() {
         final DiscordClient client = DiscordClient.builder(conf.getToken())
                 .onClientResponse(ResponseFunction.emptyIfNotFound()).build();
 
@@ -60,21 +85,5 @@ public class DiscordService implements NiruService {
                 }).block();
     }
 
-    private <T extends Event> void register(GatewayDiscordClient gateway, EventListener<T> eventListener) {
-        gateway.getEventDispatcher().on(eventListener.eventType())
-                .flatMap(event -> eventListener.execute(event)
-                        .timeout(Duration.ofMinutes(5),
-                                Mono.error(new RuntimeException(String.format("%s timed out", event))))
-                        .onErrorResume(err -> Mono.fromRunnable(() -> Nirubot.error("An exception occured {}", err))))
-                .subscribe(null, Nirubot::error);
-    }
 
-    @Override
-    public boolean shutdown() {
-        if (!shutdown) {
-            Nirubot.info("Discord listener is shutting down");
-            gateway.logout().then(Mono.fromRunnable(() -> shutdown = true));
-        }
-        return shutdown;
-    }
 }

@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 import java.util.stream.Stream;
 
 import com.google.api.client.http.javanet.NetHttpTransport;
@@ -19,7 +20,6 @@ import org.slf4j.LoggerFactory;
 
 import discord4j.rest.util.Color;
 import nirusu.nirubot.core.Config;
-import nirusu.nirubot.core.help.CommandMeta;
 import nirusu.nirubot.core.help.HelpCreator;
 import nirusu.nirubot.service.discord.DiscordService;
 import nirusu.nirubot.service.NiruService;
@@ -39,10 +39,9 @@ public class Nirubot extends AbstractIdleService {
     private static YouTube yt;
     private static File tmpDir;
     private static File tmpWebDir;
-    private final ArrayList<NiruService> listeners;
+    private final List<NiruService> listeners;
     private final CommandDispatcher dispatcher;
     private final HelpCreator helpCreator;
-    private final CommandMeta metadata;
 
     public static Nirubot getNirubot() {
         if (bot == null) {
@@ -76,7 +75,9 @@ public class Nirubot extends AbstractIdleService {
         }
 
         if (!tmpDir.exists()) {
-            tmpDir.mkdirs();
+            if (tmpDir.mkdirs()) {
+                throw new RuntimeException("Couldn't create temp directorys for discord");
+            }
         }
 
         return tmpDir;
@@ -95,11 +96,21 @@ public class Nirubot extends AbstractIdleService {
         super();
         listeners = new ArrayList<>();
 
+
         dispatcher = new CommandDispatcher.Builder()
                 .addPackage("nirusu.nirubot.command").build();
       
         helpCreator = new HelpCreator(dispatcher.getModules());
-        metadata = CommandMeta.getMetadataForCommands();
+    }
+
+    @Override
+    protected void startUp() {
+        listeners.add(new DiscordService());
+        listeners.add(new TeamSpeakService());
+
+        for (NiruService s : listeners) {
+            new Thread(s::start).start();
+        }
     }
 
     public static void main(String[] args) {
@@ -173,18 +184,9 @@ public class Nirubot extends AbstractIdleService {
     }
 
     @Override
-    protected void startUp() throws Exception {
-        // command handling etc for discord
-        listeners.add(new TeamSpeakService());
-        listeners.add(new DiscordService());
-    }
-
-    @Override
     protected void shutDown() {
         // shutdown everything
-        for (NiruService s : listeners) {
-            while (!s.shutdown());
-        }
+        listeners.forEach(NiruService::shutdown);
     }
 
     /**
@@ -235,16 +237,6 @@ public class Nirubot extends AbstractIdleService {
         return this.helpCreator;
     }
 
-    public void cleanTmpDir() {
-        File dir = getTmpDirectory();
-        try {
-            deleteRecursive(dir);
-        } catch (IOException e) {
-            warning(e.getMessage());
-        }
-        dir.mkdirs();
-    }
-
     public static String getTmpDirPath() {
         return getConfig().getTmpDirPath();
     }
@@ -272,10 +264,6 @@ public class Nirubot extends AbstractIdleService {
                 });
             }
         }
-    }
-
-    public CommandMeta getMetadata() {
-        return metadata;
     }
 
     public static void setOwner(long id) {
