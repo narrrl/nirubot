@@ -21,7 +21,7 @@ public class HelpCreator {
     public HelpCreator(@Nonnull Set<Class<? extends BaseModule>> modules) {
         modulesMap = new HashMap<>();
         for (Class<? extends BaseModule> module : modules) {
-            modulesMap.put(module.getSimpleName(), module);
+            modulesMap.put(module.getSimpleName().toLowerCase(), module);
         }
     }
 
@@ -38,7 +38,7 @@ public class HelpCreator {
     private boolean commandContainsKey(Method m, String key) {
         if (m.isAnnotationPresent(Command.class)) {
             for (String keyOfCommand : m.getAnnotation(Command.class).key()) {
-                if (keyOfCommand.equals(key)) {
+                if (keyOfCommand.equalsIgnoreCase(key)) {
                     return true;
                 }
             }
@@ -69,6 +69,6 @@ public class HelpCreator {
     }
 
     public Optional<Class<? extends BaseModule>> getModuleWithName(String moduleName) {
-        return Optional.ofNullable(modulesMap.get(moduleName));
+        return Optional.ofNullable(modulesMap.get(moduleName.toLowerCase()));
     }
 }
