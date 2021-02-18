@@ -36,10 +36,7 @@ public class MessageCreateListener implements EventListener<MessageCreateEvent> 
         String prefix;
 
         if (ctx.isGuild()) {
-            prefix = event.getGuild().blockOptional().map(g -> {
-                GuildManager mg = GuildManager.of(g.getId());
-                return mg.prefix();
-            }).orElse(Nirubot.getDefaultPrefix());
+            prefix = ctx.getGuild().map(g -> GuildManager.of(g.getId()).prefix()).orElse(Nirubot.getDefaultPrefix());
         } else if (ctx.isPrivate()) {
             prefix = "";
         } else {

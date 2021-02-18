@@ -39,7 +39,18 @@ public class YoutubeDl {
         this.webDir.mkdirs();
 
         this.req = new YoutubeDLRequest(videoURL, tmpDir.getAbsolutePath());
-        setOptions(args, req);
+        setOptions(Collections.emptyList(), req);
+    }
+
+    public YoutubeDl(String[] args) throws InvalidYoutubeDlException {
+        String videoURL = getURL(List.of(args));
+        this.randomString = RandomString.getRandomString(4);
+        this.tmpDir = new File(Nirubot.getTmpDirectory().getAbsolutePath().concat(File.separator).concat("teamspeak").concat(File.separator).concat("youtube-dl").concat(File.separator).concat(randomString));
+        this.tmpDir.mkdirs();
+        this.webDir = tmpDir;
+
+        this.req = new YoutubeDLRequest(videoURL, tmpDir.getAbsolutePath());
+        setOptions(List.of(args), req);
     }
 
     public File start() throws InvalidYoutubeDlException {
@@ -77,6 +88,31 @@ public class YoutubeDl {
         return webDir;
     }
 
+    public File getFile() throws InvalidYoutubeDlException {
+        try {
+            YoutubeDL.execute(req);
+        } catch (YoutubeDLException e) {
+            throw new InvalidYoutubeDlException(e.getMessage());
+        }
+
+        if (tmpDir.listFiles().length == 1) {
+            return tmpDir.listFiles()[0];
+        } else {
+
+            // iterate through all the downloaded files
+            File zip;
+            try {
+                // make zip
+                zip = ZipMaker.compressFiles(List.of(tmpDir.listFiles()), randomString + ".zip", tmpDir);
+            } catch (IOException e) {
+                throw new InvalidYoutubeDlException(e.getMessage());
+            }
+            return zip;
+        }
+
+    }
+
+
     private void createZip() throws InvalidYoutubeDlException {
         if (tmpDir.listFiles().length > 1) {
             // hashmap for zip
@@ -105,7 +141,7 @@ public class YoutubeDl {
         request.setOption("quiet");
         request.setOption("no-warnings");
         request.setOption("ignore-errors");
-        request.setOption("o", "%(title).90s.%(ext)s"); // limit output length
+        request.setOption("output", "%(title).90s.%(ext)s"); // limit output length
 
         // specific options by user
         boolean specificFormat = false;

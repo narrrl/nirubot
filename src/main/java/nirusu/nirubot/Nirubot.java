@@ -23,7 +23,7 @@ import nirusu.nirubot.core.Config;
 import nirusu.nirubot.core.help.HelpCreator;
 import nirusu.nirubot.service.discord.DiscordService;
 import nirusu.nirubot.service.NiruService;
-import nirusu.nirubot.service.TeamSpeakService;
+import nirusu.nirubot.service.teamspeak.TeamSpeakService;
 import nirusu.nirucmd.CommandDispatcher;
 
 import javax.annotation.Nonnull;
@@ -97,7 +97,7 @@ public class Nirubot extends AbstractIdleService {
 
         dispatcher = new CommandDispatcher.Builder()
                 .addPackage("nirusu.nirubot.command").build();
-      
+
         helpCreator = new HelpCreator(dispatcher.getModules());
     }
 
@@ -201,7 +201,7 @@ public class Nirubot extends AbstractIdleService {
         return Color.of(0, 153, 255);
     }
 
-  
+
     public void exit() {
         shutDown();
     }

@@ -17,11 +17,11 @@ public class ZipMaker {
 
     public static File compressFiles(List<File> files, final String name, final File tmpDir) throws IOException {
 
-        tmpDir.mkdir();
+        if (!tmpDir.exists()) tmpDir.mkdirs();
 
         File out = new File(tmpDir.getAbsolutePath() + File.separator + name);
 
-        Files.delete(out.toPath());
+        if (out.exists()) Files.delete(out.toPath());
 
         Files.createFile(out.toPath());
 
