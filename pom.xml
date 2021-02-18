@@ -72,7 +72,7 @@
     <dependency>
       <groupId>com.discord4j</groupId>
       <artifactId>discord4j-core</artifactId>
-      <version>3.2.0-M1</version>
+      <version>3.1.3</version>
     </dependency>
     <dependency>
       <groupId>ch.qos.logback</groupId>
@@ -98,6 +98,11 @@
       <groupId>com.fasterxml.jackson.dataformat</groupId>
       <artifactId>jackson-dataformat-yaml</artifactId>
       <version>2.12.1</version>
+    </dependency>
+    <dependency>
+      <groupId>com.github.theholywaffle</groupId>
+      <artifactId>teamspeak3-api</artifactId>
+      <version>1.2.0</version>
     </dependency>
   </dependencies>
 
