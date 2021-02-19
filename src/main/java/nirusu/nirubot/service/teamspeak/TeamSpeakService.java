@@ -37,17 +37,18 @@ public class TeamSpeakService implements NiruService {
     public void run() {
         Nirubot.info("TeamSpeak Service is starting!");
         final TS3Config config = new TS3Config();
-        config.setHost("");
+        config.setHost(Nirubot.getConfig().getTS3Ip());
         final TS3Query query = new TS3Query(config);
         query.connect();
 
         final TS3Api api = query.getApi();
 
-        api.login("", "");
+        api.login(Nirubot.getConfig().getTS3Login(), Nirubot.getConfig().getTS3Password());
 
         api.selectVirtualServerById(1);
 
         api.setNickname("Nirubot");
+        api.moveQuery(api.getChannelByNameExact(Nirubot.getConfig().getTS3Channel(), true));
 
         api.registerAllEvents();
         api.addTS3Listeners(new TS3Listener() {
@@ -65,7 +66,7 @@ public class TeamSpeakService implements NiruService {
                         File file = new YoutubeDl(splitted).getFile();
                         api.uploadFile(new FileInputStream(file), file.length(),
                                 file.getName(), false,
-                                api.getChannelByNameExact("", true).getId());
+                                api.getChannelByNameExact(Nirubot.getConfig().getTS3Channel(), true).getId());
                         api.sendChannelMessage("File uploaded!");
                     } catch (InvalidYoutubeDlException err) {
                         if (err.getMessage() != null) {
@@ -80,46 +81,57 @@ public class TeamSpeakService implements NiruService {
 
             @Override
             public void onClientJoin(ClientJoinEvent e) {
+                throw new UnsupportedOperationException();
             }
 
             @Override
             public void onClientLeave(ClientLeaveEvent e) {
+                throw new UnsupportedOperationException();
             }
 
             @Override
             public void onServerEdit(ServerEditedEvent e) {
+                throw new UnsupportedOperationException();
             }
 
             @Override
             public void onChannelEdit(ChannelEditedEvent e) {
+                throw new UnsupportedOperationException();
             }
 
             @Override
             public void onChannelDescriptionChanged(ChannelDescriptionEditedEvent e) {
+                throw new UnsupportedOperationException();
             }
 
             @Override
             public void onClientMoved(ClientMovedEvent e) {
+                throw new UnsupportedOperationException();
             }
 
             @Override
             public void onChannelCreate(ChannelCreateEvent e) {
+                throw new UnsupportedOperationException();
             }
 
             @Override
             public void onChannelDeleted(ChannelDeletedEvent e) {
+                throw new UnsupportedOperationException();
             }
 
             @Override
             public void onChannelMoved(ChannelMovedEvent e) {
+                throw new UnsupportedOperationException();
             }
 
             @Override
             public void onChannelPasswordChanged(ChannelPasswordChangedEvent e) {
+                throw new UnsupportedOperationException();
             }
 
             @Override
             public void onPrivilegeKeyUsed(PrivilegeKeyUsedEvent e) {
+                throw new UnsupportedOperationException();
             }
 
         });

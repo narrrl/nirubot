@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 
+import com.google.gson.annotations.SerializedName;
+
 import nirusu.nirubot.Nirubot;
 
 /**
@@ -30,6 +32,14 @@ public class Config {
         private String host;
         private String tmpDirPath;
         private long[] owners;
+        @SerializedName("ts3-channel")
+        private String ts3ChannelName;
+        @SerializedName("ts3-login")
+        private String ts3ServerLogin;
+        @SerializedName("ts3-password")
+        private String ts3ServerPassword;
+        @SerializedName("ts3-ip")
+        private String ts3Ip;
     }
 
     public Config() throws IOException {
@@ -69,6 +79,22 @@ public class Config {
     public synchronized void setActivityType(final String newType) {
         data.activityType = newType;
         write();
+    }
+
+    public String getTS3Channel() {
+        return data.ts3ChannelName;
+    }
+
+    public String getTS3Login() {
+        return data.ts3ServerLogin;
+    }
+
+    public String getTS3Password() {
+        return data.ts3ServerPassword;
+    }
+
+    public String getTS3Ip() {
+        return data.ts3Ip;
     }
 
     public String getToken() {

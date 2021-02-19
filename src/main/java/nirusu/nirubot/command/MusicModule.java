@@ -21,39 +21,41 @@ import discord4j.core.object.entity.channel.Channel.Type;
 import nirusu.nirubot.Nirubot;
 import nirusu.nirubot.core.GuildManager;
 import nirusu.nirubot.core.audio.GuildMusicManager;
+import nirusu.nirubot.core.audio.ResultHandler;
 import nirusu.nirubot.model.DiscordUtil;
 import nirusu.nirubot.model.YouTubeVideo;
 import nirusu.nirubot.model.audio.MusicCondition;
 import nirusu.nirucmd.BaseModule;
 import nirusu.nirucmd.annotation.Command;
 
+
+/**
+ * Ok fuck this. This shit needs to be redesigned from ground up.
+ * 
+ */
+@Deprecated
 public class MusicModule extends BaseModule {
     private static final String NEXT_ARGUMENT = "-next";
 
     @Command(key = { "p", "play", "pl" }, description = "Plays a song", context = { Type.GUILD_CATEGORY,
             Type.GUILD_NEWS, Type.GUILD_TEXT })
     public void play() {
-        if (!MusicCondition.checkConditions(ctx, MusicCondition.USER_CONNECTED)) {
-            return;
-        }
         ctx.getGuild().ifPresent(guild -> ctx.getArgs().ifPresent(args -> {
             String link;
             GuildMusicManager musicManager = GuildMusicManager.of(guild.getId());
 
-            if (args.size() == 1) {
-                link = args.get(0);
-                ctx.getAuthorVoiceState().flatMap(state -> state.getChannel().blockOptional()).ifPresent(ch -> {
-                    musicManager.loadAndPlay(link, ctx);
-                    ch.join(con -> con.setProvider(musicManager.getProvider())).block();
-                });
-            } else if (args.size() == 2 && args.get(0).equals(NEXT_ARGUMENT)) {
-                link = args.get(1);
-                ctx.getAuthorVoiceState().flatMap(state -> state.getChannel().blockOptional()).ifPresent(ch -> {
-                    musicManager.loadAndPlayNext(link, ctx);
-                    ch.join(con -> con.setProvider(musicManager.getProvider())).block();
-                });
+            if (args.size() != 1) {
+                return;
             }
 
+            link = args.get(0);
+
+            musicManager.setVolume(GuildManager.of(guild.getId()).volume());
+
+            ctx.getAuthorVoiceState().ifPresent(state -> 
+                musicManager.play(state, link, new ResultHandler.Builder(musicManager).setCTX(ctx).build())
+                    .ifPresent(result -> ctx.reply(result.getOutput()))
+            );
         }));
 
     }
@@ -61,11 +63,6 @@ public class MusicModule extends BaseModule {
     @Command(key = { "skip", "next", "s", "sk" }, description = "Skips the current song", context = {
             Type.GUILD_CATEGORY, Type.GUILD_NEWS, Type.GUILD_TEXT })
     public void skip() {
-
-        if (!MusicCondition.checkConditions(ctx, MusicCondition.SAME_VOICE_CHANNEL, MusicCondition.MUSIC_PLAYING)) {
-            return;
-        }
-
         ctx.getGuild().ifPresent(guild -> ctx.getArgs().ifPresent(args -> {
             if (!args.isEmpty()) {
                 return;
@@ -132,12 +129,9 @@ public class MusicModule extends BaseModule {
                 return;
             }
 
-            if (!MusicCondition.checkConditions(ctx, MusicCondition.USER_CONNECTED)) {
-                return;
-            }
-
             GuildMusicManager manager = GuildMusicManager.of(guild.getId());
-            joinChannel(manager);
+
+            ctx.getAuthorVoiceState().ifPresent(state -> manager.join(state).ifPresent(result -> ctx.reply(result.getOutput())));
         });
     }
 
@@ -154,7 +148,7 @@ public class MusicModule extends BaseModule {
                 return;
             }
 
-            disconnectChannel();
+            GuildMusicManager.of(guild.getId()).disconnect();
             GuildMusicManager.destroy(guild.getId());
         }));
     }

@@ -4,5 +4,9 @@
     "activityType":"listening",
     "token":"YOUR BOT TOKEN",
     "owners":[208979474988007425,208981656999034890],
-    "googleApiToken": "YOUR_GOOGLE_API_TOKEN"
+    "googleApiToken": "YOUR_GOOGLE_API_TOKEN",
+    "ts3-ip": "server.ip",
+    "ts3-login": "username",
+    "ts3-password": "password",
+    "ts3-channel": "channel-name"
 }
