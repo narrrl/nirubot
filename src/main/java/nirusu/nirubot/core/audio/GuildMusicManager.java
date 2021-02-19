@@ -1,6 +1,5 @@
 package nirusu.nirubot.core.audio;
 
-import java.lang.StackWalker.Option;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -15,12 +14,10 @@ import com.sedmelluq.discord.lavaplayer.track.playback.NonAllocatingAudioFrameBu
 
 import discord4j.common.util.Snowflake;
 import discord4j.core.object.VoiceState;
-import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.channel.VoiceChannel;
 import discord4j.voice.VoiceConnection;
 import nirusu.nirubot.core.Result;
 import nirusu.nirubot.core.Result.ResultType;
-import nirusu.nirucmd.CommandContext;
 import reactor.core.publisher.Mono;
 
 /**
