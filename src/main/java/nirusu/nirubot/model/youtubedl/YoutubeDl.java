@@ -20,6 +20,7 @@ import nirusu.nirubot.model.ZipMaker;
 import nirusu.nirucmd.CommandContext;
 
 public class YoutubeDl {
+    private static final long MAX_FILE_SIZE = 8388119;
     private static final Pattern URL_REGEX = Pattern
             .compile("^(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]");
     private static final Pattern OPTION_REGEX = Pattern.compile("-.+");
@@ -62,7 +63,7 @@ public class YoutubeDl {
         }
 
         // return if file can be send directly
-        if (tmpDir.listFiles().length == 1 && tmpDir.listFiles()[0].length() < CommandContext.getMaxFileSize()) {
+        if (tmpDir.listFiles().length == 1 && tmpDir.listFiles()[0].length() < MAX_FILE_SIZE) {
             return tmpDir.listFiles()[0];
         }
 

@@ -81,57 +81,46 @@ public class TeamSpeakService implements NiruService {
 
             @Override
             public void onClientJoin(ClientJoinEvent e) {
-                throw new UnsupportedOperationException();
             }
 
             @Override
             public void onClientLeave(ClientLeaveEvent e) {
-                throw new UnsupportedOperationException();
             }
 
             @Override
             public void onServerEdit(ServerEditedEvent e) {
-                throw new UnsupportedOperationException();
             }
 
             @Override
             public void onChannelEdit(ChannelEditedEvent e) {
-                throw new UnsupportedOperationException();
             }
 
             @Override
             public void onChannelDescriptionChanged(ChannelDescriptionEditedEvent e) {
-                throw new UnsupportedOperationException();
             }
 
             @Override
             public void onClientMoved(ClientMovedEvent e) {
-                throw new UnsupportedOperationException();
             }
 
             @Override
             public void onChannelCreate(ChannelCreateEvent e) {
-                throw new UnsupportedOperationException();
             }
 
             @Override
             public void onChannelDeleted(ChannelDeletedEvent e) {
-                throw new UnsupportedOperationException();
             }
 
             @Override
             public void onChannelMoved(ChannelMovedEvent e) {
-                throw new UnsupportedOperationException();
             }
 
             @Override
             public void onChannelPasswordChanged(ChannelPasswordChangedEvent e) {
-                throw new UnsupportedOperationException();
             }
 
             @Override
             public void onPrivilegeKeyUsed(PrivilegeKeyUsedEvent e) {
-                throw new UnsupportedOperationException();
             }
 
         });

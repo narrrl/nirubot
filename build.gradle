@@ -49,7 +49,7 @@ dependencies {
     implementation('com.google.code.gson:gson:2.8.6')
     implementation('com.google.apis:google-api-services-youtube:v3-rev20200618-1.30.9')
     implementation('com.github.sapher:youtubedl-java:1.+')
-    implementation('com.github.nirusu99:niru-cmdd:0.1.5')
+    implementation('com.github.nirusu99:niru-cmdd:0.1.6')
     implementation group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-yaml', version: '2.12.1'
     implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.0.1'
     implementation group: 'com.github.theholywaffle', name: 'teamspeak3-api', version: '1.2.+'
