@@ -40,7 +40,7 @@ public class YoutubeDl {
         this.webDir.mkdirs();
 
         this.req = new YoutubeDLRequest(videoURL, tmpDir.getAbsolutePath());
-        setOptions(Collections.emptyList(), req);
+        setOptions(args, req);
     }
 
     public YoutubeDl(String[] args) throws InvalidYoutubeDlException {
