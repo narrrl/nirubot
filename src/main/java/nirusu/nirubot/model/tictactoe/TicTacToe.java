@@ -9,7 +9,7 @@ public class TicTacToe {
     private static final String CANNOT_PLACE = "You can't place here";
     private static final String PLAYER_WON = "Player {} won the game!";
     private static final String DRAW = "Draw!";
-    private static final float EPSILON = 0.0EPSILON;
+    private static final float EPSILON = 1.0E-4f;
     private final Player one;
     private final Player two;
     private final TicTacToeBoard board;
