@@ -1,6 +1,7 @@
 package nirusu.nirubot.model.tictactoe;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -25,6 +26,16 @@ public class TicTacToe {
 
         this.board = new TicTacToeBoard(boardSize);
         isRunning = true;
+    }
+
+    public synchronized String surrender(Player p) {
+
+        this.isRunning = false;
+
+        if (p.equals(one)) {
+            return board.toString() + "\n\n" + PLAYER_WON.replace("{}", two.toString());
+        }
+        return board.toString() + "\n\n" + PLAYER_WON.replace("{}", one.toString());
     }
 
     public synchronized String makeTurn(int x, int y, Player p) {

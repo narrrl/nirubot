@@ -2,6 +2,7 @@ package nirusu.nirubot.model.tictactoe;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -152,6 +153,29 @@ public class TicTacToeHandler {
         });
     }
 
+    public void surrender(CommandContext ctx) {
+        if (!isRunning) {
+            ctx.reply("Game is not running!");
+            return;
+        }
+
+        if (ctx.getArgs().map(List::size).orElse(-1) != 1) {
+            return;
+        }
+
+        ctx.getAuthor().ifPresent(u -> players.computeIfPresent(u.getId(), (key, p) -> {
+            ctx.reply(game.surrender(p));
+            return p;
+        }));
+
+        ctx.getChannel().ifPresent(ch -> {
+            if (game.hasEnded()) {
+                games.remove(ch.getId());
+            }
+        });
+
+    }
+
     public enum TicTacToeCommand {
         START {
             @Override
@@ -174,8 +198,16 @@ public class TicTacToeHandler {
         PUT {
             @Override
             public void exec(CommandContext ctx) {
-                ctx.getChannel().ifPresent(ch -> TicTacToeHandler.of(ch.getId()).ifPresent(h -> 
+                ctx.getChannel().ifPresent(ch -> TicTacToeHandler.of(ch.getId()).ifPresent(h ->
                         h.makeTurn(ctx)
+                ));
+            }
+        },
+        SURRENDER {
+            @Override
+            public void exec(CommandContext ctx) {
+                ctx.getChannel().ifPresent(ch -> TicTacToeHandler.of(ch.getId()).ifPresent(h ->
+                            h.surrender(ctx)
                 ));
             }
         },
