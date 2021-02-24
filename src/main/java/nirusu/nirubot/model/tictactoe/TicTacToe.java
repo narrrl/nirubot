@@ -9,6 +9,7 @@ public class TicTacToe {
     private static final String CANNOT_PLACE = "You can't place here";
     private static final String PLAYER_WON = "Player {} won the game!";
     private static final String DRAW = "Draw!";
+    private static final float EPSILON = 0.0EPSILON;
     private final Player one;
     private final Player two;
     private final TicTacToeBoard board;
@@ -38,13 +39,13 @@ public class TicTacToe {
         for (Player pl : Arrays.asList(one, two)) {
             if (hasWone(pl)) {
                 isRunning = false;
-                return board.toString() + "\n" + PLAYER_WON.replace("{}", p.toString());
+                return board.toString() + "\n\n" + PLAYER_WON.replace("{}", p.toString());
             }
         }
 
         if (!canWin(one) && !canWin(two)) {
             isRunning = false;
-            return board.toString() + "\n" + DRAW;
+            return board.toString() + "\n\n" + DRAW;
         }
 
         advanceUser();
@@ -69,8 +70,8 @@ public class TicTacToe {
             dia += board.get(i, i).numeric();
             secDia += board.get(board.size() - 1 - i, i).numeric();
 
-            if (Math.abs(dia / board.size() - p.numeric()) < 0.01
-                    || Math.abs(secDia / board.size() - p.numeric()) < 0.01) {
+            if (Math.abs(dia / board.size() - p.numeric()) < EPSILON
+                    || Math.abs(secDia / board.size() - p.numeric()) < EPSILON) {
                 return true;
             }
 
@@ -83,8 +84,8 @@ public class TicTacToe {
 
             }
 
-            if (Math.abs(col / board.size() - p.numeric()) < 0.01
-                    || Math.abs(row / board.size() - p.numeric()) < 0.01) {
+            if (Math.abs(col / board.size() - p.numeric()) < EPSILON
+                    || Math.abs(row / board.size() - p.numeric()) < EPSILON) {
                 return true;
             }
         }
