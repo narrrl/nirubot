@@ -60,7 +60,7 @@ public class FunModule extends BaseModule {
             char c = num == 0 ? Character.toUpperCase(ch[i]) : Character.toLowerCase(ch[i]);
             builder.append(c);
         }
-        ctx.reply(builder.toString());
+        ctx.send(builder.toString());
         ctx.getSelfMember().flatMap(u -> u.getBasePermissions().blockOptional()).ifPresent(perms -> {
             if (perms.contains(Permission.ADMINISTRATOR) || perms.contains(Permission.MANAGE_MESSAGES)) {
                 ctx.getEvent().getMessage().delete().block();
