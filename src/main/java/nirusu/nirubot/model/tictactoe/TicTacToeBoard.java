@@ -5,7 +5,7 @@ package nirusu.nirubot.model.tictactoe;
  * {@link nirusu.nirubot.model.tictactoe.Player#empty()}
  */
 public class TicTacToeBoard {
-    private Player[][] board;
+    private final Player[][] board;
 
     public TicTacToeBoard(int boardSize) {
         if (boardSize < 1) {
@@ -54,8 +54,8 @@ public class TicTacToeBoard {
     public String toString() {
         StringBuilder out = new StringBuilder();
         for (int i = 0; i < board.length; i++) {
-            for (int j = 0; j < board.length; j++) {
-                out.append(board[j][i]);
+            for (Player[] players : board) {
+                out.append(players[i]);
             }
             out.append("\n");
         }

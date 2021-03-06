@@ -267,8 +267,9 @@ public class Nirubot extends AbstractIdleService {
     public static void setOwner(long id) {
         boolean doesContain = false;
         for (long i : getConfig().getOwners()) {
-            if (i == id ) {
+            if (i == id) {
                 doesContain = true;
+                break;
             }
         }
         if (!doesContain) {

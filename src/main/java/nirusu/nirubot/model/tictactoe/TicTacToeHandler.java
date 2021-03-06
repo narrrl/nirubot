@@ -51,8 +51,8 @@ public class TicTacToeHandler {
         return Optional.ofNullable(games.get(channelId));
     }
 
-    public static TicTacToeHandler createGame(CommandContext ctx) {
-        return ctx.getEvent().getMessage().getUserMentions().collectList().blockOptional().map(users -> {
+    public static void createGame(CommandContext ctx) {
+        ctx.getEvent().getMessage().getUserMentions().collectList().blockOptional().map(users -> {
             if (users.size() != 1) {
                 throw new TicTacToeException(TOO_MANY_USER_ERROR);
             }
@@ -88,27 +88,23 @@ public class TicTacToeHandler {
     }
 
     public static boolean acceptGame(CommandContext ctx) {
-        return ctx.getArgs().map(args -> {
-
-            return ctx.getChannel().map(ch -> {
-                TicTacToeHandler handler = games.get(ch.getId());
-                if (handler == null) {
-                    return false;
-                }
-                boolean accepted = handler.accept(ctx.getAuthor().map(User::getId).orElse(null));
-                if (accepted) {
-                    ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
-                    executor.schedule(() -> {
-                        if (games.containsKey(ch.getId())) {
-                            games.remove(ch.getId());
-                            ctx.reply("Game has been cancelled!");
-                        }
-                    }, 15, TimeUnit.MINUTES);
-                }
-                return accepted;
-            }).orElse(false);
-
-        }).orElse(false);
+        return ctx.getArgs().map(args -> ctx.getChannel().map(ch -> {
+            TicTacToeHandler handler = games.get(ch.getId());
+            if (handler == null) {
+                return false;
+            }
+            boolean accepted = handler.accept(ctx.getAuthor().map(User::getId).orElse(null));
+            if (accepted) {
+                ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+                executor.schedule(() -> {
+                    if (games.containsKey(ch.getId())) {
+                        games.remove(ch.getId());
+                        ctx.reply("Game has been cancelled!");
+                    }
+                }, 15, TimeUnit.MINUTES);
+            }
+            return accepted;
+        }).orElse(false)).orElse(false);
     }
 
     private boolean accept(Snowflake user) {
@@ -198,17 +194,15 @@ public class TicTacToeHandler {
         PUT {
             @Override
             public void exec(CommandContext ctx) {
-                ctx.getChannel().ifPresent(ch -> TicTacToeHandler.of(ch.getId()).ifPresent(h ->
-                        h.makeTurn(ctx)
-                ));
+                ctx.getChannel().flatMap(ch -> TicTacToeHandler.of(ch.getId())).ifPresent(h ->
+                        h.makeTurn(ctx));
             }
         },
         SURRENDER {
             @Override
             public void exec(CommandContext ctx) {
-                ctx.getChannel().ifPresent(ch -> TicTacToeHandler.of(ch.getId()).ifPresent(h ->
-                            h.surrender(ctx)
-                ));
+                ctx.getChannel().flatMap(ch -> TicTacToeHandler.of(ch.getId())).ifPresent(h ->
+                        h.surrender(ctx));
             }
         },
         INVALID {

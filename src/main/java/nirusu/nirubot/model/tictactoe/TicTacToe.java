@@ -1,7 +1,6 @@
 package nirusu.nirubot.model.tictactoe;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -54,7 +53,7 @@ public class TicTacToe {
             }
         }
 
-        if (!canWin(one) && !canWin(two)) {
+        if (cantWin(one) && cantWin(two)) {
             isRunning = false;
             return board.toString() + "\n\n" + DRAW;
         }
@@ -103,7 +102,7 @@ public class TicTacToe {
         return false;
     }
 
-    private boolean canWin(Player p) {
+    private boolean cantWin(Player p) {
         Set<Player> dia = new HashSet<>();
         Set<Player> secDia = new HashSet<>();
         Player o = getOtherPlayer(p);
@@ -113,7 +112,7 @@ public class TicTacToe {
             secDia.add(board.get(board.size() - 1 - i, i));
 
             if (i == board.size() - 1 && (!dia.contains(o) || !secDia.contains(o))) {
-                return true;
+                return false;
             }
 
             Set<Player> col = new HashSet<>();
@@ -126,10 +125,10 @@ public class TicTacToe {
             }
 
             if (!col.contains(o) || !row.contains(o)) {
-                return true;
+                return false;
             }
         }
-        return false;
+        return true;
     }
 
     private Player getOtherPlayer(Player p) {

@@ -6,7 +6,7 @@ public class Player {
         NONE = new Player(Symbol.NONE);
     }
 
-    private Symbol symbol;
+    private final Symbol symbol;
 
     public Player(Symbol symbol) {
         this.symbol = symbol;
@@ -14,8 +14,8 @@ public class Player {
 
     public enum Symbol {
         ONE("⭕", -1), TWO("❌", 1), NONE("⬛", 0);
-        private String repr;
-        private int num;
+        private final String repr;
+        private final int num;
 
         Symbol(final String repr, final int num) {
             this.repr = repr;
