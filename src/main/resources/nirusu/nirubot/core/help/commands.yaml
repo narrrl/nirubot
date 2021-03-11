@@ -24,6 +24,10 @@
     This command prints out some information about this application
   syntax: "<prefix>info"
 # admin module
+- name: "servericon"
+  description: >
+    Gets the current servericon, what did you excpect?
+  syntax: "<prefix>servericon"
 - name: "shutdown"
   description: >
     This command is for the bot owner only and it shutdowns the bot.

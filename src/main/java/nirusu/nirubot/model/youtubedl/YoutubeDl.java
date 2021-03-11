@@ -17,7 +17,6 @@ import nirusu.nirubot.Nirubot;
 import nirusu.nirubot.model.IndexCreator;
 import nirusu.nirubot.model.RandomString;
 import nirusu.nirubot.model.ZipMaker;
-import nirusu.nirucmd.CommandContext;
 
 public class YoutubeDl {
     private static final long MAX_FILE_SIZE = 8388119;

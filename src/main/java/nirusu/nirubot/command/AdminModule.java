@@ -1,6 +1,7 @@
 package nirusu.nirubot.command;
 
 import discord4j.rest.util.Permission;
+import discord4j.rest.util.Image.Format;
 import nirusu.nirubot.Nirubot;
 import nirusu.nirubot.core.GuildManager;
 import nirusu.nirubot.model.DiscordUtil;
@@ -48,6 +49,16 @@ public class AdminModule extends BaseModule {
             DiscordUtil.getActivityUpdateRequest(args).ifPresentOrElse(req -> DiscordUtil.setActivity(ctx, req),
                     () -> ctx.reply("Invalid activity type!"));
         });
+    }
+
+
+    @Command(key = "servericon")
+    public void servericon() {
+        if (!ctx.getArgsOrEmpty().isEmpty()) {
+            return;
+        }
+
+        ctx.getGuild().ifPresent(guild -> ctx.reply(guild.getIconUrl(Format.UNKNOWN).orElse("No ICON").replace(".UNKNOWN", "")));
     }
 
 }
