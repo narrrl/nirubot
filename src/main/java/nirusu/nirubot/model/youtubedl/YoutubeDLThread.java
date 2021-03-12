@@ -56,7 +56,7 @@ public final class YoutubeDLThread extends Thread {
             }, 10, TimeUnit.MINUTES);
         }
         if (out.length() > ctx.getMaxFileSize() || out.isDirectory()) {
-            ctx.reply(String.format("You can download %s here: %s%s %s", out.getName(),
+            ctx.reply(String.format("You can download %s here: %s%s/ %s", out.getName(),
                     Nirubot.getHost() + Nirubot.getTmpDirPath(), out.getName(), author.getMention()));
             return;
         }
