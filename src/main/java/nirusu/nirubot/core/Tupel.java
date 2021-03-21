@@ -13,11 +13,11 @@ public class Tupel<T, E> {
         this.second = second;
     }
 
-    private T getFirst() {
+    public T getFirst() {
         return this.first;
     }
 
-    private E getSecond() {
+    public E getSecond() {
         return this.second;
     }
     

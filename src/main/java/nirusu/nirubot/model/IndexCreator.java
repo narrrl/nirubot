@@ -1,6 +1,8 @@
 package nirusu.nirubot.model;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -8,14 +10,32 @@ import java.nio.file.Files;
 import nirusu.nirubot.Nirubot;
 
 public final class IndexCreator {
-    private static final String FIRST_HALF = "<!DOCTYPE html><html><head profile=\"https://nirusu99.de/\"><meta charset=\"utf-16\">"
-            + "<link rel=\"icon\" type=\"image/png\" href=\"/img/favicon.png\"><link rel=\"stylesheet\" href=\"/css/style.css\"><html>"
-            + "<head><title>Home - Nirusu99.de</title></head><body><div class=\"topnav\"><a class=\"active\" href=\"/\">Home</a>"
-            + "<a href=\"/videos\">Videos</a><a href=\"http://nirusu99.de:8123/\">Minecraft Server Map</a><a href=\"/uni\">Uni-Material</a>"
-            + "<a href=\"/downloads\">Downloads</a></div>";
-    private static final String SECOND_HALF = "</body></html>";
+    private static String index = null;
 
     private IndexCreator() {
+    }
+
+    public static String getIndex() throws IOException {
+        if (index == null) {
+
+            try (var in = new BufferedReader(new FileReader(
+                    new File(System.getProperty("user.dir").concat(File.separator).concat("index.html"))))) {
+
+                StringBuilder sb = new StringBuilder();
+
+                String line = null;
+
+                while ((line = in.readLine()) != null) {
+                    sb.append(line);
+                }
+
+                index = sb.toString();
+            }
+            if (index == null)
+                throw new IOException("Example Index not found");
+        }
+
+        return index;
     }
 
     public static void createIndex(File dir) throws IOException {
@@ -23,11 +43,12 @@ public final class IndexCreator {
             return;
         }
 
-        File index = new File(dir.getAbsolutePath() + File.separator + "index.html");
+        String example = IndexCreator.getIndex();
 
-        Files.createFile(index.toPath());
+        File indexFile = new File(dir.getAbsolutePath() + File.separator + "index.html");
+        Files.createFile(indexFile.toPath());
 
-        StringBuilder content = new StringBuilder().append(FIRST_HALF + "<ul style=\"line-height:1.5\">");
+        StringBuilder content = new StringBuilder();
 
         File zip = null;
 
@@ -36,20 +57,18 @@ public final class IndexCreator {
                 zip = f;
             } else if (!f.getName().endsWith(".html")) {
                 String[] arr = f.toURI().toString().split(dir.toString());
-                content.append("<li><a href=\".").append(arr[1]).append("\">").append(f.getName()).append("</a></li>");
+                content.append("<dt><a href=\"./").append(arr[1]).append("\">").append(f.getName()).append("</a></dt>");
             }
         }
 
-        content.append("</ul>");
+        example = example.replace("LIST_CONTENT", content.toString());
 
         if (zip != null) {
-            content.append("<a href=\"./").append(zip.getName()).append("\">Download all!</a>");
+            example = example.replace("ZIP_NAME", zip.getName());
         }
 
-        content.append(SECOND_HALF);
-
         try (FileWriter writer = new FileWriter(index)) {
-            writer.write(content.toString());
+            writer.write(example);
             writer.flush();
         } catch (IOException e) {
             Nirubot.error(e.getMessage(), e);
