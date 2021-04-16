@@ -33,7 +33,8 @@ import nirusu.nirucmd.annotation.Command;
  * TODO:
  * Ok fuck this. This shit needs to be redesigned from ground up.
  *
- * <h1> Ideas <\h1>
+ * <h1> Ideas </h1>
+ * 
  * <ul>
  *  <li> Move the whole logic to another object, that every command is basically just a method call with IO for the user
  *  <li> {@link nirusu.nirubot.core.audio.GuildMusicManager} needs some redesign too. Shouldn't do any IO.

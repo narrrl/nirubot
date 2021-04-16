@@ -13,12 +13,12 @@ import javax.annotation.Nonnull;
 
 public class TagCombination implements Comparable<TagCombination> {
     private final Set<Operator> possibleOperator;
-    private final List<String> tags;
+    private final List<Tag> tags;
 
     /**
      * Case sensitive convert @param tags to upper case first
      */
-    public TagCombination(final List<String> tags) {
+    public TagCombination(final List<Tag> tags) {
         this.tags = new ArrayList<>();
         this.tags.addAll(tags);
         this.possibleOperator = new HashSet<>();
@@ -37,8 +37,8 @@ public class TagCombination implements Comparable<TagCombination> {
     @Override
     public int hashCode() {
         int hash = 0;
-        for (String str : tags) {
-            hash += str.hashCode();
+        for (Tag t : tags) {
+            hash += t.hashCode();
         }
         return hash;
     }
@@ -50,14 +50,14 @@ public class TagCombination implements Comparable<TagCombination> {
      * @return true if operator has the right tags
      */
     public boolean accepts(Operator o) {
-        for (String tag : tags) {
+        for (Tag tag : tags) {
             if (!o.hasTag(tag)) {
                 return false;
             }
         }
 
         // you cant get an 6 star without TOP_OPERATOR tag
-        return o.getRarity() != 6 || tags.contains("TOP_OPERATOR");
+        return o.getRarity() != 6 || tags.stream().anyMatch(t -> t.getTag(Language.EN).equalsIgnoreCase("Top Operator"));
     }
 
     @Override
@@ -76,13 +76,12 @@ public class TagCombination implements Comparable<TagCombination> {
         return !possibleOperator.isEmpty();
     }
 
-    @Override
-    public String toString() {
+    public String toString(Language lang) {
         StringBuilder out = new StringBuilder();
         List<Operator> ops = possibleOperator.stream().sorted(Comparator.comparingInt(Operator::getRarity))
                 .collect(Collectors.toList());
         out.append("**");
-        tags.forEach(str -> out.append(str).append(","));
+        tags.forEach(str -> out.append(str.getTag(lang)).append(","));
         out.replace(out.length() - 1, out.length(), "");
         out.append("**\n");
         ops.forEach(op -> out.append(op).append(" "));
@@ -90,17 +89,17 @@ public class TagCombination implements Comparable<TagCombination> {
     }
 
     // when the embed is bigger than 2048 because of hyperlinks
-    public List<String> toStringAsList() {
+    public List<String> toStringAsList(Language lang) {
         List<String> strings = new ArrayList<>();
         List<Operator> ops = possibleOperator.stream().sorted(Comparator.comparingInt(Operator::getRarity))
                 .collect(Collectors.toList());
         StringBuilder str = new StringBuilder();
         str.append("\n**");
-        tags.forEach(tagsStr -> str.append(tagsStr).append(","));
+        tags.forEach(tagsStr -> str.append(tagsStr.getTag(lang)).append(","));
         str.replace(str.length() - 1, str.length(), "");
         str.append("**\n");
         strings.add(str.toString());
-        ops.forEach(op -> strings.add(op.toString()));
+        ops.forEach(op -> strings.add(op.toString(Language.EN)));
         return strings;
     }
 

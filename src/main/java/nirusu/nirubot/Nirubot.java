@@ -104,7 +104,7 @@ public class Nirubot extends AbstractIdleService {
     @Override
     protected void startUp() {
         listeners.add(new DiscordService());
-        listeners.add(new TeamSpeakService());
+        // listeners.add(new TeamSpeakService());
 
         for (NiruService s : listeners) {
             new Thread(s, s.name()).start();

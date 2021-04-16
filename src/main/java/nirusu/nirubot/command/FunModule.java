@@ -104,10 +104,16 @@ public class FunModule extends BaseModule {
             "arkcalc" }, description = "Calculates the best possible tag combinations for given input")
     public void arknights() {
         ctx.getArgs().ifPresent(args -> {
-            if (args.size() > 15 || args.size() < 2) {
+            if (args.size() > 6 || args.isEmpty()) {
                 return;
             }
-            List<TagCombination> all = RecruitmentCalculator.getRecruitment().calculate(args, ctx.getUserInput());
+            List<TagCombination> all;
+            try {
+                all = RecruitmentCalculator.getRecruitment().calculate(args, ctx.getUserInput());
+            } catch (IllegalArgumentException e) {
+                ctx.reply(e.getMessage());
+                return;
+            }
 
             Collections.reverse(all);
             ctx.getChannel().ifPresent(ch -> {

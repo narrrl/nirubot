@@ -32,7 +32,7 @@ public class RecruitmentCalculator {
 
     public synchronized List<Operator> loadOperators() {
         // get operator json
-        InputStream in = getClass().getResourceAsStream("operators.json");
+        InputStream in = getClass().getResourceAsStream("operator.json");
         StringBuilder opList = new StringBuilder();
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(in))) {
             String line = null;
@@ -54,7 +54,7 @@ public class RecruitmentCalculator {
             throw new IllegalArgumentException("Couldn't read operator list");
         }
 
-        return list;
+        return list.stream().filter(Operator::isntHidden).collect(Collectors.toList());
     }
 
     /**
@@ -70,7 +70,7 @@ public class RecruitmentCalculator {
         // convert the tags first because users input might be wrong
         // everything gets converted to upper case and spaced are swapped with
         // underscore
-        List<String> tags = Operator.convertTags(userInput, totalInput);
+        List<Tag> tags = Operator.convertTags(userInput, Language.EN);
 
         // create set to prevent duplicates
         HashSet<TagCombination> tagCombinations = getCombinations(tags);
@@ -102,7 +102,7 @@ public class RecruitmentCalculator {
         List<String> outList = new ArrayList<>();
         StringBuilder builder = new StringBuilder();
         for (TagCombination cb : tags) {
-            for (String str : cb.toStringAsList()) {
+            for (String str : cb.toStringAsList(Language.EN)) {
                 if (builder.length() + str.length() > 1800) {
                     outList.add(builder.toString());
                     builder = new StringBuilder();
@@ -118,11 +118,11 @@ public class RecruitmentCalculator {
         return outList;
     }
 
-    private HashSet<TagCombination> getCombinations(List<String> tags) {
+    private HashSet<TagCombination> getCombinations(List<Tag> tags) {
         HashSet<TagCombination> tagCombinations = new HashSet<>();
-        for (String tag : tags) {
-            for (String tag2 : tags) {
-                for (String tag3 : tags) {
+        for (Tag tag : tags) {
+            for (Tag tag2 : tags) {
+                for (Tag tag3 : tags) {
                     if (!tag.equals(tag2) && !tag.equals(tag3) && !tag2.equals(tag3)) {
                         tagCombinations.add(new TagCombination(Arrays.asList(tag, tag2, tag3)));
                     }

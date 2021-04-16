@@ -1,45 +1,45 @@
 package nirusu.nirubot.model.arknight;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+
+import com.google.gson.annotations.SerializedName;
+
+import nirusu.nirubot.Nirubot;
 
 /**
  * This class represents a operator in arknights.
  */
 public class Operator implements Comparable<Operator> {
-    public enum Qualification {
-        STARTER, SENIOR_OPERATOR, TOP_OPERATOR, NONE
-    }
+    private String[] tags;
+    private boolean hidden;
+    private int level;
+    private Tag[] operatorTags;
+    private String type;
 
-    public enum Position {
-        MELEE, RANGED
-    }
+    @SerializedName("name_cn")
+    private String nameCn;
 
-    public enum OperatorClass {
-        GUARD, MEDIC, VANGUARD, CASTER, SNIPER, DEFENDER, SUPPORTER, SPECIALIST
-    }
+    @SerializedName("name_en")
+    private String nameEn;
 
-    public enum Affix {
-        HEALING, SUPPORT, DPS, AOE, SLOW, SURVIVAL, DEFENSE, DEBUFF, SHIFT, CROWD_CONTROL, NUKER, SUMMON, FAST_REDEPLOY,
-        DP_RECOVERY, ROBOT
-    }
+    @SerializedName("name_jp")
+    private String nameJp;
 
-    private int rarity;
+    @SerializedName("name_kr")
+    private String nameKr;
 
-    private Qualification qualification;
-
-    private Position position;
-
-    private OperatorClass operatorClass;
-
-    private Affix[] affixes;
-
-    private String name;
-
-    @Override
-    public String toString() {
-        return "[" + this.name + "](" + "https://aceship.github.io/AN-EN-Tags/akhrchars.html?opname="
-                + this.name.replace(" ", "_") + ") " + rarity + "☆";
+    public String toString(Language lang) {
+        String name = switch (lang) {
+        case EN -> nameEn;
+        case CN -> nameCn;
+        case KR -> nameKr;
+        case JP -> nameJp;
+        default -> nameEn;
+        };
+        return "[" + name + "](" + "https://aceship.github.io/AN-EN-Tags/akhrchars.html?opname="
+                + name.replace(" ", "_") + ") " + this.level + "☆";
     }
 
     @Override
@@ -49,80 +49,77 @@ public class Operator implements Comparable<Operator> {
 
     @Override
     public int hashCode() {
-        return name.hashCode();
+        return nameEn.hashCode();
     }
 
-    public boolean hasTag(final String tag) {
-
-        if (tag == null) {
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof Operator)) {
             return false;
+        } else if (o == this) {
+            return true;
+        }
+        return nameEn.equals(((Operator) o).nameEn);
+    }
+
+    public boolean hasTag(final Tag tag) {
+
+        for (Tag t : getTags()) {
+            if (t.equals(tag))
+                return true;
         }
 
-        if (tag.equals(qualification.name())) {
-            return true;
-        } else if (tag.equals(position.name())) {
-            return true;
-        } else if (tag.equals(operatorClass.name())) {
-            return true;
-        } else {
-            for (Affix a : affixes) {
-                if (tag.equals(a.name())) {
-                    return true;
-                }
+        return false;
+    }
+
+    public List<Tag> getTags() {
+        if (this.operatorTags == null) {
+            this.operatorTags = createTags();
+        }
+
+        return Arrays.asList(this.operatorTags);
+    }
+
+    private Tag[] createTags() {
+        this.operatorTags = new Tag[this.tags.length + 1];
+        for (int i = 0; i < this.tags.length; i++) {
+
+            this.operatorTags[i] = Tag.getTagByName(tags[i], Language.CN).orElse(null);
+
+            if (this.operatorTags[i] == null) {
+                Nirubot.warning(String.format("Invalid tag %s for operator %s", this.tags[i], this.nameEn));
             }
-            return false;
         }
+
+            this.operatorTags[this.operatorTags.length - 1] = Tag.getTagByName(this.type, Language.CN).orElse(null);
+
+            if (this.operatorTags[this.operatorTags.length - 1] == null) {
+                Nirubot.warning(String.format("Invalid tag %s for operator %s", this.type, this.nameEn));
+            }
+
+
+        return this.operatorTags;
     }
 
     public int getRarity() {
-        return this.rarity;
+        return this.level;
     }
 
-    static List<String> convertTags(final List<String> oldTags, final String total) {
+    public boolean isntHidden() {
+        return !this.hidden;
+    }
 
-        List<String> newTags = new ArrayList<>();
-        String newTotal = total.toUpperCase();
+    public static List<Tag> convertTags(final List<String> oldTags, Language lang) {
+
+        List<Tag> newTags = new ArrayList<>();
 
         for (String str : oldTags) {
-            newTags.add(str.toUpperCase().replace("-", "_").toUpperCase());
+            Tag t = Tag.getTagByName(str.replace("-", " ").replace("_", " "), lang)
+                    .orElseThrow(() -> new IllegalArgumentException("Invalid tag " + str));
+
+            newTags.add(t);
         }
 
-        if (newTotal.contains("TOP OPERATOR")) {
-            newTags.remove("TOP");
-            newTags.remove("OPERATOR");
-            newTags.add("TOP_OPERATOR");
-        }
-        if (newTotal.contains("SENIOR OPERATOR")) {
-            newTags.remove("SENIOR");
-            newTags.remove("OPERATOR");
-            newTags.add("SENIOR_OPERATOR");
-        }
-        if (newTotal.contains("CROWD CONTROL")) {
-            newTags.remove("CROWD");
-            newTags.remove("CONTROL");
-            newTags.add("CROWD_CONTROL");
-
-        }
         return newTags;
     }
-
-    public static String getAllTagsAsString() {
-        StringBuilder out = new StringBuilder();
-        for (Qualification q : Qualification.values()) {
-            if (!q.equals(Qualification.NONE)) {
-                out.append(q.name()).append(" ");
-            }
-        }
-        for (Position pos : Position.values()) {
-            out.append(pos.name()).append(" ");
-        }
-        for (OperatorClass cl : OperatorClass.values()) {
-            out.append(cl.name()).append(" ");
-        }
-        for (Affix a : Affix.values()) {
-            out.append(a.name()).append(" ");
-        }
-        return out.substring(0, out.length() - 1);
-    }
-
 }
