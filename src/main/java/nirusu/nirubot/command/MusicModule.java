@@ -30,8 +30,14 @@ import nirusu.nirucmd.annotation.Command;
 
 
 /**
+ * TODO:
  * Ok fuck this. This shit needs to be redesigned from ground up.
- * 
+ *
+ * <h1> Ideas <\h1>
+ * <ul>
+ *  <li> Move the whole logic to another object, that every command is basically just a method call with IO for the user
+ *  <li> {@link nirusu.nirubot.core.audio.GuildMusicManager} needs some redesign too. Shouldn't do any IO.
+ *
  */
 @Deprecated
 public class MusicModule extends BaseModule {
@@ -52,7 +58,7 @@ public class MusicModule extends BaseModule {
 
             musicManager.setVolume(GuildManager.of(guild.getId()).volume());
 
-            ctx.getAuthorVoiceState().ifPresent(state -> 
+            ctx.getAuthorVoiceState().ifPresent(state ->
                 musicManager.play(state, link, new ResultHandler.Builder(musicManager).setCTX(ctx).build())
                     .ifPresent(result -> ctx.reply(result.getOutput()))
             );
@@ -446,11 +452,12 @@ public class MusicModule extends BaseModule {
     }
 
     private void playYouTubeVideo(GuildMusicManager manager, YouTubeVideo video, boolean loadAsNext) {
+        ResultHandler.Builder handler = new ResultHandler.Builder(manager);
         ctx.getGuild().ifPresent(guild -> {
             if (loadAsNext) {
-                manager.loadAndPlayNext(video.getVideoId(), null);
+                manager.loadAndPlayNext(video.getVideoId(), handler.setPlayAsNext(true).build());
             } else {
-                manager.loadAndPlay(video.getVideoId(), null);
+                manager.loadAndPlay(video.getVideoId(), handler.setPlayAsNext(false).build());
             }
         });
     }

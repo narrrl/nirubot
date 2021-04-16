@@ -53,6 +53,8 @@ public class TeamSpeakService implements NiruService {
         api.registerAllEvents();
         api.addTS3Listeners(new TS3Listener() {
 
+            // TODO: reimplement with a more modular approach
+
             @Override
             public void onTextMessage(TextMessageEvent e) {
                 String input = e.getMessage();
