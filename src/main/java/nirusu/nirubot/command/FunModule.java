@@ -10,7 +10,9 @@ import nirusu.nirubot.core.help.CommandMeta;
 import nirusu.nirubot.core.help.HelpCreator;
 import nirusu.nirubot.model.DiscordUtil;
 import nirusu.nirubot.model.RandomHttpClient;
+import nirusu.nirubot.model.arknight.Language;
 import nirusu.nirubot.model.arknight.RecruitmentCalculator;
+import nirusu.nirubot.model.arknight.Tag;
 import nirusu.nirubot.model.arknight.TagCombination;
 import nirusu.nirubot.model.gelbooru.Gelbooru;
 import nirusu.nirubot.model.gelbooru.Image;
@@ -68,6 +70,14 @@ public class FunModule extends BaseModule {
         });
     }
 
+    @Command(key = "arktags", description = "All arknights tags")
+    public void arktags() {
+        List<Tag> tags = Tag.getAllTags();
+
+
+        ctx.reply(tags.stream().map(t -> t.getTag(Language.EN)).collect(Collectors.joining(", ")));
+    }
+
     /**
      * ttt start [player]: Start a New Game<br>
      * ttt put [index]: put your piece to a given index<br>
@@ -109,7 +119,7 @@ public class FunModule extends BaseModule {
             }
             List<TagCombination> all;
             try {
-                all = RecruitmentCalculator.getRecruitment().calculate(args, ctx.getUserInput());
+                all = RecruitmentCalculator.getRecruitment().calculate(args);
             } catch (IllegalArgumentException e) {
                 ctx.reply(e.getMessage());
                 return;

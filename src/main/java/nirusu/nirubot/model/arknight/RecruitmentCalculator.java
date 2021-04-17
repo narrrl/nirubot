@@ -66,11 +66,23 @@ public class RecruitmentCalculator {
      * @return a sorted list from worst to best of
      *         {@link nirusu.nirubot.model.arknight.TagCombination}
      */
-    public List<TagCombination> calculate(@Nonnull final List<String> userInput, final String totalInput) {
+    public List<TagCombination> calculate(@Nonnull final List<String> userInput) {
         // convert the tags first because users input might be wrong
         // everything gets converted to upper case and spaced are swapped with
         // underscore
-        List<Tag> tags = Operator.convertTags(userInput, Language.EN);
+
+        List<String> input = userInput.stream().map(String::toUpperCase).filter(str -> !str.equals("OPERATOR")).collect(Collectors.toList());
+
+        if (input.contains("TOP")) {
+            input.remove("TOP");
+            input.add("TOP OPERATOR");
+        }
+
+        if (input.contains("SENIOR")) {
+            input.remove("SENIOR");
+            input.add("SENIOR OPERATOR");
+        }
+        List<Tag> tags = Operator.convertTags(input, Language.EN);
 
         // create set to prevent duplicates
         HashSet<TagCombination> tagCombinations = getCombinations(tags);

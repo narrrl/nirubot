@@ -14,6 +14,7 @@ import nirusu.nirubot.Nirubot;
 public class Operator implements Comparable<Operator> {
     private String[] tags;
     private boolean hidden;
+    private boolean globalHidden = false;
     private int level;
     private Tag[] operatorTags;
     private String type;
@@ -106,7 +107,7 @@ public class Operator implements Comparable<Operator> {
     }
 
     public boolean isntHidden() {
-        return !this.hidden;
+        return !this.hidden && !this.globalHidden;
     }
 
     public static List<Tag> convertTags(final List<String> oldTags, Language lang) {
@@ -114,7 +115,7 @@ public class Operator implements Comparable<Operator> {
         List<Tag> newTags = new ArrayList<>();
 
         for (String str : oldTags) {
-            Tag t = Tag.getTagByName(str.replace("-", " ").replace("_", " "), lang)
+            Tag t = Tag.getTagByName(str, lang)
                     .orElseThrow(() -> new IllegalArgumentException("Invalid tag " + str));
 
             newTags.add(t);
