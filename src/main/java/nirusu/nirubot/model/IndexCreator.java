@@ -67,7 +67,7 @@ public final class IndexCreator {
             example = example.replace("ZIP_NAME", zip.getName());
         }
 
-        try (FileWriter writer = new FileWriter(index)) {
+        try (FileWriter writer = new FileWriter(indexFile)) {
             writer.write(example);
             writer.flush();
         } catch (IOException e) {
