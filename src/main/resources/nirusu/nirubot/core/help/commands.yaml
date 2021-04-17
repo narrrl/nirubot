@@ -74,6 +74,11 @@
     This command is for the recruiting tab in the gatcha game [Arknights](https://www.arknights.global/).
     It calculates the best possible combinations for a given list of tags.
   syntax: "<prefix>arknights [tag1] [tag2]..."
+- name: "arktags"
+  description: >
+    This command is for the recruiting tab in the gatcha game [Arknights](https://www.arknights.global/).
+    It displays all tags.
+  syntax: "<prefix>arktags"
 - name: "nakiri"
   description: >
     This command sends random cute nakiri images.
