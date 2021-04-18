@@ -75,26 +75,20 @@ public class DiscordUtil {
         String requestType = args.get(0);
         String activityMessage = String.join(" ", args).replace(requestType + " ", "");
 
-        switch (requestType) {
-            case "playing" -> {
-                return Optional.of(Activity.playing(activityMessage));
-            }
-            case "competing" -> {
-                return Optional.of(Activity.competing(activityMessage));
-            }
-            case "listening" -> {
-                return Optional.of(Activity.listening(activityMessage));
-            }
-            case "watching" -> {
-                return Optional.of(Activity.watching(activityMessage));
-            }
-            case "streaming" -> {
-                return Optional.of(Activity.streaming(activityMessage.replace(args.get(args.size() - 1), ""),
+        return switch (requestType) {
+            case "playing" -> 
+                Optional.of(Activity.playing(activityMessage));
+            case "competing" -> 
+                Optional.of(Activity.competing(activityMessage));
+            case "listening" -> 
+                Optional.of(Activity.listening(activityMessage));
+            case "watching" -> 
+                Optional.of(Activity.watching(activityMessage));
+            case "streaming" -> 
+                Optional.of(Activity.streaming(activityMessage.replace(args.get(args.size() - 1), ""),
                         args.get(args.size() - 1)));
-            }
-            default -> {
-                return Optional.empty();
-            }
-        }
+            default -> 
+                Optional.empty();
+        };
     }
 }
