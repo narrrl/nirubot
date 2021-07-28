@@ -45,9 +45,9 @@
       <version>0.1.6</version>
     </dependency>
     <dependency>
-      <groupId>org.jdom</groupId>
-      <artifactId>jdom</artifactId>
-      <version>2.0.7</version>
+	    <groupId>com.github.kettas</groupId>
+	    <artifactId>jdom</artifactId>
+	    <version>2.0.6.1</version>
     </dependency>
     <dependency>
       <groupId>com.sedmelluq</groupId>
